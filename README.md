@@ -1,6 +1,6 @@
 # trajeR
 
-A R package
+A R package thah fit 
 ffgf
 df
 
