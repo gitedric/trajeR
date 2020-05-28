@@ -1,7 +1,4 @@
 # trajeR
 
-A R package thah fit 
-ffgf
-df
+A R package that fit **regression mixture model - group-based trajectory modeling (GBTM)**.
 
-sdfsdf
