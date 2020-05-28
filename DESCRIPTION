@@ -1,0 +1,14 @@
+Package: trajeR
+Type: Package
+Title: What the Package Does Using Title Case
+Version: 1.0
+Date: 2020-05-28
+Author: Your Name
+Maintainer: Your Name <your@email.com>
+Description: More details about what the package does. See
+       <http://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file>
+       for details on how to write this part.
+License: GPL (>= 2)
+Imports: Rcpp (>= 1.0.4.6)
+LinkingTo: Rcpp, RcppArmadillo
+RoxygenNote: 7.1.0
