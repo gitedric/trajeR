@@ -13,13 +13,17 @@ NumericVector muikt_cpp(NumericVector beta,
                         Nullable<List> delta,
                         int nw,
                         int k);
+
 double piikIntern_cpp(NumericVector theta,
                       int i,
                       int k,
                       int ng,
                       NumericMatrix X);
+
 double prodvect(NumericVector vec);
+
 NumericMatrix submat_cpp(NumericMatrix X, LogicalVector condition);
+
 NumericVector findtheta_cpp(NumericVector theta, 
                             NumericMatrix taux, 
                             NumericMatrix X, 
@@ -29,5 +33,13 @@ NumericVector findtheta_cpp(NumericVector theta,
                             int period, 
                             bool EMIRLS, 
                             int refgr);
+
+double Wit_cpp(Nullable<NumericMatrix> TCOV,
+               int period,
+               Nullable<List> delta, 
+               int nw,
+               int i,
+               int t,
+               int k);
   
 #endif //  __CommonFunction__

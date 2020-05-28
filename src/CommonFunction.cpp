@@ -58,7 +58,6 @@ double prodvect(NumericVector vec){
 // ----------------------------------------------------------------------------
 // Wit
 // ----------------------------------------------------------------------------
-// [[Rcpp::export]]
 double Wit_cpp(Nullable<NumericMatrix> TCOV,
                int period,
                Nullable<List> delta, 
