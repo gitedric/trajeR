@@ -256,7 +256,7 @@ difLdeltakalpha <- function(param, k, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCO
             tind = tind +1
           }
         } else{
-          difbkl = TCOV[i, which(indmin) + (l-1)*period]*exp(-3*alpha[k])*(Y[i,which(ind)]-muikt[which(ind)])*dnorm(m[which(ind)])
+          difbkl = TCOV[i, which(ind) + (l-1)*period]*exp(-3*alpha[k])*(Y[i,which(ind)]-muikt[which(ind)])*dnorm(m[which(ind)])
         }
         py = prod(exp(-alpha[k])*dnorm(m[which(ind)]))
       }

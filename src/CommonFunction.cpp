@@ -46,7 +46,6 @@ double piikIntern_cpp(NumericVector theta,
   vtmp = exp(vtmp -  max(vtmp));
   return(vtmp[k]/sum(vtmp));
 }
-
 // product of all elements of a vector
 double prodvect(NumericVector vec){
   double res = 1;

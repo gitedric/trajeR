@@ -100,8 +100,8 @@ Likelihoodalpha(c(pi, unlist(beta), sigma,unlist(delta)),
                     ymax, 
                     TCOV,
                     nw)
-a1=difLalpha(c(pi, unlist(beta), sigma,unlist(delta)), ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
-a2=difLalpha_cpp(c(pi, unlist(beta), sigma,unlist(delta)), ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
+a1=difLalphaunique(c(pi, unlist(beta), sigma,unlist(delta)), ng, nx, nbeta, n, A, Y, X, ymin, ymax=30, TCOV, nw)
+a2=difLalphaunique_cpp(c(pi, unlist(beta), sigma,unlist(delta)), ng, nx, nbeta, n, A, Y, X, ymin, ymax=30, TCOV, nw)
 
 
 k=1
@@ -127,3 +127,75 @@ sol2R = trajeR(data[,1:5], data[,6:10], Risk = data[, 11:15], ng = 3, degre=c(2,
 sol2EMR = trajeR(data[,1:5], data[,6:10], Risk = data[, 11:15], ng = 3, degre=c(2,2,2), 
                 Model="CNORM", Method = "EM", ssigma = FALSE, 
                 hessian = FALSE)
+
+
+############################# exempale vignette
+load(file = "/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07_sol")
+load(file = "/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07Censored_sol")
+solL = trajeR(Y = data[,2:11], A = data[,12:21],
+              ng = 3, degre = c(0,3,4),
+              Model = "CNORM", Method = "L",  hessian = TRUE, ssigma = FALSE)
+solLs = trajeR(Y = data[,2:11], A = data[,12:21],
+              ng = 3, degre = c(0,3,4),
+              Model = "CNORM", Method = "L",  hessian = TRUE, ssigma = TRUE)
+solEM = trajeR(Y = data[,2:11], A = data[,12:21],
+              ng = 3, degre = c(0,3,4),
+              Model = "CNORM", Method = "EM",  hessian = FALSE, ssigma = FALSE)
+solLRisks = trajeR(Y = data[,2:11], A = data[,12:21], Risk = data[,42:43],
+                   ng = 3, degre = c(0,3,4),
+                   Model = "CNORM", Method = "L", ssigma = TRUE, hessian = FALSE)
+solLRisk = trajeR(Y = data[,2:11], A = data[,12:21], Risk = data[,42:43],
+                   ng = 3, degre = c(0,3,4),
+                   Model = "CNORM", Method = "L", ssigma = FALSE, hessian = FALSE)
+solLTCOV2 = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:41],
+                   ng = 3, degre = c(0,3,4),
+                   Model = "CNORM", Method = "L", ssigma = FALSE, hessian = FALSE)
+solLTCOV2s = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:41],
+                   ng = 3, degre = c(0,3,4),
+                   Model = "CNORM", Method = "L", ssigma = TRUE, hessian = FALSE)
+solLC = trajeR(Y = dataC[,2:11], A = dataC[,12:21],
+               ng = 3, degre = c(0,3,4),
+               Model="CNORM", Method = "L", ssigma = FALSE, hessian = FALSE,
+               ymin=2, ymax=23)
+solLCs = trajeR(Y = dataC[,2:11], A = dataC[,12:21],
+               ng = 3, degre = c(0,3,4),
+               Model="CNORM", Method = "L", ssigma = TRUE, hessian = FALSE,
+               ymin=2, ymax=23)
+solLCTCOV = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:31],
+                   ng = 3, degre = c(0,3,4),
+                   Model = "CNORM", Method = "L", ssigma = FALSE, hessian = FALSE,
+                   ymin = 2,  ymax = 23)
+solLCTCOVs = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:31],
+                    ng = 3, degre = c(0,3,4),
+                    Model = "CNORM", Method = "L", ssigma = TRUE, hessian = FALSE,
+                    ymin = 2,  ymax = 23)
+
+X= matrix(rep(1, nrow(data)), ncol = 1)
+nx= ncol(X)
+Y = data[,2:11]
+A = data[,12:21]
+TCOV = data[,22:31]
+nw=1
+ng = 3
+nbeta = c(0,3,4)+1
+n = nrow(data)
+ymin = 2
+ymax = 23
+k=1
+j = 1
+betatmp=solLCTCOV$beta
+beta = list()
+for (i in 1:ng){
+  beta[[i]] = betatmp[j:sum(nbeta[1:i])]
+  j = sum(nbeta[1:i]) + 1
+}
+ndeltacum = cumsum(c(0, rep(nw, ng)))
+deltatmp=solLCTCOV$delta
+delta = list()
+for (i in 1:ng){
+  delta[[i]] = deltatmp[(ndeltacum[i]+1):(ndeltacum[i+1])]
+}
+
+k=1
+difLdeltakalpha(c(solLCTCOV$theta, solLCTCOV$beta, solLCTCOV$sigma,solLCTCOV$delta), k, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
+difLdeltakalpha_cpp(solLCTCOV$theta, beta, solLCTCOV$sigma,delta, k-1, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)

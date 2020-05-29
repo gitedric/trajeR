@@ -17,7 +17,6 @@
 piik <- function(theta, i, k, ng, X){
   ntheta = ncol(X)
   tmp = exp(sapply(1:ng,function(s){theta[((s-1)*ntheta+1):(s*ntheta)]%*%X[i,]}))
-  tmp = exp(tmp-max(tmp))
   return(tmp[k]/sum(tmp))
 }
 #################################################################################

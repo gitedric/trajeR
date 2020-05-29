@@ -261,7 +261,9 @@ NumericVector difLdeltakalpha_cpp(NumericVector theta,
       NumericMatrix YimuiA(3, period);
       YimuiA(0, _) = Y(i, _);
       YimuiA(1, _) = muikt;
-      YimuiA(2, _) = A(i, _);
+      for (int t = 0; t < period; t++){
+        YimuiA(2, t) = TCOV(i, t + l*period);   
+      }
       // check if there exist some censored values
       LogicalVector indmin = (Y(i, _) <= rep(ymin, period));
       LogicalVector indmax = (Y(i, _) >= rep(ymax, period));
@@ -278,10 +280,10 @@ NumericVector difLdeltakalpha_cpp(NumericVector theta,
             // vector with all elements except the element t
             NumericVector vmeantmpminus = vmean;
             vmeantmpminus.erase(vmeantmpminus.begin() + t);
-            difbklmin -= TCOV(i, vAtmp[t]+l*period-1)*exp(-alpha[k])*(R::dnorm(vmean[t], 0.0, 1.0, false))*prodvect(Rcpp::pnorm(vmeantmpminus, 0.0, 1.0, true, false));   
+            difbklmin -= vAtmp[t]*exp(-alpha[k])*(R::dnorm(vmean[t], 0.0, 1.0, false))*prodvect(Rcpp::pnorm(vmeantmpminus, 0.0, 1.0, true, false));   
           } 
         }else{
-          difbklmin = -TCOV(i, vAtmp[0]+l*period-1)*exp(-alpha[k])*(R::dnorm(vmean[0], 0.0, 1.0, false));   
+          difbklmin = -vAtmp[0]*exp(-alpha[k])*(R::dnorm(vmean[0], 0.0, 1.0, false));   
         }
         pymin = prodvect(Rcpp::pnorm(vmean, 0.0, 1.0, true, false));
       }
@@ -297,10 +299,10 @@ NumericVector difLdeltakalpha_cpp(NumericVector theta,
             // vector with all elements except the element t
             NumericVector vmeantmpminus = vmean;
             vmeantmpminus.erase(vmeantmpminus.begin() + t);
-            difbklmax += TCOV(i, vAtmp[t]+l*period-1)*exp(-alpha[k])*(R::dnorm(vmean[t], 0.0, 1.0, false))*prodvect(Rcpp::pnorm(-vmeantmpminus, 0.0, 1.0, true, false));   
+            difbklmax += vAtmp[t]*exp(-alpha[k])*(R::dnorm(vmean[t], 0.0, 1.0, false))*prodvect(Rcpp::pnorm(-vmeantmpminus, 0.0, 1.0, true, false));   
           } 
         }else{
-          difbklmax = TCOV(i, vAtmp[0]+l*period-1)*exp(-alpha[k])*(R::dnorm(vmean[0], 0.0, 1.0, false));   
+          difbklmax = vAtmp[0]*exp(-alpha[k])*(R::dnorm(vmean[0], 0.0, 1.0, false));   
         }
         pymax = prodvect(Rcpp::pnorm(-vmean, 0.0, 1.0, true, false));
       }
@@ -316,10 +318,10 @@ NumericVector difLdeltakalpha_cpp(NumericVector theta,
             // vector with all elements except the element t
             NumericVector vmeantmpminus = vmean;
             vmeantmpminus.erase(vmeantmpminus.begin() + t);
-            difbkl += TCOV(i, vAtmp[t]+l*period-1)*exp(-2*alpha[k])*vmean[t]*(R::dnorm(vmean[t], 0.0, 1.0, false))*prodvect(exp(-alpha[k])*(Rcpp::dnorm(vmeantmpminus, 0.0, 1.0, false)));   
+            difbkl += vAtmp[t]*exp(-2*alpha[k])*vmean[t]*(R::dnorm(vmean[t], 0.0, 1.0, false))*prodvect(exp(-alpha[k])*(Rcpp::dnorm(vmeantmpminus, 0.0, 1.0, false)));   
           } 
         }else{
-          difbkl = TCOV(i, vAtmp[0]+l*period-1)*exp(-2*alpha[k])*vmean[0]*(R::dnorm(vmean[0], 0.0, 1.0, false));   
+          difbkl = vAtmp[0]*exp(-2*alpha[k])*vmean[0]*(R::dnorm(vmean[0], 0.0, 1.0, false));   
         }
         py = prodvect(exp(-alpha[k])*(Rcpp::dnorm(vmean, 0.0, 1.0, false)));
       }
@@ -679,6 +681,14 @@ NumericVector difLalphaunique_cpp(NumericVector param,
   NumericVector tmp =  difLsigmaalphaunique_cpp(theta, betaL, alpha, deltaL, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw);
   for (int i =0; i < tmp.length(); ++i){
     out.push_back(tmp[i]);
+  }
+  if (nw != 0){
+    for (int k = 0; k < ng; ++k){
+      NumericVector tmp =  difLdeltakalpha_cpp(theta, betaL, alpha, deltaL, k, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw);
+      for (int i = 0; i < tmp.length(); ++i){
+        out.push_back(tmp[i]);
+      }
+    }
   }
   return(out);
 }
