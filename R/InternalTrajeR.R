@@ -26,7 +26,7 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
       newparam = optim(par = paraminitL, fn = Likelihoodalpha_cpp, gr=difLalpha_cpp,
                        method = "BFGS",
                        hessian = hessian,
-                       control = list(fnscale=-1, trace=6, maxit = itermax),
+                       control = list(fnscale=-1, trace=1, REPORT=1, maxit = itermax),
                        ng = ng, nx = nx, n =n, A = A, Y = Y, X = X, nbeta = nbeta,
                        ymin = ymin, ymax = ymax, nw = nw, TCOV = TCOV)
     } else {
@@ -66,7 +66,7 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     }
     if (max(Y)<ymax & min(Y)>ymin){
       if (ssigma == FALSE){
-        param = EM(paraminitEM,ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, delta, nw, itermax, EMIRLS)
+        param = EM_cpp(paraminitEM, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
       }else{
         param = EMSigmaunique(paraminitEM,ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, delta, nw, itermax, EMIRLS)
       }
@@ -88,11 +88,7 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     }else{
       SE = NA
     }
-    if (nx == 1){
-      param = c(param[-c(1:(ng-1))], param[1:(ng-1)], 1-sum(param[1:(ng-1)]))
-    }else{
-      param = c(param[-c(1:(ng*nx))], param[1:(ng*nx)])
-    }
+    param = c(param[-c(1:(ng*nx))], param[1:(ng*nx)])
   }
   if (hessian == TRUE){
     d = data.frame(Estimate =  param,

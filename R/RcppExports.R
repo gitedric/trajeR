@@ -25,10 +25,6 @@ piik_cpp <- function(theta, i, k, ng, X) {
     .Call(`_trajeR_piik_cpp`, theta, i, k, ng, X)
 }
 
-Wit_cpp <- function(TCOV, period, delta, nw, i, t, k) {
-    .Call(`_trajeR_Wit_cpp`, TCOV, period, delta, nw, i, t, k)
-}
-
 ftheta_cpp <- function(theta, taux, X, n, ng, period) {
     .Call(`_trajeR_ftheta_cpp`, theta, taux, X, n, ng, period)
 }

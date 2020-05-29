@@ -46,27 +46,6 @@ namespace trajeR {
         return Rcpp::as<double >(rcpp_result_gen);
     }
 
-    inline double Wit_cpp(Nullable<NumericMatrix> TCOV, int period, Nullable<List> delta, int nw, int i, int t, int k) {
-        typedef SEXP(*Ptr_Wit_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
-        static Ptr_Wit_cpp p_Wit_cpp = NULL;
-        if (p_Wit_cpp == NULL) {
-            validateSignature("double(*Wit_cpp)(Nullable<NumericMatrix>,int,Nullable<List>,int,int,int,int)");
-            p_Wit_cpp = (Ptr_Wit_cpp)R_GetCCallable("trajeR", "_trajeR_Wit_cpp");
-        }
-        RObject rcpp_result_gen;
-        {
-            RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_Wit_cpp(Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(period)), Shield<SEXP>(Rcpp::wrap(delta)), Shield<SEXP>(Rcpp::wrap(nw)), Shield<SEXP>(Rcpp::wrap(i)), Shield<SEXP>(Rcpp::wrap(t)), Shield<SEXP>(Rcpp::wrap(k)));
-        }
-        if (rcpp_result_gen.inherits("interrupted-error"))
-            throw Rcpp::internal::InterruptedException();
-        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
-            throw Rcpp::LongjumpException(rcpp_result_gen);
-        if (rcpp_result_gen.inherits("try-error"))
-            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
-        return Rcpp::as<double >(rcpp_result_gen);
-    }
-
     inline double ftheta_cpp(NumericVector theta, NumericMatrix taux, NumericMatrix X, int n, int ng, int period) {
         typedef SEXP(*Ptr_ftheta_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_ftheta_cpp p_ftheta_cpp = NULL;

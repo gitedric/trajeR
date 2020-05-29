@@ -224,6 +224,116 @@ NumericVector difLbetakalpha_cpp(NumericVector theta,
   return(betas); 
 }
 // ----------------------------------------------------------------------------
+// dif likelihood deltak
+// ----------------------------------------------------------------------------
+NumericVector difLdeltakalpha_cpp(NumericVector theta,
+                                 List beta,
+                                 NumericVector alpha,
+                                 Nullable<List> delta,
+                                 int k,
+                                 int ng,
+                                 int nx,
+                                 IntegerVector nbeta,
+                                 int n,
+                                 NumericMatrix A,
+                                 NumericMatrix Y,
+                                 NumericMatrix X,
+                                 double ymin,
+                                 double ymax, 
+                                 Nullable<NumericMatrix> initTCOV,
+                                 int nw){
+  NumericVector deltas;
+  int period = A.ncol();
+  NumericMatrix TCOV(initTCOV);
+  
+  for (int l = 0; l < nw; ++l){
+    double a = 0;
+    for (int i = 0; i < n; i++){
+      double difbkl = 0;
+      double difbklmin = 0;
+      double difbklmax = 0;
+      double py = 1;
+      double pymax = 1;
+      double pymin = 1;
+      // initialize mean
+      NumericVector muikt = muikt_cpp(beta[k], nbeta[k], i, period, A, TCOV, delta, nw, k);
+      // create a matrix with Yit, muikt ans Ait
+      NumericMatrix YimuiA(3, period);
+      YimuiA(0, _) = Y(i, _);
+      YimuiA(1, _) = muikt;
+      YimuiA(2, _) = A(i, _);
+      // check if there exist some censored values
+      LogicalVector indmin = (Y(i, _) <= rep(ymin, period));
+      LogicalVector indmax = (Y(i, _) >= rep(ymax, period));
+      LogicalVector ind = !(indmin | indmax);
+      if (is_true(any(indmin == TRUE))){
+        // construct a matrix with element of Yimui for which ind is true
+        NumericMatrix mtmp = submat_cpp(YimuiA, indmin); 
+        NumericVector vytmp = rep(ymin, sum(indmin));
+        NumericVector vmutmp = mtmp(1, _);
+        NumericVector vAtmp = mtmp(2, _);
+        NumericVector vmean = (vytmp - vmutmp)*exp(-alpha[k]);
+        if (sum(indmin) > 1){
+          for (int t = 0; t < vytmp.size(); ++t){
+            // vector with all elements except the element t
+            NumericVector vmeantmpminus = vmean;
+            vmeantmpminus.erase(vmeantmpminus.begin() + t);
+            difbklmin -= TCOV(i, vAtmp[t]+l*period-1)*exp(-alpha[k])*(R::dnorm(vmean[t], 0.0, 1.0, false))*prodvect(Rcpp::pnorm(vmeantmpminus, 0.0, 1.0, true, false));   
+          } 
+        }else{
+          difbklmin = -TCOV(i, vAtmp[0]+l*period-1)*exp(-alpha[k])*(R::dnorm(vmean[0], 0.0, 1.0, false));   
+        }
+        pymin = prodvect(Rcpp::pnorm(vmean, 0.0, 1.0, true, false));
+      }
+      if (is_true(any(indmax == TRUE))){
+        // construct a matrix with element of Yimui for which ind is true
+        NumericMatrix mtmp = submat_cpp(YimuiA, indmax); 
+        NumericVector vytmp = rep(ymax, sum(indmax));
+        NumericVector vmutmp = mtmp(1, _);
+        NumericVector vAtmp = mtmp(2, _);
+        NumericVector vmean = (vytmp - vmutmp)*exp(-alpha[k]);
+        if (sum(indmax) > 1){
+          for (int t = 0; t < vytmp.size(); ++t){
+            // vector with all elements except the element t
+            NumericVector vmeantmpminus = vmean;
+            vmeantmpminus.erase(vmeantmpminus.begin() + t);
+            difbklmax += TCOV(i, vAtmp[t]+l*period-1)*exp(-alpha[k])*(R::dnorm(vmean[t], 0.0, 1.0, false))*prodvect(Rcpp::pnorm(-vmeantmpminus, 0.0, 1.0, true, false));   
+          } 
+        }else{
+          difbklmax = TCOV(i, vAtmp[0]+l*period-1)*exp(-alpha[k])*(R::dnorm(vmean[0], 0.0, 1.0, false));   
+        }
+        pymax = prodvect(Rcpp::pnorm(-vmean, 0.0, 1.0, true, false));
+      }
+      if (is_true(any(ind == TRUE))){
+        // construct a matrix with element of Yimui for which ind is true
+        NumericMatrix mtmp = submat_cpp(YimuiA, ind); 
+        NumericVector vytmp = mtmp(0, _);
+        NumericVector vmutmp = mtmp(1, _);
+        NumericVector vAtmp = mtmp(2, _);
+        NumericVector vmean = (vytmp - vmutmp)*exp(-alpha[k]);
+        if (sum(ind) > 1){
+          for (int t = 0; t < vytmp.size(); ++t){
+            // vector with all elements except the element t
+            NumericVector vmeantmpminus = vmean;
+            vmeantmpminus.erase(vmeantmpminus.begin() + t);
+            difbkl += TCOV(i, vAtmp[t]+l*period-1)*exp(-2*alpha[k])*vmean[t]*(R::dnorm(vmean[t], 0.0, 1.0, false))*prodvect(exp(-alpha[k])*(Rcpp::dnorm(vmeantmpminus, 0.0, 1.0, false)));   
+          } 
+        }else{
+          difbkl = TCOV(i, vAtmp[0]+l*period-1)*exp(-2*alpha[k])*vmean[0]*(R::dnorm(vmean[0], 0.0, 1.0, false));   
+        }
+        py = prodvect(exp(-alpha[k])*(Rcpp::dnorm(vmean, 0.0, 1.0, false)));
+      }
+      double so = 0;
+      for (int s = 0; s < ng; ++s){
+        so += piikIntern_cpp(theta, i, s, ng, X)*gkalpha_cpp(beta, alpha, i, s, nbeta, A, Y, ymin, ymax, TCOV, delta, nw);
+      }
+      a += piikIntern_cpp(theta, i, k, ng, X)/so*(difbklmin*py*pymax+difbklmax*py*pymin+difbkl*pymin*pymax);
+    }
+    deltas.push_back(a);
+  }
+  return(deltas); 
+}
+// ----------------------------------------------------------------------------
 // dif likelihood sigma with reparametrization alpha
 // ----------------------------------------------------------------------------
 double difLsigmakalpha_cpp(NumericVector theta,
@@ -495,6 +605,14 @@ NumericVector difLalpha_cpp(NumericVector param,
   for (int k = 0; k < ng; ++k){
     double tmp =  difLsigmakalpha_cpp(theta, betaL, alpha, deltaL, k, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw);
     out.push_back(tmp);
+  }
+  if (nw != 0){
+    for (int k = 0; k < ng; ++k){
+      NumericVector tmp =  difLdeltakalpha_cpp(theta, betaL, alpha, deltaL, k, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw);
+      for (int i = 0; i < tmp.length(); ++i){
+        out.push_back(tmp[i]);
+      }
+    }
   }
   return(out);
 }

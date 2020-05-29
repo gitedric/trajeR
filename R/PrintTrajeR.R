@@ -142,7 +142,7 @@ print.Trajectory.CNORM <- function(Obj, ...){
   writeLines(Row(namestmp, widths, esp))
   writeLines(Row(c("","","","","param.=0",""), widths, esp))
   writeLines(sep1)
-  # write beta and delt
+  # write beta and delta
   for (i in 1:(ng-1)){
     for (j in 1:(nbeta[i]+ndelta)){
       writeLines(Row(dfprint[indcum[i]+j , ], widths, esp))

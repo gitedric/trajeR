@@ -160,46 +160,6 @@ RcppExport SEXP _trajeR_piik_cpp(SEXP thetaSEXP, SEXP iSEXP, SEXP kSEXP, SEXP ng
     UNPROTECT(1);
     return rcpp_result_gen;
 }
-// Wit_cpp
-double Wit_cpp(Nullable<NumericMatrix> TCOV, int period, Nullable<List> delta, int nw, int i, int t, int k);
-static SEXP _trajeR_Wit_cpp_try(SEXP TCOVSEXP, SEXP periodSEXP, SEXP deltaSEXP, SEXP nwSEXP, SEXP iSEXP, SEXP tSEXP, SEXP kSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Nullable<NumericMatrix> >::type TCOV(TCOVSEXP);
-    Rcpp::traits::input_parameter< int >::type period(periodSEXP);
-    Rcpp::traits::input_parameter< Nullable<List> >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
-    Rcpp::traits::input_parameter< int >::type i(iSEXP);
-    Rcpp::traits::input_parameter< int >::type t(tSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    rcpp_result_gen = Rcpp::wrap(Wit_cpp(TCOV, period, delta, nw, i, t, k));
-    return rcpp_result_gen;
-END_RCPP_RETURN_ERROR
-}
-RcppExport SEXP _trajeR_Wit_cpp(SEXP TCOVSEXP, SEXP periodSEXP, SEXP deltaSEXP, SEXP nwSEXP, SEXP iSEXP, SEXP tSEXP, SEXP kSEXP) {
-    SEXP rcpp_result_gen;
-    {
-        Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_trajeR_Wit_cpp_try(TCOVSEXP, periodSEXP, deltaSEXP, nwSEXP, iSEXP, tSEXP, kSEXP));
-    }
-    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
-    if (rcpp_isInterrupt_gen) {
-        UNPROTECT(1);
-        Rf_onintr();
-    }
-    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
-    if (rcpp_isLongjump_gen) {
-        Rcpp::internal::resumeJump(rcpp_result_gen);
-    }
-    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
-    if (rcpp_isError_gen) {
-        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
-        UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
-    }
-    UNPROTECT(1);
-    return rcpp_result_gen;
-}
 // ftheta_cpp
 double ftheta_cpp(NumericVector theta, NumericMatrix taux, NumericMatrix X, int n, int ng, int period);
 static SEXP _trajeR_ftheta_cpp_try(SEXP thetaSEXP, SEXP tauxSEXP, SEXP XSEXP, SEXP nSEXP, SEXP ngSEXP, SEXP periodSEXP) {
@@ -365,7 +325,6 @@ static int _trajeR_RcppExport_validate(const char* sig) {
     static std::set<std::string> signatures;
     if (signatures.empty()) {
         signatures.insert("double(*piik_cpp)(NumericVector,int,int,int,NumericMatrix)");
-        signatures.insert("double(*Wit_cpp)(Nullable<NumericMatrix>,int,Nullable<List>,int,int,int,int)");
         signatures.insert("double(*ftheta_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int)");
         signatures.insert("NumericVector(*difftheta_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int)");
         signatures.insert("Rcpp::NumericVector(*thethaIRLS_cpp)(Rcpp::NumericVector,int,int,Rcpp::NumericMatrix,arma::mat,int)");
@@ -377,7 +336,6 @@ static int _trajeR_RcppExport_validate(const char* sig) {
 // registerCCallable (register entry points for exported C++ functions)
 RcppExport SEXP _trajeR_RcppExport_registerCCallable() { 
     R_RegisterCCallable("trajeR", "_trajeR_piik_cpp", (DL_FUNC)_trajeR_piik_cpp_try);
-    R_RegisterCCallable("trajeR", "_trajeR_Wit_cpp", (DL_FUNC)_trajeR_Wit_cpp_try);
     R_RegisterCCallable("trajeR", "_trajeR_ftheta_cpp", (DL_FUNC)_trajeR_ftheta_cpp_try);
     R_RegisterCCallable("trajeR", "_trajeR_difftheta_cpp", (DL_FUNC)_trajeR_difftheta_cpp_try);
     R_RegisterCCallable("trajeR", "_trajeR_thethaIRLS_cpp", (DL_FUNC)_trajeR_thethaIRLS_cpp_try);
@@ -393,7 +351,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_trajeR_Likelihoodalpha_cpp", (DL_FUNC) &_trajeR_Likelihoodalpha_cpp, 12},
     {"_trajeR_EM_cpp", (DL_FUNC) &_trajeR_EM_cpp, 15},
     {"_trajeR_piik_cpp", (DL_FUNC) &_trajeR_piik_cpp, 5},
-    {"_trajeR_Wit_cpp", (DL_FUNC) &_trajeR_Wit_cpp, 7},
     {"_trajeR_ftheta_cpp", (DL_FUNC) &_trajeR_ftheta_cpp, 6},
     {"_trajeR_difftheta_cpp", (DL_FUNC) &_trajeR_difftheta_cpp, 6},
     {"_trajeR_thethaIRLS_cpp", (DL_FUNC) &_trajeR_thethaIRLS_cpp, 6},
