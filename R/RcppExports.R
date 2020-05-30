@@ -21,6 +21,14 @@ EM_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, iterm
     .Call(`_trajeR_EM_cpp`, param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
 }
 
+EMSigmaunique_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr) {
+    .Call(`_trajeR_EMSigmaunique_cpp`, param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
+}
+
+EMCensored_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr) {
+    .Call(`_trajeR_EMCensored_cpp`, param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
+}
+
 piik_cpp <- function(theta, i, k, ng, X) {
     .Call(`_trajeR_piik_cpp`, theta, i, k, ng, X)
 }

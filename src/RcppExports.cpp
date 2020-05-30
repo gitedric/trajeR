@@ -122,6 +122,56 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// EMSigmaunique_cpp
+NumericVector EMSigmaunique_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw, int itermax, bool EMIRLS, int refgr);
+RcppExport SEXP _trajeR_EMSigmaunique_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type param(paramSEXP);
+    Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
+    Rcpp::traits::input_parameter< int >::type nx(nxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nbeta(nbetaSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type A(ASEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< double >::type ymin(yminSEXP);
+    Rcpp::traits::input_parameter< double >::type ymax(ymaxSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericMatrix> >::type TCOV(TCOVSEXP);
+    Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
+    Rcpp::traits::input_parameter< int >::type itermax(itermaxSEXP);
+    Rcpp::traits::input_parameter< bool >::type EMIRLS(EMIRLSSEXP);
+    Rcpp::traits::input_parameter< int >::type refgr(refgrSEXP);
+    rcpp_result_gen = Rcpp::wrap(EMSigmaunique_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// EMCensored_cpp
+NumericVector EMCensored_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw, int itermax, bool EMIRLS, int refgr);
+RcppExport SEXP _trajeR_EMCensored_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type param(paramSEXP);
+    Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
+    Rcpp::traits::input_parameter< int >::type nx(nxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nbeta(nbetaSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type A(ASEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< double >::type ymin(yminSEXP);
+    Rcpp::traits::input_parameter< double >::type ymax(ymaxSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericMatrix> >::type TCOV(TCOVSEXP);
+    Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
+    Rcpp::traits::input_parameter< int >::type itermax(itermaxSEXP);
+    Rcpp::traits::input_parameter< bool >::type EMIRLS(EMIRLSSEXP);
+    Rcpp::traits::input_parameter< int >::type refgr(refgrSEXP);
+    rcpp_result_gen = Rcpp::wrap(EMCensored_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr));
+    return rcpp_result_gen;
+END_RCPP
+}
 // piik_cpp
 double piik_cpp(NumericVector theta, int i, int k, int ng, NumericMatrix X);
 static SEXP _trajeR_piik_cpp_try(SEXP thetaSEXP, SEXP iSEXP, SEXP kSEXP, SEXP ngSEXP, SEXP XSEXP) {
@@ -350,6 +400,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_trajeR_difLalphaunique_cpp", (DL_FUNC) &_trajeR_difLalphaunique_cpp, 12},
     {"_trajeR_Likelihoodalpha_cpp", (DL_FUNC) &_trajeR_Likelihoodalpha_cpp, 12},
     {"_trajeR_EM_cpp", (DL_FUNC) &_trajeR_EM_cpp, 15},
+    {"_trajeR_EMSigmaunique_cpp", (DL_FUNC) &_trajeR_EMSigmaunique_cpp, 15},
+    {"_trajeR_EMCensored_cpp", (DL_FUNC) &_trajeR_EMCensored_cpp, 15},
     {"_trajeR_piik_cpp", (DL_FUNC) &_trajeR_piik_cpp, 5},
     {"_trajeR_ftheta_cpp", (DL_FUNC) &_trajeR_ftheta_cpp, 6},
     {"_trajeR_difftheta_cpp", (DL_FUNC) &_trajeR_difftheta_cpp, 6},

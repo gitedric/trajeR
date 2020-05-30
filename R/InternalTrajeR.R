@@ -68,14 +68,14 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
       if (ssigma == FALSE){
         param = EM_cpp(paraminitEM, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
       }else{
-        param = EMSigmaunique(paraminitEM,ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, delta, nw, itermax, EMIRLS)
+        param = EMSigmaunique_cpp(paraminitEM, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
       }
     }else{
       if (ssigma == TRUE){
         param = EMcensoredsamesigma(paraminitEM, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, delta, nw, itermax, EMIRLS)
       }
       else{
-        param = EMcensored(paraminitEM, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, delta, nw, itermax, EMIRLS)
+        param = EMCensored_cpp(paraminitEM, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
       }
     }
     if (hessian == TRUE){
