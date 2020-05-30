@@ -64,7 +64,7 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     }else{
       if (nx == 1){paraminitEM = paraminit[-ng]}
     }
-    if (max(Y)<ymax & min(Y)>ymin){
+    if (max(Y)<=ymax & min(Y)>=ymin){
       if (ssigma == FALSE){
         param = EM_cpp(paraminitEM, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
       }else{

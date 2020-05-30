@@ -41,5 +41,13 @@ double Wit_cpp(Nullable<NumericMatrix> TCOV,
                int i,
                int t,
                int k);
+
+double WitEM_cpp(Nullable<NumericMatrix> TCOV,
+               int period,
+               Nullable<NumericVector> delta, 
+               int nw,
+               int i,
+               int t,
+               int k);
   
 #endif //  __CommonFunction__

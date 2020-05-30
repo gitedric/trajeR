@@ -1039,7 +1039,7 @@ NumericVector EM_cpp(NumericVector param,
           b += taux(i, k)*as_scalar(mtmp*trans(mtmp));
         }
         newbeta = join_rows(newbeta, a*inv(Ai*trans(Ai))/sum(taux(_, k)));
-        newdelta = join_rows(newdelta, c*inv(Sw)); 
+        newdelta = join_rows(newdelta, c/Sw); 
         newsigma[k]= sqrt(b/(period*sum(taux(_, k))));
       }
     }
@@ -1184,7 +1184,7 @@ NumericVector EMSigmaunique_cpp(NumericVector param,
           b += taux(i, k)*as_scalar(mtmp*trans(mtmp));
         }
         newbeta = join_rows(newbeta, a*inv(Ai*trans(Ai))/sum(taux(_, k)));
-        newdelta = join_rows(newdelta, c*inv(Sw)); 
+        newdelta = join_rows(newdelta, c/Sw); 
       }
     }
     NumericVector vstmp = rep(sqrt(b/(period*n)), ng);
@@ -1354,15 +1354,46 @@ NumericVector EMCensored_cpp(NumericVector param,
               Wi(kk, t) = mTCOV(i, t + kk*period);
             }
           }
-          rowvec vtmp = Y(i, _);
-          a += taux(i, k)*(vtmp*trans(Ai) - (Rcpp::as<arma::rowvec>(delta)).subvec(ndeltacum[k], ndeltacum[k+1]-1)*Wi*trans(Ai));
-          c += taux(i, k)*(vtmp*trans(Wi) - (Rcpp::as<arma::rowvec>(beta)).subvec(nbetacum[k], nbetacum[k+1]-1)*Ai*trans(Wi));
+          NumericVector betak = beta[Range(nbetacum[k], nbetacum[k+1]-1)];
+          NumericVector deltak = delta[Range(ndeltacum[k], ndeltacum[k+1]-1)];
+          NumericVector muikt;
+          for (int s = 0; s < period; ++s){
+            NumericVector vtmp2;
+            for (int po = 0; po < nbeta[k]; ++po){
+              vtmp2.push_back(pow(A(i,s), po));
+            }
+            muikt.push_back(sum(betak*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, s, k));
+          }
+          NumericVector vymax = rep(ymax, period) - muikt;
+          rowvec alphamax = as<arma::rowvec>(vymax)/sigma[k];
+          NumericVector vymin = rep(ymin, period) - muikt;
+          rowvec alphamin = as<arma::rowvec>(vymin)/sigma[k]; 
+          rowvec qmax = normpdf(alphamax)/normcdf(-alphamax);
+          rowvec qmin = normpdf(alphamin)/normcdf(alphamin);
+          rowvec Ytildei(period);
+          rowvec Ytilde2i(period);
+          for (int t = 0; t < period; ++t){
+            if (Y(i, t) <= ymin){
+              Ytildei[t] = muikt[t]-sigma[k]*qmin[t];
+              Ytilde2i[t] = pow(sigma[k], 2)*(1-alphamin[t]*qmin[t])+pow(muikt[t], 2)-2*muikt[t]*sigma[k]*qmin[t];
+            }else if (Y(i, t) >= ymax){
+              Ytildei[t] = muikt[t]+sigma[k]*qmax[t];
+              Ytilde2i[t] = pow(sigma[k], 2)*(1+alphamax[t]*qmax[t])+pow(muikt[t], 2)+2*muikt[t]*sigma[k]*qmax[t];
+            }else{
+              Ytildei[t] = Y(i, t);
+              Ytilde2i[t] = Y(i,t)*Y(i,t);
+            }
+          }
+          a += taux(i, k)*Ytildei*trans(Ai);
+          c += taux(i, k)*(Ytildei*trans(Wi) - (Rcpp::as<arma::rowvec>(beta)).subvec(nbetacum[k], nbetacum[k+1]-1)*Ai*trans(Wi));
           Sw += taux(i, k)*Wi*trans(Wi);
-          rowvec mtmp = vtmp - (Rcpp::as<arma::rowvec>(beta)).subvec(nbetacum[k], nbetacum[k+1]-1)*Ai-(Rcpp::as<arma::rowvec>(delta)).subvec(ndeltacum[k], ndeltacum[k+1]-1)*Wi;
-          b += taux(i, k)*as_scalar(mtmp*trans(mtmp));
+          rowvec mtmp = (Rcpp::as<arma::rowvec>(beta)).subvec(nbetacum[k], nbetacum[k+1]-1)*Ai+(Rcpp::as<arma::rowvec>(delta)).subvec(ndeltacum[k], ndeltacum[k+1]-1)*Wi;
+          mat un(period, 1);
+          un.ones();
+          b += taux(i, k)*(as_scalar(Ytilde2i*un)-2*as_scalar(Ytildei*trans(mtmp))+as_scalar(mtmp*trans(mtmp)));
         }
         newbeta = join_rows(newbeta, a*inv(Ai*trans(Ai))/sum(taux(_, k)));
-        newdelta = join_rows(newdelta, c*inv(Sw)); 
+        newdelta = join_rows(newdelta, c/Sw); 
         newsigma[k]= sqrt(b/(period*sum(taux(_, k))));
       }
     }
@@ -1393,8 +1424,3 @@ NumericVector EMCensored_cpp(NumericVector param,
   }
   return(NumericVector(vparam.begin(), vparam.end()));
 }
-/***R
-a1=EMcensoredtmp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, delta, nw, itermax=20, EMIRLS)
-a2=EMCensored_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax=20, EMIRLS, refgr)
-abs(a1-a2[-3])<10**(-6)
-*/

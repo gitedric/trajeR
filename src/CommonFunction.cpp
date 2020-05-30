@@ -97,6 +97,28 @@ NumericVector muikt_cpp(NumericVector beta,
   }
   return(muikt);
 }
+// ----------------------------------------------------------------------------
+// Wit for EM algorithm
+// ----------------------------------------------------------------------------
+double WitEM_cpp(Nullable<NumericMatrix> TCOV,
+               int period,
+               Nullable<NumericVector> delta, 
+               int nw,
+               int i,
+               int t,
+               int k){
+  if (nw == 0){
+    return(0);
+  }else{
+    double a = 0;
+    NumericMatrix mTCOV(TCOV.get());
+    NumericVector vtmp(delta.get());
+    for (int s = 0; s < nw; ++s){
+      a += vtmp[s]*mTCOV(i, t + s*period);
+    }
+    return(a);
+  }
+}
 // subset of a matrix that matches a logical statement
 NumericMatrix submat_cpp(NumericMatrix X, LogicalVector condition) { 
   int n=X.nrow(), k=X.ncol();

@@ -178,6 +178,7 @@ solLCTCOVs = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:31],
                     ymin = 2,  ymax = 23)
 
 X= matrix(rep(1, nrow(data)), ncol = 1)
+#X= cbind(matrix(rep(1, nrow(data)), ncol = 1), data[,11:15])
 nx= ncol(X)
 Y = data[,2:11]
 A = data[,12:21]
@@ -207,146 +208,20 @@ k=1
 difLdeltakalpha(c(solLCTCOV$theta, solLCTCOV$beta, solLCTCOV$sigma,solLCTCOV$delta), k, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
 difLdeltakalpha_cpp(solLCTCOV$theta, beta, solLCTCOV$sigma,delta, k-1, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
 
-param = c(solEM$theta[-1], solEM$beta, solEM$sigma)
-itermax=10
+#param = c(solEM$theta[-1], solEM$beta, solEM$sigma)
+param=c(solEM$theta[-1], solLCTCOV$beta, solLCTCOV$sigma, solLCTCOV$delta)
+itermax=100
 EMIRLS=TRUE
-TCOV=NULL
-delta=NULL
-nw=0
+# TCOV=NULL
+# delta=NULL
+# nw=0
 refgr = 1
+# /***R
+# a1=EMcensoredtmp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax=20, EMIRLS, refgr)
+# a2=EMCensored_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax=20, EMIRLS, refgr)
+# abs(a1-a2[-3])<10**(-4)
+# */
+EMCensored_cpp(c(0.3333333, 0.3333333, 0.3333333, 3.347283, 9.615996, 0, 0, 0, 15.88471 ,0 ,0 ,0 ,0, 0, 0, 0), ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax=20, EMIRLS, refgr)
+param
 
-EMcensoredtmp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, delta, nw, itermax, EMIRLS){
-  period = ncol(A)
-  nsigma = ng
-  if (nx == 1){
-    pi = param[1:(ng-1)]
-    beta = param[(ng):(ng+sum(nbeta)-1)]
-    sigma = param[(ng+sum(nbeta)):(ng+sum(nbeta)+ng-1)]
-    delta = param[-c(1:(ng+sum(nbeta)+ng-1))]
-    pi = c(pi, 1-sum(pi))
-  }else{
-    pi = param[1:(ng*nx)]
-    beta = param[(ng*nx+1):(ng*nx+sum(nbeta))]
-    sigma = param[(ng*nx+sum(nbeta)+1):(ng*nx+sum(nbeta)+ng)]
-    delta = param[-c(1:(ng*nx+sum(nbeta)+ng))]
-  }
-  nbetacum = cumsum(c(0, nbeta))
-  ndeltacum = cumsum(c(0, rep(nw, ng)))
-  tour = 1
-  while (tour < itermax){
-    if (nx == 1){
-      cat(paste(-likelihoodEM(n, ng, nbeta, beta, sigma, pi, A, Y, ymin, ymax, TCOV, delta, nw), "\n"))
-    }else{
-      cat(paste(-LikelihoodCNORM(c(pi, beta, sigma, delta), ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw), "\n"))
-    }
-    # E-step
-    taux = ftaux(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X)
-    newbeta = c()
-    newsigma = c()
-    newdelta = c()
-    # M-step
-    if (nw == 0){
-      for (k in 1:ng){
-        a = 0
-        b = 0
-        for (i in 1:n){
-          Ytildei = Y[i,]
-          Ytilde2i = Y[i,]**2
-          muikt = sapply(1:period, function(s){
-            sum(beta[(nbetacum[k]+1):nbetacum[k+1]]*A[i,s]**(0:(nbeta[k]-1)))
-          })
-          alphamax = (ymax-muikt)/sigma[k]
-          alphamin = (ymin-muikt)/sigma[k]
-          #to avoid numerically division by zero
-          alphamax[alphamax>37] = 37
-          qmax = dnorm(alphamax)/pnorm(-alphamax)
-          qmin = dnorm(alphamin)/pnorm(alphamin)
-
-          Ytildei[which(Y[i,]<=ymin)] = muikt[which(Y[i,]<=ymin)]-sigma[k]*qmin[which(Y[i,]<=ymin)]
-          Ytildei[which(Y[i,]>=ymax)] = muikt[which(Y[i,]>=ymax)]+sigma[k]*qmax[which(Y[i,]>=ymax)]
-          Ytilde2i[which(Y[i,]<=ymin)] = sigma[k]**2*(1-alphamin[which(Y[i,]<=ymin)]*qmin[which(Y[i,]<=ymin)])+muikt[which(Y[i,]<=ymin)]**2-2*muikt[which(Y[i,]<=ymin)]*sigma[k]*qmin[which(Y[i,]<=ymin)]
-          Ytilde2i[which(Y[i,]>=ymax)] = sigma[k]**2*(1+alphamax[which(Y[i,]>=ymax)]*qmax[which(Y[i,]>=ymax)])+muikt[which(Y[i,]>=ymax)]**2+2*muikt[which(Y[i,]>=ymax)]*sigma[k]*qmax[which(Y[i,]>=ymax)]
-          Ai = c()
-          for (t in 1:period){
-            Ai = cbind(Ai,sapply(0:(nbeta[k]-1), function(s){A[i,t]**(s)}))
-          }
-          
-
-          
-          a = a + taux[i,k]*Ytildei%*%t(Ai)
-          
-      
-          b = b+ taux[i,k]*(t(Ytilde2i)%*%matrix(rep(1, period), ncol=1)-2*Ytildei%*%t(beta[(nbetacum[k]+1):nbetacum[k+1]]%*%Ai)+(beta[(nbetacum[k]+1):nbetacum[k+1]]%*%Ai)%*%t(beta[(nbetacum[k]+1):nbetacum[k+1]]%*%Ai))
-          
- 
-        }
-        newbeta = c(newbeta, a%*%solve(Ai%*%t(Ai))/sum(taux[,k]))
-        newsigma = c(newsigma, sqrt(b/(period*sum(taux[,k]))))
-        
-      }
-    }else{
-      for (k in 1:ng){
-        a = 0
-        b = 0
-        c = 0
-        Sw = 0
-        for (i in 1:n){
-          Ytildei = Y[i,]
-          Ytilde2i = Y[i,]**2
-          muikt = sapply(1:period, function(s){
-            sum(beta[(nbetacum[k]+1):nbetacum[k+1]]*A[i,s]**(0:(nbeta[k]-1)))+WitEM(TCOV, period, delta, nw, i, s, k, ndeltacum)
-          })
-          alphamax = (ymax-muikt)/sigma[k]
-          alphamin = (ymin-muikt)/sigma[k]
-          #to avoid numerically division by zero
-          alphamax[alphamax>37] = 37
-          qmax = dnorm(alphamax)/pnorm(-alphamax)
-          qmin = dnorm(alphamin)/pnorm(alphamin)
-          Ytildei[which(Y[i,]<=ymin)] = muikt[which(Y[i,]<=ymin)]-sigma[k]*qmin[which(Y[i,]<=ymin)]
-          Ytildei[which(Y[i,]>=ymax)] = muikt[which(Y[i,]>=ymax)]+sigma[k]*qmax[which(Y[i,]>=ymax)]
-          Ytilde2i[which(Y[i,]<=ymin)] = sigma[k]**2*(1-alphamin[which(Y[i,]<=ymin)]*qmin[which(Y[i,]<=ymin)])+muikt[which(Y[i,]<=ymin)]**2-2*muikt[which(Y[i,]<=ymin)]*sigma[k]*qmin[which(Y[i,]<=ymin)]
-          Ytilde2i[which(Y[i,]>=ymax)] = sigma[k]**2*(1+alphamax[which(Y[i,]>=ymax)]*qmax[which(Y[i,]>=ymax)])+muikt[which(Y[i,]>=ymax)]**2+2*muikt[which(Y[i,]>=ymax)]*sigma[k]*qmax[which(Y[i,]>=ymax)]
-          Ai = c()
-          Wi = c()
-          for (t in 1:period){
-            Ai = cbind(Ai,sapply(0:(nbeta[k]-1), function(s){A[i,t]**(s)}))
-            Wi = cbind(Wi, TCOV[i, seq(from = t, to = t+(nw-1)*period, by = period)])
-          }
-          a = a + taux[i,k]*Ytildei%*%t(Ai)
-          c = c + taux[i,k]*(Ytildei%*%t(Wi)-beta[(nbetacum[k]+1):(nbetacum[k+1])]%*%Ai%*%t(Wi))
-          Sw = Sw + taux[i,k]*Wi%*%t(Wi)
-          b = b + taux[i,k]*(t(Ytilde2i)%*%matrix(rep(1, period), ncol=1)
-                             -2*Ytildei%*%t(beta[(nbetacum[k]+1):nbetacum[k+1]]%*%Ai+delta[(ndeltacum[k]+1):ndeltacum[k+1]]%*%Wi)
-                             +(beta[(nbetacum[k]+1):nbetacum[k+1]]%*%Ai+delta[(ndeltacum[k]+1):ndeltacum[k+1]]%*%Wi)%*%t(beta[(nbetacum[k]+1):nbetacum[k+1]]%*%Ai+delta[(ndeltacum[k]+1):ndeltacum[k+1]]%*%Wi))
-        }
-        newbeta = c(newbeta, a%*%solve(Ai%*%t(Ai))/sum(taux[,k]))
-        newdelta =c(newdelta, c/Sw)
-        newsigma = c(newsigma, sqrt(b/(period*sum(taux[,k]))))
-      }
-    }
-    if (nx == 1){
-      pi = colSums(taux)/n
-      stoppi = 0
-      refpi = 0
-    }else{
-      newpi = findtheta(pi, taux, X, n, ng, nx, period, EMIRLS)
-      stoppi = (pi-pi[1:ng])-(newpi-newpi[1:ng])
-      refpi = rep(0, length(stoppi))
-      pi = newpi
-    }
-    tour = tour + 1
-    if (all(abs(c(newbeta, newsigma, newdelta, stoppi)-c(beta, sigma, delta, refpi))<10**(-6))){
-      tour = itermax + 2
-    }
-    beta = newbeta
-    sigma = newsigma
-    delta = newdelta
-  }
-  if (nx == 1){
-    param = c(pi[1:(ng-1)], beta, sigma, delta)
-  }else{
-    param = c(pi, beta, sigma, delta)
-  }
-  return(param)
-}
 
