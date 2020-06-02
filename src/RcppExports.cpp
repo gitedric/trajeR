@@ -11,10 +11,9 @@ using namespace Rcpp;
 
 // gkCNORM_cpp
 double gkCNORM_cpp(List beta, NumericVector sigma, int i, int k, IntegerVector nbeta, NumericMatrix A, NumericMatrix Y, double ymin, double ymax, Nullable<NumericMatrix> TCOV, Nullable<List> delta, int nw);
-RcppExport SEXP _trajeR_gkCNORM_cpp(SEXP betaSEXP, SEXP sigmaSEXP, SEXP iSEXP, SEXP kSEXP, SEXP nbetaSEXP, SEXP ASEXP, SEXP YSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP deltaSEXP, SEXP nwSEXP) {
+static SEXP _trajeR_gkCNORM_cpp_try(SEXP betaSEXP, SEXP sigmaSEXP, SEXP iSEXP, SEXP kSEXP, SEXP nbetaSEXP, SEXP ASEXP, SEXP YSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP deltaSEXP, SEXP nwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type sigma(sigmaSEXP);
     Rcpp::traits::input_parameter< int >::type i(iSEXP);
@@ -29,14 +28,37 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
     rcpp_result_gen = Rcpp::wrap(gkCNORM_cpp(beta, sigma, i, k, nbeta, A, Y, ymin, ymax, TCOV, delta, nw));
     return rcpp_result_gen;
-END_RCPP
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _trajeR_gkCNORM_cpp(SEXP betaSEXP, SEXP sigmaSEXP, SEXP iSEXP, SEXP kSEXP, SEXP nbetaSEXP, SEXP ASEXP, SEXP YSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP deltaSEXP, SEXP nwSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_trajeR_gkCNORM_cpp_try(betaSEXP, sigmaSEXP, iSEXP, kSEXP, nbetaSEXP, ASEXP, YSEXP, yminSEXP, ymaxSEXP, TCOVSEXP, deltaSEXP, nwSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
 }
 // difLalpha_cpp
 NumericVector difLalpha_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw);
-RcppExport SEXP _trajeR_difLalpha_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP) {
+static SEXP _trajeR_difLalpha_cpp_try(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type param(paramSEXP);
     Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
     Rcpp::traits::input_parameter< int >::type nx(nxSEXP);
@@ -51,14 +73,37 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
     rcpp_result_gen = Rcpp::wrap(difLalpha_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw));
     return rcpp_result_gen;
-END_RCPP
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _trajeR_difLalpha_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_trajeR_difLalpha_cpp_try(paramSEXP, ngSEXP, nxSEXP, nbetaSEXP, nSEXP, ASEXP, YSEXP, XSEXP, yminSEXP, ymaxSEXP, TCOVSEXP, nwSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
 }
 // difLalphaunique_cpp
 NumericVector difLalphaunique_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw);
-RcppExport SEXP _trajeR_difLalphaunique_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP) {
+static SEXP _trajeR_difLalphaunique_cpp_try(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type param(paramSEXP);
     Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
     Rcpp::traits::input_parameter< int >::type nx(nxSEXP);
@@ -73,14 +118,37 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
     rcpp_result_gen = Rcpp::wrap(difLalphaunique_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw));
     return rcpp_result_gen;
-END_RCPP
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _trajeR_difLalphaunique_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_trajeR_difLalphaunique_cpp_try(paramSEXP, ngSEXP, nxSEXP, nbetaSEXP, nSEXP, ASEXP, YSEXP, XSEXP, yminSEXP, ymaxSEXP, TCOVSEXP, nwSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
 }
 // Likelihoodalpha_cpp
 double Likelihoodalpha_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw);
-RcppExport SEXP _trajeR_Likelihoodalpha_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP) {
+static SEXP _trajeR_Likelihoodalpha_cpp_try(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type param(paramSEXP);
     Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
     Rcpp::traits::input_parameter< int >::type nx(nxSEXP);
@@ -95,14 +163,85 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
     rcpp_result_gen = Rcpp::wrap(Likelihoodalpha_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw));
     return rcpp_result_gen;
-END_RCPP
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _trajeR_Likelihoodalpha_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_trajeR_Likelihoodalpha_cpp_try(paramSEXP, ngSEXP, nxSEXP, nbetaSEXP, nSEXP, ASEXP, YSEXP, XSEXP, yminSEXP, ymaxSEXP, TCOVSEXP, nwSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
+}
+// ftauxCNORM_cpp
+NumericMatrix ftauxCNORM_cpp(NumericVector pi, NumericVector beta, NumericVector sigma, int ng, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, double ymin, double ymax, Nullable<NumericMatrix> TCOV, Nullable<NumericVector> delta, int nw, int nx, NumericMatrix X);
+static SEXP _trajeR_ftauxCNORM_cpp_try(SEXP piSEXP, SEXP betaSEXP, SEXP sigmaSEXP, SEXP ngSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP deltaSEXP, SEXP nwSEXP, SEXP nxSEXP, SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type pi(piSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nbeta(nbetaSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type A(ASEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< double >::type ymin(yminSEXP);
+    Rcpp::traits::input_parameter< double >::type ymax(ymaxSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericMatrix> >::type TCOV(TCOVSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericVector> >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
+    Rcpp::traits::input_parameter< int >::type nx(nxSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(ftauxCNORM_cpp(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X));
+    return rcpp_result_gen;
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _trajeR_ftauxCNORM_cpp(SEXP piSEXP, SEXP betaSEXP, SEXP sigmaSEXP, SEXP ngSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP deltaSEXP, SEXP nwSEXP, SEXP nxSEXP, SEXP XSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_trajeR_ftauxCNORM_cpp_try(piSEXP, betaSEXP, sigmaSEXP, ngSEXP, nbetaSEXP, nSEXP, ASEXP, YSEXP, yminSEXP, ymaxSEXP, TCOVSEXP, deltaSEXP, nwSEXP, nxSEXP, XSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
 }
 // EM_cpp
 NumericVector EM_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw, int itermax, bool EMIRLS, int refgr);
-RcppExport SEXP _trajeR_EM_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
+static SEXP _trajeR_EM_cpp_try(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type param(paramSEXP);
     Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
     Rcpp::traits::input_parameter< int >::type nx(nxSEXP);
@@ -120,14 +259,37 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type refgr(refgrSEXP);
     rcpp_result_gen = Rcpp::wrap(EM_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr));
     return rcpp_result_gen;
-END_RCPP
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _trajeR_EM_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_trajeR_EM_cpp_try(paramSEXP, ngSEXP, nxSEXP, nbetaSEXP, nSEXP, ASEXP, YSEXP, XSEXP, yminSEXP, ymaxSEXP, TCOVSEXP, nwSEXP, itermaxSEXP, EMIRLSSEXP, refgrSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
 }
 // EMSigmaunique_cpp
 NumericVector EMSigmaunique_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw, int itermax, bool EMIRLS, int refgr);
-RcppExport SEXP _trajeR_EMSigmaunique_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
+static SEXP _trajeR_EMSigmaunique_cpp_try(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type param(paramSEXP);
     Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
     Rcpp::traits::input_parameter< int >::type nx(nxSEXP);
@@ -145,14 +307,37 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type refgr(refgrSEXP);
     rcpp_result_gen = Rcpp::wrap(EMSigmaunique_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr));
     return rcpp_result_gen;
-END_RCPP
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _trajeR_EMSigmaunique_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_trajeR_EMSigmaunique_cpp_try(paramSEXP, ngSEXP, nxSEXP, nbetaSEXP, nSEXP, ASEXP, YSEXP, XSEXP, yminSEXP, ymaxSEXP, TCOVSEXP, nwSEXP, itermaxSEXP, EMIRLSSEXP, refgrSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
 }
 // EMCensored_cpp
 NumericVector EMCensored_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw, int itermax, bool EMIRLS, int refgr);
-RcppExport SEXP _trajeR_EMCensored_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
+static SEXP _trajeR_EMCensored_cpp_try(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type param(paramSEXP);
     Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
     Rcpp::traits::input_parameter< int >::type nx(nxSEXP);
@@ -169,6 +354,101 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type EMIRLS(EMIRLSSEXP);
     Rcpp::traits::input_parameter< int >::type refgr(refgrSEXP);
     rcpp_result_gen = Rcpp::wrap(EMCensored_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr));
+    return rcpp_result_gen;
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _trajeR_EMCensored_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_trajeR_EMCensored_cpp_try(paramSEXP, ngSEXP, nxSEXP, nbetaSEXP, nSEXP, ASEXP, YSEXP, XSEXP, yminSEXP, ymaxSEXP, TCOVSEXP, nwSEXP, itermaxSEXP, EMIRLSSEXP, refgrSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
+}
+// EMCensoredSigmaunique_cpp
+NumericVector EMCensoredSigmaunique_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw, int itermax, bool EMIRLS, int refgr);
+static SEXP _trajeR_EMCensoredSigmaunique_cpp_try(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type param(paramSEXP);
+    Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
+    Rcpp::traits::input_parameter< int >::type nx(nxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nbeta(nbetaSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type A(ASEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< double >::type ymin(yminSEXP);
+    Rcpp::traits::input_parameter< double >::type ymax(ymaxSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericMatrix> >::type TCOV(TCOVSEXP);
+    Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
+    Rcpp::traits::input_parameter< int >::type itermax(itermaxSEXP);
+    Rcpp::traits::input_parameter< bool >::type EMIRLS(EMIRLSSEXP);
+    Rcpp::traits::input_parameter< int >::type refgr(refgrSEXP);
+    rcpp_result_gen = Rcpp::wrap(EMCensoredSigmaunique_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr));
+    return rcpp_result_gen;
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _trajeR_EMCensoredSigmaunique_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP itermaxSEXP, SEXP EMIRLSSEXP, SEXP refgrSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_trajeR_EMCensoredSigmaunique_cpp_try(paramSEXP, ngSEXP, nxSEXP, nbetaSEXP, nSEXP, ASEXP, YSEXP, XSEXP, yminSEXP, ymaxSEXP, TCOVSEXP, nwSEXP, itermaxSEXP, EMIRLSSEXP, refgrSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
+}
+// IEM_cpp
+arma::vec IEM_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw, int refgr);
+RcppExport SEXP _trajeR_IEM_cpp(SEXP paramSEXP, SEXP ngSEXP, SEXP nxSEXP, SEXP nbetaSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP XSEXP, SEXP yminSEXP, SEXP ymaxSEXP, SEXP TCOVSEXP, SEXP nwSEXP, SEXP refgrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type param(paramSEXP);
+    Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
+    Rcpp::traits::input_parameter< int >::type nx(nxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nbeta(nbetaSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type A(ASEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< double >::type ymin(yminSEXP);
+    Rcpp::traits::input_parameter< double >::type ymax(ymaxSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericMatrix> >::type TCOV(TCOVSEXP);
+    Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
+    Rcpp::traits::input_parameter< int >::type refgr(refgrSEXP);
+    rcpp_result_gen = Rcpp::wrap(IEM_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, refgr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -374,6 +654,15 @@ RcppExport SEXP _trajeR_findtheta_cpp(SEXP thetaSEXP, SEXP tauxSEXP, SEXP XSEXP,
 static int _trajeR_RcppExport_validate(const char* sig) { 
     static std::set<std::string> signatures;
     if (signatures.empty()) {
+        signatures.insert("double(*gkCNORM_cpp)(List,NumericVector,int,int,IntegerVector,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,Nullable<List>,int)");
+        signatures.insert("NumericVector(*difLalpha_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int)");
+        signatures.insert("NumericVector(*difLalphaunique_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int)");
+        signatures.insert("double(*Likelihoodalpha_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int)");
+        signatures.insert("NumericMatrix(*ftauxCNORM_cpp)(NumericVector,NumericVector,NumericVector,int,IntegerVector,int,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,Nullable<NumericVector>,int,int,NumericMatrix)");
+        signatures.insert("NumericVector(*EM_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int,int,bool,int)");
+        signatures.insert("NumericVector(*EMSigmaunique_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int,int,bool,int)");
+        signatures.insert("NumericVector(*EMCensored_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int,int,bool,int)");
+        signatures.insert("NumericVector(*EMCensoredSigmaunique_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int,int,bool,int)");
         signatures.insert("double(*piik_cpp)(NumericVector,int,int,int,NumericMatrix)");
         signatures.insert("double(*ftheta_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int)");
         signatures.insert("NumericVector(*difftheta_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int)");
@@ -385,6 +674,15 @@ static int _trajeR_RcppExport_validate(const char* sig) {
 
 // registerCCallable (register entry points for exported C++ functions)
 RcppExport SEXP _trajeR_RcppExport_registerCCallable() { 
+    R_RegisterCCallable("trajeR", "_trajeR_gkCNORM_cpp", (DL_FUNC)_trajeR_gkCNORM_cpp_try);
+    R_RegisterCCallable("trajeR", "_trajeR_difLalpha_cpp", (DL_FUNC)_trajeR_difLalpha_cpp_try);
+    R_RegisterCCallable("trajeR", "_trajeR_difLalphaunique_cpp", (DL_FUNC)_trajeR_difLalphaunique_cpp_try);
+    R_RegisterCCallable("trajeR", "_trajeR_Likelihoodalpha_cpp", (DL_FUNC)_trajeR_Likelihoodalpha_cpp_try);
+    R_RegisterCCallable("trajeR", "_trajeR_ftauxCNORM_cpp", (DL_FUNC)_trajeR_ftauxCNORM_cpp_try);
+    R_RegisterCCallable("trajeR", "_trajeR_EM_cpp", (DL_FUNC)_trajeR_EM_cpp_try);
+    R_RegisterCCallable("trajeR", "_trajeR_EMSigmaunique_cpp", (DL_FUNC)_trajeR_EMSigmaunique_cpp_try);
+    R_RegisterCCallable("trajeR", "_trajeR_EMCensored_cpp", (DL_FUNC)_trajeR_EMCensored_cpp_try);
+    R_RegisterCCallable("trajeR", "_trajeR_EMCensoredSigmaunique_cpp", (DL_FUNC)_trajeR_EMCensoredSigmaunique_cpp_try);
     R_RegisterCCallable("trajeR", "_trajeR_piik_cpp", (DL_FUNC)_trajeR_piik_cpp_try);
     R_RegisterCCallable("trajeR", "_trajeR_ftheta_cpp", (DL_FUNC)_trajeR_ftheta_cpp_try);
     R_RegisterCCallable("trajeR", "_trajeR_difftheta_cpp", (DL_FUNC)_trajeR_difftheta_cpp_try);
@@ -399,9 +697,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_trajeR_difLalpha_cpp", (DL_FUNC) &_trajeR_difLalpha_cpp, 12},
     {"_trajeR_difLalphaunique_cpp", (DL_FUNC) &_trajeR_difLalphaunique_cpp, 12},
     {"_trajeR_Likelihoodalpha_cpp", (DL_FUNC) &_trajeR_Likelihoodalpha_cpp, 12},
+    {"_trajeR_ftauxCNORM_cpp", (DL_FUNC) &_trajeR_ftauxCNORM_cpp, 15},
     {"_trajeR_EM_cpp", (DL_FUNC) &_trajeR_EM_cpp, 15},
     {"_trajeR_EMSigmaunique_cpp", (DL_FUNC) &_trajeR_EMSigmaunique_cpp, 15},
     {"_trajeR_EMCensored_cpp", (DL_FUNC) &_trajeR_EMCensored_cpp, 15},
+    {"_trajeR_EMCensoredSigmaunique_cpp", (DL_FUNC) &_trajeR_EMCensoredSigmaunique_cpp, 15},
+    {"_trajeR_IEM_cpp", (DL_FUNC) &_trajeR_IEM_cpp, 13},
     {"_trajeR_piik_cpp", (DL_FUNC) &_trajeR_piik_cpp, 5},
     {"_trajeR_ftheta_cpp", (DL_FUNC) &_trajeR_ftheta_cpp, 6},
     {"_trajeR_difftheta_cpp", (DL_FUNC) &_trajeR_difftheta_cpp, 6},

@@ -4,6 +4,8 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 using namespace arma;
+// [[Rcpp::interfaces(r, cpp)]]
+
 
 // ----------------------------------------------------------------------------
 // gk 
@@ -860,7 +862,8 @@ double likelihoodEM_cpp(int n,
 // ----------------------------------------------------------------------------
 // Function rate
 // ----------------------------------------------------------------------------
-NumericMatrix ftaux_cpp(NumericVector pi,
+// [[Rcpp::export]]
+NumericMatrix ftauxCNORM_cpp(NumericVector pi,
                         NumericVector beta,
                         NumericVector sigma,
                         int ng,
@@ -980,7 +983,7 @@ NumericVector EM_cpp(NumericVector param,
       Rprintf("%.6f\n", -likelihoodCNORM_cpp(NumericVector(vparam.begin(), vparam.end()), ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw));
     }
     // E-step
-    NumericMatrix  taux = ftaux_cpp(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X);
+    NumericMatrix  taux = ftauxCNORM_cpp(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X);
     rowvec newbeta;
     rowvec newdelta;
     rowvec newsigma(ng);
@@ -1039,7 +1042,7 @@ NumericVector EM_cpp(NumericVector param,
           b += taux(i, k)*as_scalar(mtmp*trans(mtmp));
         }
         newbeta = join_rows(newbeta, a*inv(Ai*trans(Ai))/sum(taux(_, k)));
-        newdelta = join_rows(newdelta, c/Sw); 
+        newdelta = join_rows(newdelta, c*inv(Sw)); 
         newsigma[k]= sqrt(b/(period*sum(taux(_, k))));
       }
     }
@@ -1127,7 +1130,7 @@ NumericVector EMSigmaunique_cpp(NumericVector param,
       Rprintf("%.6f\n", -likelihoodCNORM_cpp(NumericVector(vparam.begin(), vparam.end()), ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw));
     }
     // E-step
-    NumericMatrix  taux = ftaux_cpp(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X);
+    NumericMatrix  taux = ftauxCNORM_cpp(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X);
     rowvec newbeta;
     rowvec newdelta;
     if (nw == 0){
@@ -1184,7 +1187,7 @@ NumericVector EMSigmaunique_cpp(NumericVector param,
           b += taux(i, k)*as_scalar(mtmp*trans(mtmp));
         }
         newbeta = join_rows(newbeta, a*inv(Ai*trans(Ai))/sum(taux(_, k)));
-        newdelta = join_rows(newdelta, c/Sw); 
+        newdelta = join_rows(newdelta, c*inv(Sw)); 
       }
     }
     NumericVector vstmp = rep(sqrt(b/(period*n)), ng);
@@ -1273,7 +1276,7 @@ NumericVector EMCensored_cpp(NumericVector param,
       Rprintf("%.6f\n", -likelihoodCNORM_cpp(NumericVector(vparam.begin(), vparam.end()), ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw));
     }
     // E-step
-    NumericMatrix  taux = ftaux_cpp(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X);
+    NumericMatrix  taux = ftauxCNORM_cpp(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X);
     rowvec newbeta;
     rowvec newdelta;
     rowvec newsigma(ng);
@@ -1424,3 +1427,212 @@ NumericVector EMCensored_cpp(NumericVector param,
   }
   return(NumericVector(vparam.begin(), vparam.end()));
 }
+// ----------------------------------------------------------------------------
+// EM censored same sigma
+// ----------------------------------------------------------------------------
+// [[Rcpp::export]]
+NumericVector EMCensoredSigmaunique_cpp(NumericVector param,
+                             int ng, 
+                             int nx,
+                             IntegerVector nbeta,
+                             int n,
+                             NumericMatrix A,
+                             NumericMatrix Y,
+                             NumericMatrix X,
+                             double ymin,
+                             double ymax, 
+                             Nullable<NumericMatrix> TCOV,
+                             int nw, 
+                             int itermax, 
+                             bool EMIRLS,
+                             int refgr){
+  int period = A.ncol();
+  double prec = 0.000001;
+  NumericVector pi(ng);
+  NumericVector beta;
+  NumericVector sigma;
+  NumericVector delta;
+  NumericVector nbetacum(nbeta.size());
+  std::partial_sum(nbeta.begin(), nbeta.end(), nbetacum.begin());
+  nbetacum.push_front(0);
+  if (nx == 1){
+    pi = param[Range(0,ng-2)];
+    beta = param[Range(ng-1,ng+sum(nbeta)-2)];
+    sigma = param[Range(ng+sum(nbeta)-1, ng+sum(nbeta)+ng-2)]; 
+    if (param.length() > ng*nx+sum(nbeta)+ng){
+      delta = param[Range(ng+sum(nbeta)+ng - 1, param.length() - 1)];
+    }
+    pi.push_back(1-sum(pi));  
+  }else{
+    pi = param[Range(0,ng*nx-1)];
+    beta = param[Range(ng*nx,ng*nx+sum(nbeta)-1)];
+    sigma = param[Range(ng*nx+sum(nbeta), ng*nx+sum(nbeta)+ng-1)]; 
+    if (param.length() > ng*nx+sum(nbeta)+ng){
+      delta = param[Range(ng*nx+sum(nbeta)+ng, param.length() - 1)];
+    }
+  }
+  rowvec vparam = join_rows(as<arma::rowvec>(pi), as<arma::rowvec>(beta), as<arma::rowvec>(sigma), as<arma::rowvec>(delta));
+  int tour = 1;
+  double b = 0;
+  while (tour < itermax){
+    if (nx == 1){
+      Rprintf("iter %3d value ", tour);
+      Rprintf("%.6f\n", -likelihoodEM_cpp(n, ng, nbeta, beta, sigma, pi, A, Y, ymin, ymax, TCOV, delta, nw));
+    }else{
+      // a modifier
+      Rprintf("iter %3d value ", tour);
+      Rprintf("%.6f\n", -likelihoodCNORM_cpp(NumericVector(vparam.begin(), vparam.end()), ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw));
+    }
+    // E-step
+    NumericMatrix  taux = ftauxCNORM_cpp(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X);
+    rowvec newbeta;
+    rowvec newdelta;
+    if (nw == 0){
+      b = 0;
+      for (int k = 0; k < ng; ++k){
+        rowvec a(nbeta[k]);
+        a.fill(0);
+        mat Ai(nbeta[k], period);
+        for (int i = 0; i < n; ++i){
+          for (int t = 0; t < period; ++t){
+            for (int kk = 0; kk < nbeta[k]; ++kk){
+              Ai(kk, t) = pow(A(i, t), kk);
+            }
+          }
+          NumericVector muikt;
+          for (int s = 0; s < period; ++s){
+            NumericVector vtmp2;
+            for (int po = 0; po < nbeta[k]; ++po){
+              vtmp2.push_back(pow(A(i,s), po));
+            }
+            NumericVector betak = beta[Range(nbetacum[k], nbetacum[k+1]-1)];
+            muikt.push_back(sum(betak*vtmp2));
+          }
+          NumericVector vymax = rep(ymax, period) - muikt;
+          rowvec alphamax = as<arma::rowvec>(vymax)/sigma[k];
+          NumericVector vymin = rep(ymin, period) - muikt;
+          rowvec alphamin = as<arma::rowvec>(vymin)/sigma[k]; 
+          rowvec qmax = normpdf(alphamax)/normcdf(-alphamax);
+          rowvec qmin = normpdf(alphamin)/normcdf(alphamin);
+          rowvec Ytildei(period);
+          rowvec Ytilde2i(period);
+          for (int t = 0; t < period; ++t){
+            if (Y(i, t) <= ymin){
+              Ytildei[t] = muikt[t]-sigma[k]*qmin[t];
+              Ytilde2i[t] = pow(sigma[k], 2)*(1-alphamin[t]*qmin[t])+pow(muikt[t], 2)-2*muikt[t]*sigma[k]*qmin[t];
+            }else if (Y(i, t) >= ymax){
+              Ytildei[t] = muikt[t]+sigma[k]*qmax[t];
+              Ytilde2i[t] = pow(sigma[k], 2)*(1+alphamax[t]*qmax[t])+pow(muikt[t], 2)+2*muikt[t]*sigma[k]*qmax[t];
+            }else{
+              Ytildei[t] = Y(i, t);
+              Ytilde2i[t] = Y(i,t)*Y(i,t);
+            }
+          }
+          a += taux(i, k)*Ytildei*trans(Ai);
+          rowvec vtmp = trans((Rcpp::as<arma::vec>(beta)).subvec(nbetacum[k], nbetacum[k+1]-1))*Ai;
+          mat un(period, 1);
+          un.ones();
+          b += taux(i, k)*as_scalar(Ytilde2i*un-2*Ytildei*trans(vtmp)+vtmp*trans(vtmp));
+        }
+        newbeta = join_rows(newbeta, a*inv(Ai*trans(Ai))/sum(taux(_, k)));
+      }
+    }else{
+      // TCOV is not NULL
+      NumericVector ndeltacum(ng);
+      NumericVector deltatmp(ng);
+      deltatmp.fill(nw);
+      std::partial_sum(deltatmp.begin(), deltatmp.end(), ndeltacum.begin());
+      ndeltacum.push_front(0);
+      mat mTCOV = as<arma::mat>(TCOV);
+      b = 0;
+      for (int k = 0; k < ng; ++k){
+        rowvec a(nbeta[k]);
+        a.fill(0);
+        rowvec c(nw);
+        c.fill(0);
+        mat Sw(nw, nw);
+        Sw.fill(0);
+        mat Ai(nbeta[k], period);
+        mat Wi(nw, period);
+        for (int i = 0; i < n; ++i){
+          for (int t = 0; t < period; ++t){
+            for (int kk = 0; kk < nbeta[k]; ++kk){
+              Ai(kk, t) = pow(A(i, t), kk);
+            }
+            for (int kk = 0; kk < nw; ++kk){
+              Wi(kk, t) = mTCOV(i, t + kk*period);
+            }
+          }
+          NumericVector betak = beta[Range(nbetacum[k], nbetacum[k+1]-1)];
+          NumericVector deltak = delta[Range(ndeltacum[k], ndeltacum[k+1]-1)];
+          NumericVector muikt;
+          for (int s = 0; s < period; ++s){
+            NumericVector vtmp2;
+            for (int po = 0; po < nbeta[k]; ++po){
+              vtmp2.push_back(pow(A(i,s), po));
+            }
+            muikt.push_back(sum(betak*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, s, k));
+          }
+          NumericVector vymax = rep(ymax, period) - muikt;
+          rowvec alphamax = as<arma::rowvec>(vymax)/sigma[k];
+          NumericVector vymin = rep(ymin, period) - muikt;
+          rowvec alphamin = as<arma::rowvec>(vymin)/sigma[k]; 
+          rowvec qmax = normpdf(alphamax)/normcdf(-alphamax);
+          rowvec qmin = normpdf(alphamin)/normcdf(alphamin);
+          rowvec Ytildei(period);
+          rowvec Ytilde2i(period);
+          for (int t = 0; t < period; ++t){
+            if (Y(i, t) <= ymin){
+              Ytildei[t] = muikt[t]-sigma[k]*qmin[t];
+              Ytilde2i[t] = pow(sigma[k], 2)*(1-alphamin[t]*qmin[t])+pow(muikt[t], 2)-2*muikt[t]*sigma[k]*qmin[t];
+            }else if (Y(i, t) >= ymax){
+              Ytildei[t] = muikt[t]+sigma[k]*qmax[t];
+              Ytilde2i[t] = pow(sigma[k], 2)*(1+alphamax[t]*qmax[t])+pow(muikt[t], 2)+2*muikt[t]*sigma[k]*qmax[t];
+            }else{
+              Ytildei[t] = Y(i, t);
+              Ytilde2i[t] = Y(i,t)*Y(i,t);
+            }
+          }
+          a += taux(i, k)*Ytildei*trans(Ai);
+          c += taux(i, k)*(Ytildei*trans(Wi) - (Rcpp::as<arma::rowvec>(beta)).subvec(nbetacum[k], nbetacum[k+1]-1)*Ai*trans(Wi));
+          Sw += taux(i, k)*Wi*trans(Wi);
+          rowvec mtmp = (Rcpp::as<arma::rowvec>(beta)).subvec(nbetacum[k], nbetacum[k+1]-1)*Ai+(Rcpp::as<arma::rowvec>(delta)).subvec(ndeltacum[k], ndeltacum[k+1]-1)*Wi;
+          mat un(period, 1);
+          un.ones();
+          b += taux(i, k)*(as_scalar(Ytilde2i*un)-2*as_scalar(Ytildei*trans(mtmp))+as_scalar(mtmp*trans(mtmp)));
+        }
+        newbeta = join_rows(newbeta, a*inv(Ai*trans(Ai))/sum(taux(_, k)));
+        newdelta = join_rows(newdelta, c/Sw); 
+      }
+    }
+    NumericVector vstmp = rep(sqrt(b/(period*n)), ng);
+    rowvec newsigma(ng);
+    newsigma = Rcpp::as<arma::rowvec>(vstmp);
+    // calculus of pi
+    NumericVector newpi;
+    if (nx == 1){
+      NumericVector tmp(ng);
+      for (int i = 0; i < ng; ++i){
+        tmp[i] = sum(taux(_, i));
+      }
+      newpi = tmp/n;
+    }else{
+      newpi = findtheta_cpp(pi, taux, X, n, ng, nx, period, EMIRLS, refgr);
+    }
+    // stop test
+    rowvec newparam = join_rows(as<arma::rowvec>(newpi), newbeta, newsigma, newdelta);
+    rowvec tmp(newparam.size());
+    tmp.fill(prec);
+    if (all(abs(newparam-vparam)<tmp)){
+      tour = itermax + 2;
+    }
+    ++tour;
+    vparam = newparam;
+    beta = newbeta;
+    sigma = newsigma;
+    delta = newdelta;
+    pi = newpi;
+  }
+  return(NumericVector(vparam.begin(), vparam.end()));
+}
+

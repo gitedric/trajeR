@@ -2,7 +2,6 @@
 // [[Rcpp::interfaces(r, cpp)]]
 using namespace Rcpp;
 using namespace arma;
-
 #include "CommonFunction.h"
 
 // [[Rcpp::export]]
@@ -288,21 +287,20 @@ NumericVector findtheta_cpp(NumericVector theta,
       newtheta.push_back(newthetaIRLS(i));
     }
   }else{
-
+    Rcpp::Environment stats("package:stats");
+    Rcpp::Function optim = stats["optim"];
+    List tmp = optim(Rcpp::_["par"] = theta,
+                     Rcpp::_["fn"] = Rcpp::InternalFunction(&ftheta_cpp),
+                     Rcpp::_["gr"] = Rcpp::InternalFunction(&difftheta_cpp),
+                     Rcpp::_["taux"] = taux,
+                     Rcpp::_["X"] = X,
+                     Rcpp::_["n"] = n,
+                     Rcpp::_["ng"] = ng,
+                     Rcpp::_["period"] = period,
+                     Rcpp::_["hessian"] =  0,
+                     Rcpp::_["control"] = List::create(Named("fnscale")=-1)
+    );
+    newtheta = tmp[0];
   }
-  // if (EMIRLS == TRUE){
-  //   newtheta = c()
-  //   thetaIRLS = theta[-c(((refgr-1)*nx+1):(nx*refgr))]
-  //   thetaIRLS = thetaIRLS - theta[-c(((refgr-1)*nx+1):(nx*refgr))]
-  //   ind = 1:ng
-  //   ind = ind[-refgr]
-  //   precIRLS = 1
-  //   newtheta = rep(0, ng*nx)
-  //   newtheta[-c(((refgr-1)*nx+1):(nx*refgr))] = thethaIRLS_cpp(thetaIRLS , n, ng,  X, taux, refgr)
-  // }else{
-  //   newtheta = optim(par = theta, fn = ftheta_cpp, gr= difftheta_cpp,
-  //                    taux=taux, X=X, n=n, ng=ng, period=period, 
-  //                    control = list(fnscale=-1), hessian=FALSE)$par
-  // }
   return(newtheta);
 }

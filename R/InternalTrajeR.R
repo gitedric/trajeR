@@ -64,7 +64,7 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     }else{
       if (nx == 1){paraminitEM = paraminit[-ng]}
     }
-    if (max(Y)<=ymax & min(Y)>=ymin){
+    if (max(Y)<ymax & min(Y)>ymin){
       if (ssigma == FALSE){
         param = EM_cpp(paraminitEM, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
       }else{
@@ -72,14 +72,14 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
       }
     }else{
       if (ssigma == TRUE){
-        param = EMcensoredsamesigma(paraminitEM, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, delta, nw, itermax, EMIRLS)
+        param = EMCensoredSigmaunique_cpp(paraminitEM, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
       }
       else{
         param = EMCensored_cpp(paraminitEM, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
       }
     }
     if (hessian == TRUE){
-      SE = IEM(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, refgr)
+      SE = IEM_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, refgr)
       if (nx == 1){
         SE = c(SE[-c(1:(ng-1))], SE[1:(ng-1)],  sqrt(sum(SE[1:(ng-1)]**2)))
       }else{

@@ -131,7 +131,7 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, ng, degre = NULL, degre.nu = 
   pi = sapply(1:ng, function(s){piik(theta = theta, i = 1, k = s, ng = ng, X = X)})
   if (is.null(paraminit)){
     cat("Starting Values\n ")
-    cat(c(pi, unlist(beta), unlist(nu), unlist(delta)))
+    cat(c(pi, unlist(beta), unlist(nu), rep(sd(Y), ng), unlist(delta)))
     cat('\n\n')
     cat('Likelihood \n')
   }else{

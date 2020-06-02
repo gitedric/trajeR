@@ -17,6 +17,10 @@ Likelihoodalpha_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TC
     .Call(`_trajeR_Likelihoodalpha_cpp`, param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
 }
 
+ftauxCNORM_cpp <- function(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X) {
+    .Call(`_trajeR_ftauxCNORM_cpp`, pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X)
+}
+
 EM_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr) {
     .Call(`_trajeR_EM_cpp`, param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
 }
@@ -27,6 +31,14 @@ EMSigmaunique_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV
 
 EMCensored_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr) {
     .Call(`_trajeR_EMCensored_cpp`, param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
+}
+
+EMCensoredSigmaunique_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr) {
+    .Call(`_trajeR_EMCensoredSigmaunique_cpp`, param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax, EMIRLS, refgr)
+}
+
+IEM_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, refgr) {
+    .Call(`_trajeR_IEM_cpp`, param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, refgr)
 }
 
 piik_cpp <- function(theta, i, k, ng, X) {

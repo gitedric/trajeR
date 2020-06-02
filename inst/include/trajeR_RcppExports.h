@@ -25,6 +25,195 @@ namespace trajeR {
         }
     }
 
+    inline double gkCNORM_cpp(List beta, NumericVector sigma, int i, int k, IntegerVector nbeta, NumericMatrix A, NumericMatrix Y, double ymin, double ymax, Nullable<NumericMatrix> TCOV, Nullable<List> delta, int nw) {
+        typedef SEXP(*Ptr_gkCNORM_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+        static Ptr_gkCNORM_cpp p_gkCNORM_cpp = NULL;
+        if (p_gkCNORM_cpp == NULL) {
+            validateSignature("double(*gkCNORM_cpp)(List,NumericVector,int,int,IntegerVector,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,Nullable<List>,int)");
+            p_gkCNORM_cpp = (Ptr_gkCNORM_cpp)R_GetCCallable("trajeR", "_trajeR_gkCNORM_cpp");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_gkCNORM_cpp(Shield<SEXP>(Rcpp::wrap(beta)), Shield<SEXP>(Rcpp::wrap(sigma)), Shield<SEXP>(Rcpp::wrap(i)), Shield<SEXP>(Rcpp::wrap(k)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(ymin)), Shield<SEXP>(Rcpp::wrap(ymax)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(delta)), Shield<SEXP>(Rcpp::wrap(nw)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
+            throw Rcpp::LongjumpException(rcpp_result_gen);
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<double >(rcpp_result_gen);
+    }
+
+    inline NumericVector difLalpha_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw) {
+        typedef SEXP(*Ptr_difLalpha_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+        static Ptr_difLalpha_cpp p_difLalpha_cpp = NULL;
+        if (p_difLalpha_cpp == NULL) {
+            validateSignature("NumericVector(*difLalpha_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int)");
+            p_difLalpha_cpp = (Ptr_difLalpha_cpp)R_GetCCallable("trajeR", "_trajeR_difLalpha_cpp");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_difLalpha_cpp(Shield<SEXP>(Rcpp::wrap(param)), Shield<SEXP>(Rcpp::wrap(ng)), Shield<SEXP>(Rcpp::wrap(nx)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(X)), Shield<SEXP>(Rcpp::wrap(ymin)), Shield<SEXP>(Rcpp::wrap(ymax)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(nw)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
+            throw Rcpp::LongjumpException(rcpp_result_gen);
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<NumericVector >(rcpp_result_gen);
+    }
+
+    inline NumericVector difLalphaunique_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw) {
+        typedef SEXP(*Ptr_difLalphaunique_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+        static Ptr_difLalphaunique_cpp p_difLalphaunique_cpp = NULL;
+        if (p_difLalphaunique_cpp == NULL) {
+            validateSignature("NumericVector(*difLalphaunique_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int)");
+            p_difLalphaunique_cpp = (Ptr_difLalphaunique_cpp)R_GetCCallable("trajeR", "_trajeR_difLalphaunique_cpp");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_difLalphaunique_cpp(Shield<SEXP>(Rcpp::wrap(param)), Shield<SEXP>(Rcpp::wrap(ng)), Shield<SEXP>(Rcpp::wrap(nx)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(X)), Shield<SEXP>(Rcpp::wrap(ymin)), Shield<SEXP>(Rcpp::wrap(ymax)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(nw)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
+            throw Rcpp::LongjumpException(rcpp_result_gen);
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<NumericVector >(rcpp_result_gen);
+    }
+
+    inline double Likelihoodalpha_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw) {
+        typedef SEXP(*Ptr_Likelihoodalpha_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+        static Ptr_Likelihoodalpha_cpp p_Likelihoodalpha_cpp = NULL;
+        if (p_Likelihoodalpha_cpp == NULL) {
+            validateSignature("double(*Likelihoodalpha_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int)");
+            p_Likelihoodalpha_cpp = (Ptr_Likelihoodalpha_cpp)R_GetCCallable("trajeR", "_trajeR_Likelihoodalpha_cpp");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_Likelihoodalpha_cpp(Shield<SEXP>(Rcpp::wrap(param)), Shield<SEXP>(Rcpp::wrap(ng)), Shield<SEXP>(Rcpp::wrap(nx)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(X)), Shield<SEXP>(Rcpp::wrap(ymin)), Shield<SEXP>(Rcpp::wrap(ymax)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(nw)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
+            throw Rcpp::LongjumpException(rcpp_result_gen);
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<double >(rcpp_result_gen);
+    }
+
+    inline NumericMatrix ftauxCNORM_cpp(NumericVector pi, NumericVector beta, NumericVector sigma, int ng, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, double ymin, double ymax, Nullable<NumericMatrix> TCOV, Nullable<NumericVector> delta, int nw, int nx, NumericMatrix X) {
+        typedef SEXP(*Ptr_ftauxCNORM_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+        static Ptr_ftauxCNORM_cpp p_ftauxCNORM_cpp = NULL;
+        if (p_ftauxCNORM_cpp == NULL) {
+            validateSignature("NumericMatrix(*ftauxCNORM_cpp)(NumericVector,NumericVector,NumericVector,int,IntegerVector,int,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,Nullable<NumericVector>,int,int,NumericMatrix)");
+            p_ftauxCNORM_cpp = (Ptr_ftauxCNORM_cpp)R_GetCCallable("trajeR", "_trajeR_ftauxCNORM_cpp");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_ftauxCNORM_cpp(Shield<SEXP>(Rcpp::wrap(pi)), Shield<SEXP>(Rcpp::wrap(beta)), Shield<SEXP>(Rcpp::wrap(sigma)), Shield<SEXP>(Rcpp::wrap(ng)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(ymin)), Shield<SEXP>(Rcpp::wrap(ymax)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(delta)), Shield<SEXP>(Rcpp::wrap(nw)), Shield<SEXP>(Rcpp::wrap(nx)), Shield<SEXP>(Rcpp::wrap(X)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
+            throw Rcpp::LongjumpException(rcpp_result_gen);
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<NumericMatrix >(rcpp_result_gen);
+    }
+
+    inline NumericVector EM_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw, int itermax, bool EMIRLS, int refgr) {
+        typedef SEXP(*Ptr_EM_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+        static Ptr_EM_cpp p_EM_cpp = NULL;
+        if (p_EM_cpp == NULL) {
+            validateSignature("NumericVector(*EM_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int,int,bool,int)");
+            p_EM_cpp = (Ptr_EM_cpp)R_GetCCallable("trajeR", "_trajeR_EM_cpp");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_EM_cpp(Shield<SEXP>(Rcpp::wrap(param)), Shield<SEXP>(Rcpp::wrap(ng)), Shield<SEXP>(Rcpp::wrap(nx)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(X)), Shield<SEXP>(Rcpp::wrap(ymin)), Shield<SEXP>(Rcpp::wrap(ymax)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(nw)), Shield<SEXP>(Rcpp::wrap(itermax)), Shield<SEXP>(Rcpp::wrap(EMIRLS)), Shield<SEXP>(Rcpp::wrap(refgr)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
+            throw Rcpp::LongjumpException(rcpp_result_gen);
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<NumericVector >(rcpp_result_gen);
+    }
+
+    inline NumericVector EMSigmaunique_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw, int itermax, bool EMIRLS, int refgr) {
+        typedef SEXP(*Ptr_EMSigmaunique_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+        static Ptr_EMSigmaunique_cpp p_EMSigmaunique_cpp = NULL;
+        if (p_EMSigmaunique_cpp == NULL) {
+            validateSignature("NumericVector(*EMSigmaunique_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int,int,bool,int)");
+            p_EMSigmaunique_cpp = (Ptr_EMSigmaunique_cpp)R_GetCCallable("trajeR", "_trajeR_EMSigmaunique_cpp");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_EMSigmaunique_cpp(Shield<SEXP>(Rcpp::wrap(param)), Shield<SEXP>(Rcpp::wrap(ng)), Shield<SEXP>(Rcpp::wrap(nx)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(X)), Shield<SEXP>(Rcpp::wrap(ymin)), Shield<SEXP>(Rcpp::wrap(ymax)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(nw)), Shield<SEXP>(Rcpp::wrap(itermax)), Shield<SEXP>(Rcpp::wrap(EMIRLS)), Shield<SEXP>(Rcpp::wrap(refgr)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
+            throw Rcpp::LongjumpException(rcpp_result_gen);
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<NumericVector >(rcpp_result_gen);
+    }
+
+    inline NumericVector EMCensored_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw, int itermax, bool EMIRLS, int refgr) {
+        typedef SEXP(*Ptr_EMCensored_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+        static Ptr_EMCensored_cpp p_EMCensored_cpp = NULL;
+        if (p_EMCensored_cpp == NULL) {
+            validateSignature("NumericVector(*EMCensored_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int,int,bool,int)");
+            p_EMCensored_cpp = (Ptr_EMCensored_cpp)R_GetCCallable("trajeR", "_trajeR_EMCensored_cpp");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_EMCensored_cpp(Shield<SEXP>(Rcpp::wrap(param)), Shield<SEXP>(Rcpp::wrap(ng)), Shield<SEXP>(Rcpp::wrap(nx)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(X)), Shield<SEXP>(Rcpp::wrap(ymin)), Shield<SEXP>(Rcpp::wrap(ymax)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(nw)), Shield<SEXP>(Rcpp::wrap(itermax)), Shield<SEXP>(Rcpp::wrap(EMIRLS)), Shield<SEXP>(Rcpp::wrap(refgr)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
+            throw Rcpp::LongjumpException(rcpp_result_gen);
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<NumericVector >(rcpp_result_gen);
+    }
+
+    inline NumericVector EMCensoredSigmaunique_cpp(NumericVector param, int ng, int nx, IntegerVector nbeta, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix X, double ymin, double ymax, Nullable<NumericMatrix> TCOV, int nw, int itermax, bool EMIRLS, int refgr) {
+        typedef SEXP(*Ptr_EMCensoredSigmaunique_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+        static Ptr_EMCensoredSigmaunique_cpp p_EMCensoredSigmaunique_cpp = NULL;
+        if (p_EMCensoredSigmaunique_cpp == NULL) {
+            validateSignature("NumericVector(*EMCensoredSigmaunique_cpp)(NumericVector,int,int,IntegerVector,int,NumericMatrix,NumericMatrix,NumericMatrix,double,double,Nullable<NumericMatrix>,int,int,bool,int)");
+            p_EMCensoredSigmaunique_cpp = (Ptr_EMCensoredSigmaunique_cpp)R_GetCCallable("trajeR", "_trajeR_EMCensoredSigmaunique_cpp");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_EMCensoredSigmaunique_cpp(Shield<SEXP>(Rcpp::wrap(param)), Shield<SEXP>(Rcpp::wrap(ng)), Shield<SEXP>(Rcpp::wrap(nx)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(X)), Shield<SEXP>(Rcpp::wrap(ymin)), Shield<SEXP>(Rcpp::wrap(ymax)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(nw)), Shield<SEXP>(Rcpp::wrap(itermax)), Shield<SEXP>(Rcpp::wrap(EMIRLS)), Shield<SEXP>(Rcpp::wrap(refgr)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
+            throw Rcpp::LongjumpException(rcpp_result_gen);
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<NumericVector >(rcpp_result_gen);
+    }
+
     inline double piik_cpp(NumericVector theta, int i, int k, int ng, NumericMatrix X) {
         typedef SEXP(*Ptr_piik_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_piik_cpp p_piik_cpp = NULL;

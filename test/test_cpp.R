@@ -140,7 +140,7 @@ solLs = trajeR(Y = data[,2:11], A = data[,12:21],
               Model = "CNORM", Method = "L",  hessian = TRUE, ssigma = TRUE)
 solEM = trajeR(Y = data[,2:11], A = data[,12:21],
               ng = 3, degre = c(0,3,4),
-              Model = "CNORM", Method = "EM",  hessian = FALSE, ssigma = FALSE)
+              Model = "CNORM", Method = "EM",  hessian = TRUE, ssigma = FALSE)
 solLRisks = trajeR(Y = data[,2:11], A = data[,12:21], Risk = data[,42:43],
                    ng = 3, degre = c(0,3,4),
                    Model = "CNORM", Method = "L", ssigma = TRUE, hessian = FALSE)
@@ -176,52 +176,203 @@ solLCTCOVs = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:31],
                     ng = 3, degre = c(0,3,4),
                     Model = "CNORM", Method = "L", ssigma = TRUE, hessian = FALSE,
                     ymin = 2,  ymax = 23)
+solEMCTCOV = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:31],
+                   ng = 3, degre = c(0,3,4),
+                   Model = "CNORM", Method = "EM", ssigma = FALSE, hessian = FALSE,
+                   ymin = 2,  ymax = 23)
+solEMCTCOVs = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:31],
+                    ng = 3, degre = c(0,3,4),
+                    Model = "CNORM", Method = "EM", ssigma = TRUE, hessian = FALSE,
+                    ymin = 2,  ymax = 23)
+solEMCs = trajeR(Y = dataC[,2:11], A = dataC[,12:21],
+                ng = 3, degre = c(0,3,4),
+                Model="CNORM", Method = "EM", ssigma = TRUE, hessian = FALSE,
+                ymin=2, ymax=23)
 
+
+library(trajeR)
+load("/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07")
+load("/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07Censored")
+data = as.matrix(data)
+dataC = as.matrix(dataC)
+i=1
+k=1
+t=1
 X= matrix(rep(1, nrow(data)), ncol = 1)
-#X= cbind(matrix(rep(1, nrow(data)), ncol = 1), data[,11:15])
+X= cbind(matrix(rep(1, nrow(data)), ncol = 1), data[,42:43])
+theta=solLRisk$theta
 nx= ncol(X)
 Y = data[,2:11]
 A = data[,12:21]
-TCOV = data[,22:31]
-nw=1
+TCOV = data[,22:41]
+nw=2
+delta=solLTCOV2s$delta
+TCOV=NULL
+nw=0
 ng = 3
 nbeta = c(0,3,4)+1
 n = nrow(data)
-ymin = 2
-ymax = 23
+ymin = -100000
+ymax = 100000
 k=1
-j = 1
-betatmp=solLCTCOV$beta
-beta = list()
-for (i in 1:ng){
-  beta[[i]] = betatmp[j:sum(nbeta[1:i])]
-  j = sum(nbeta[1:i]) + 1
-}
+pi=solEM$theta
+beta=solEM$beta
+sigma=solEM$sigma
+nbetacum=c(0,cumsum(nbeta))
+ndeltacum =NULL
+delta=NULL
+delta=solEMCTCOV$delta
 ndeltacum = cumsum(c(0, rep(nw, ng)))
-deltatmp=solLCTCOV$delta
-delta = list()
-for (i in 1:ng){
-  delta[[i]] = deltatmp[(ndeltacum[i]+1):(ndeltacum[i+1])]
-}
+ndeltacum=NULL
+pi=theta
+taux = ftaux(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X)
+ndeltacum = cumsum(c(0, rep(nw, ng)))
+#delta=solLCTCOV$delta
 
-k=1
-difLdeltakalpha(c(solLCTCOV$theta, solLCTCOV$beta, solLCTCOV$sigma,solLCTCOV$delta), k, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
-difLdeltakalpha_cpp(solLCTCOV$theta, beta, solLCTCOV$sigma,delta, k-1, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
+param = c(pi[-1], beta, sigma, delta)
+paramEM=param
+param = c(pi, beta, sigma, delta)
 
-#param = c(solEM$theta[-1], solEM$beta, solEM$sigma)
-param=c(solEM$theta[-1], solLCTCOV$beta, solLCTCOV$sigma, solLCTCOV$delta)
-itermax=100
+itermax=3
 EMIRLS=TRUE
-# TCOV=NULL
-# delta=NULL
-# nw=0
-refgr = 1
-# /***R
-# a1=EMcensoredtmp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax=20, EMIRLS, refgr)
-# a2=EMCensored_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax=20, EMIRLS, refgr)
-# abs(a1-a2[-3])<10**(-4)
-# */
-EMCensored_cpp(c(0.3333333, 0.3333333, 0.3333333, 3.347283, 9.615996, 0, 0, 0, 15.88471 ,0 ,0 ,0 ,0, 0, 0, 0), ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, itermax=20, EMIRLS, refgr)
-param
+
+EMSigmauniquetmp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, delta, nw, itermax, EMIRLS )
+EMSigmaunique_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV,  nw, itermax, EMIRLS,refgr=1 )
+
+i=1
+t=1
+mbeta(i, t, ng, nbeta, A, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
+mbetaCNORM_cpp(i-1, t-1, ng, nbeta, A, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
+mdelta(i, t, ng, nbeta, A, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
+mdeltaCNORM_cpp(i-1, t-1, ng, nbeta, A, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
+mbetadelta(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
+mbetadeltaCNORM_cpp(i-1, t-1, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
+mdeltasigma(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
+mdeltasigmaCNORM_cpp(i-1, t-1, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
+mdelta(i, t, ng, nbeta, A, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
+mdeltasigmaCNORM_cpp(i-1, t-1, ng, nbeta, A, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
+msigma(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
+msigmaCNORM_cpp(i-1, t-1, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)
 
 
+EMSigmauniquetmp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, delta, nw, itermax, EMIRLS){
+  period = ncol(A)
+  nsigma = ng
+  if (nx == 1){
+    pi = param[1:(ng-1)]
+    beta = param[(ng):(ng+sum(nbeta)-1)]
+    sigma = param[(ng+sum(nbeta)):(ng+sum(nbeta)+ng-1)]
+    delta = param[-c(1:(ng+sum(nbeta)+ng-1))]
+    pi = c(pi, 1-sum(pi))
+  }else{
+    pi = param[1:(ng*nx)]
+    beta = param[(ng*nx+1):(ng*nx+sum(nbeta))]
+    sigma = param[(ng*nx+sum(nbeta)+1):(ng*nx+sum(nbeta)+ng)]
+    delta = param[-c(1:(ng*nx+sum(nbeta)+ng))]
+  }
+  nbetacum = cumsum(c(0, nbeta))
+  ndeltacum = cumsum(c(0, rep(nw, ng)))
+  tour = 1
+  while (tour < itermax) {
+    ###########################
+    # print likelihood for every loop
+    ###########################
+    if (nx == 1){
+      cat(paste(-likelihoodEM(n, ng, nbeta, beta, sigma, pi, A, Y, ymin, ymax, TCOV, delta, nw), "\n"))
+    }else{
+      cat(paste(-LikelihoodCNORM(c(pi, beta, sigma, delta), ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw), "\n"))
+    }
+    # E-step
+    taux = ftaux(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X)
+    newbeta = c()
+    newdelta = c()
+    # M-step
+    if (nw == 0) {
+      for (k in 1:ng) {
+        a = 0
+        for (i in 1:n) {
+          Ai = c()
+          for (t in 1:period) {
+            Ai = cbind(Ai, sapply(0:(nbeta[k] - 1), function(s) {
+              A[i, t] ** (s)
+            }))
+          }
+          a = a + taux[i, k] * Y[i,] %*% t(Ai)
+        }
+        newbeta = c(newbeta, a %*% solve(Ai %*% t(Ai)) / sum(taux[, k]))
+      }
+      b = 0
+      for (k in 1:ng) {
+        for (i in 1:n) {
+          Ai = c()
+          for (t in 1:period) {
+            Ai = cbind(Ai, sapply(0:(nbeta[k] - 1), function(s) {
+              A[i, t] ** (s)
+            }))
+          }
+          Mtmp = Y[i,] - beta[(nbetacum[k] + 1):nbetacum[k + 1]] %*% Ai
+          b = b + taux[i, k] * (Mtmp %*% t(Mtmp))
+        }
+      }
+      newsigma = sqrt(b / (period * sum(taux)))
+      newsigma = rep(newsigma, ng)
+    }else{
+      for (k in 1:ng) {
+        a = 0
+        c = 0
+        Sw = 0
+        for (i in 1:n) {
+          Ai = c()
+          Wi = c()
+          for (t in 1:period) {
+            Ai = cbind(Ai, sapply(0:(nbeta[k] - 1), function(s) {A[i, t] ** (s)}))
+            Wi = cbind(Wi, TCOV[i, seq(from = t, to = t + (nw - 1) * period, by = period)])
+          }
+          a = a + taux[i, k] * (Y[i, ] %*% t(Ai) - delta[(ndeltacum[k] + 1):ndeltacum[k + 1]] %*% Wi %*% t(Ai))
+          c = c + taux[i, k] * (Y[i, ] %*% t(Wi) - beta[(nbetacum[k] + 1):(nbetacum[k + 1])] %*% Ai %*% t(Wi))
+          Sw = Sw + taux[i, k] * Wi %*% t(Wi)
+        }
+        newbeta = c(newbeta, a %*% solve(Ai %*% t(Ai)) / sum(taux[, k]))
+        newdelta = c(newdelta, c %*% solve(Sw))
+      }
+      b = 0
+      for (k in 1:ng) {
+        for (i in 1:n) {
+          Ai = c()
+          Wi = c()
+          for (t in 1:period) {
+            Ai = cbind(Ai, sapply(0:(nbeta[k] - 1), function(s) {A[i, t]**(s)}))
+            Wi = cbind(Wi, TCOV[i, seq(from = t, to = t + (nw - 1) * period, by = period)])
+          }
+          Mtmp = Y[i,] - newbeta[(nbetacum[k] + 1):nbetacum[k + 1]] %*% Ai - delta[(ndeltacum[k] + 1):ndeltacum[k + 1]] %*% Wi
+          b = b + taux[i, k] * (Mtmp %*% t(Mtmp))
+        }
+      }
+      newsigma = sqrt(b / (period * sum(taux)))
+      newsigma = rep(newsigma, ng)
+    }
+    if (nx == 1){
+      pi = colSums(taux)/n
+      stoppi = 0
+      refpi = 0
+    }else{
+      newpi = findtheta(pi, taux, X, n, ng, nx,period, EMIRLS,refgr = 1)
+      stoppi = (pi-pi[1:ng])-(newpi-newpi[1:ng])
+      refpi = rep(0, length(stoppi))
+      pi = newpi
+    }
+    tour = tour + 1
+    if (all(abs(c(newbeta, newsigma, newdelta, stoppi)-c(beta, sigma, delta, refpi))<10**(-6))){
+      tour = itermax + 2
+    }
+    sigma = newsigma
+    beta = newbeta
+    delta = newdelta
+  }
+  if (nx == 1){
+    param = c(pi[1:(ng-1)], beta, sigma, delta)
+  }else{
+    param = c(pi, beta, sigma, delta)
+  }
+  return(param)
+}

@@ -1360,10 +1360,10 @@ covDeltaSigmak <- function(k, nbeta, n, ng, A, Y, period, beta, sigma, taux, nbe
           tmp = tmp - Dikl(i, k, kp, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw)*Sik(i, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw)*taux[i,k]*taux[i,l]
         }
       }
+      rcovDeltaSigmak[kp,l] = tmp
     }
-    rcovDeltaSigmak[kp,l] = tmp
-    return(rcovDeltaSigmak)
   }
+  return(rcovDeltaSigmak)
 }
 ##################################################################################
 # Main function
