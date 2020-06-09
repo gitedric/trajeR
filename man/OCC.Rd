@@ -2,7 +2,8 @@
 % Please edit documentation in R/model_adequacy.R
 \name{OCC}
 \alias{OCC}
-\title{OCC
+\title{Odds of Correct Classification
+ 
  Calculate Odds of Correct Classification. The Odds of Correct Classification for
  group k (OCCj) is the ratio between the odds of a correct
  classification into group j on the basis of the posterior probability rule and
@@ -13,24 +14,31 @@
 OCC(sol, Y, A, X = NULL)
 }
 \arguments{
-\item{sol}{a object of type trajectory.}
+\item{sol}{An object of type trajectory.}
 
-\item{Y}{a matrix containing the variables in the model.}
+\item{Y}{A matrix containing the variables in the model.}
 
-\item{A}{a matrix containing the time variable data.}
+\item{A}{A matrix containing the time variable data.}
 
-\item{X}{an optionnal matrix that modifie the probabilty of belong to group. By default its value is a mtrix
-with one column  with value 1.}
+\item{X}{An optionnal matrix that modifie the probabilty of belong to group.
+By default its value is a mtrix with one column  with value 1.}
 }
 \value{
-a vector of real. The Odds of Correct Classification.
+A vector of real. The Odds of Correct Classification.
 }
 \description{
-OCC
+Odds of Correct Classification
+ 
  Calculate Odds of Correct Classification. The Odds of Correct Classification for
  group k (OCCj) is the ratio between the odds of a correct
  classification into group j on the basis of the posterior probability rule and
  the odds of correct assignment based on random assignments with the probability
  of assignment to group j is done with pik, the probability estimate by
  the model.
+}
+\examples{
+load("data/dataNORM01.RData")
+sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
+Method = "L", ssigma = FALSE, hessian = FALSE)
+OCC(sol, Y = data[, 1;5], A = data[, 6:10])
 }

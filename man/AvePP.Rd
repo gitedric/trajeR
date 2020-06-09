@@ -2,29 +2,31 @@
 % Please edit documentation in R/model_adequacy.R
 \name{AvePP}
 \alias{AvePP}
-\title{AvePP
-Calculate the Average Posterior Porbability.
- Average Posterior Probability (AvePP) the average posterior
- probability of membership for each group for those individuals that were assigned to.}
+\title{Average Posterior Porbability}
 \usage{
 AvePP(sol, Y, A, X = NULL)
 }
 \arguments{
-\item{sol}{a object of type trajectory.}
+\item{sol}{An object of type trajectory.}
 
-\item{Y}{a matrix containing the variables in the model.}
+\item{Y}{A matrix containing the variables in the model.}
 
-\item{A}{a matrix containing the time variable data.}
+\item{A}{A matrix containing the time variable data.}
 
-\item{X}{an optionnal matrix that modifie the probabilty of belong to group. By default its value is a mtrix
-with one column  with value 1.}
+\item{X}{An optionnal matrix that modifie the probabilty of belong to group.
+By default its value is a mtrix with one column  with value 1.}
 }
 \value{
-a vector of real. The average posterior probability.
+A vector of real. The average posterior probability.
 }
 \description{
-AvePP
-Calculate the Average Posterior Porbability.
- Average Posterior Probability (AvePP) the average posterior
- probability of membership for each group for those individuals that were assigned to.
+Calculate the Average Posterior Porbability. Average Posterior Probability
+(AvePP) the average posterior probability of membership for each group for
+those individuals that were assigned to.
+}
+\examples{
+load("data/dataNORM01.RData")
+sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
+Method = "L", ssigma = FALSE, hessian = FALSE)
+AvePP(sol, Y = data[, 1;5], A = data[, 6:10])
 }

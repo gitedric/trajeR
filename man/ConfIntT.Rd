@@ -2,27 +2,36 @@
 % Please edit documentation in R/model_adequacy.R
 \name{ConfIntT}
 \alias{ConfIntT}
-\title{ConfIntT
- Calculate the confidence interval of the probibiliies with a bootstrap method. We have to speicify the number of the repetition
- of bootstrap and the degree of confidence.}
+\title{Confidence interval}
 \usage{
 ConfIntT(sol, Y, A, X = NULL, nb = 10000, alpha = 0.98)
 }
 \arguments{
-\item{sol}{a object of type trajectory.}
+\item{sol}{An object of type trajectory.}
 
-\item{Y}{a matrix containing the variables in the model.}
+\item{Y}{A matrix containing the variables in the model.}
 
-\item{A}{a matrix containing the time variable data.}
+\item{A}{A matrix containing the time variable data.}
 
-\item{X}{an optionnal matrix that modifie the probabilty of belong to group. By default its value is a mtrix
-with one column  with value 1.}
+\item{X}{An optionnal matrix that modifie the probabilty of belong to group.
+By default its value is a mtrix with one column  with value 1.}
+
+\item{nb}{An integer. The numbers of repetition in the bootstrap method.}
+
+\item{alpha}{A number. The degree of confidence of the interval.}
 }
 \value{
-a vector of real. The two bounds of the confidence interval given a degree of confidence.
+A vector of real. The two bounds of the confidence interval given a
+  degree of confidence.
 }
 \description{
-ConfIntT
- Calculate the confidence interval of the probibiliies with a bootstrap method. We have to speicify the number of the repetition
- of bootstrap and the degree of confidence.
+Calculate the confidence interval of the probabilities with a bootstrap
+method. We have to specify the number of the repetition of bootstrap and the
+degree of confidence.
+}
+\examples{
+load("data/dataNORM01.RData")
+sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
+Method = "L", ssigma = FALSE, hessian = FALSE)
+ConfIntT(sol, Y = data[, 1;5], A = data[, 6:10])
 }

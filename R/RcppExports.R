@@ -17,6 +17,14 @@ Likelihoodalpha_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TC
     .Call(`_trajeR_Likelihoodalpha_cpp`, param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
 }
 
+likelihoodCNORM_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw) {
+    .Call(`_trajeR_likelihoodCNORM_cpp`, param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
+}
+
+likelihoodEM_cpp <- function(n, ng, nbeta, beta, sigma, pi, A, Y, ymin, ymax, TCOV, delta, nw) {
+    .Call(`_trajeR_likelihoodEM_cpp`, n, ng, nbeta, beta, sigma, pi, A, Y, ymin, ymax, TCOV, delta, nw)
+}
+
 ftauxCNORM_cpp <- function(pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X) {
     .Call(`_trajeR_ftauxCNORM_cpp`, pi, beta, sigma, ng, nbeta, n, A, Y, ymin, ymax, TCOV, delta, nw, nx, X)
 }
@@ -41,6 +49,20 @@ IEM_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, refg
     .Call(`_trajeR_IEM_cpp`, param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, refgr)
 }
 
+#' piik_cpp
+#' 
+#' Calculate the membership probability to group k for a individual i.
+#'
+#' @param theta a vector of real with the value of theta parameters.
+#' @param i a integer. The index of the data which is used to calculate the probability of group belonging.
+#' @param k a integer. The numerous of group.
+#' @param ng a integer. The number of groups.
+#' @param X a matrix. The covariate that influence the group belonging probability.
+#'
+#' @return A vector of real. The probability for an individual to belonging at each group.
+#' @export
+#'
+#' piik(theta, i, k, ng, X)
 piik_cpp <- function(theta, i, k, ng, X) {
     .Call(`_trajeR_piik_cpp`, theta, i, k, ng, X)
 }
@@ -59,6 +81,74 @@ thethaIRLS_cpp <- function(thetaIRLS, n, ng, X, taux, refgr) {
 
 findtheta_cpp <- function(theta, taux, X, n, ng, nx, period, EMIRLS, refgr) {
     .Call(`_trajeR_findtheta_cpp`, theta, taux, X, n, ng, nx, period, EMIRLS, refgr)
+}
+
+IEMLOGIT_cpp <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr) {
+    .Call(`_trajeR_IEMLOGIT_cpp`, param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr)
+}
+
+gkLOGIT_cpp <- function(beta, i, k, nbeta, A, Y, TCOV, delta, nw) {
+    .Call(`_trajeR_gkLOGIT_cpp`, beta, i, k, nbeta, A, Y, TCOV, delta, nw)
+}
+
+difLthetakLOGIT_cpp <- function(theta, beta, delta, k, ng, nx, n, nbeta, A, Y, X, TCOV, nw) {
+    .Call(`_trajeR_difLthetakLOGIT_cpp`, theta, beta, delta, k, ng, nx, n, nbeta, A, Y, X, TCOV, nw)
+}
+
+difLbetakLOGIT_cpp <- function(theta, beta, delta, k, ng, nx, n, nbeta, A, Y, X, TCOV, nw) {
+    .Call(`_trajeR_difLbetakLOGIT_cpp`, theta, beta, delta, k, ng, nx, n, nbeta, A, Y, X, TCOV, nw)
+}
+
+difLdeltakLOGIT_cpp <- function(theta, beta, delta, k, ng, nx, n, nbeta, A, Y, X, initTCOV, nw) {
+    .Call(`_trajeR_difLdeltakLOGIT_cpp`, theta, beta, delta, k, ng, nx, n, nbeta, A, Y, X, initTCOV, nw)
+}
+
+difLLOGIT_cpp <- function(param, ng, nx, n, nbeta, A, Y, X, TCOV, nw) {
+    .Call(`_trajeR_difLLOGIT_cpp`, param, ng, nx, n, nbeta, A, Y, X, TCOV, nw)
+}
+
+likelihoodLOGIT_cpp <- function(param, ng, nx, n, nbeta, A, Y, X, TCOV, nw) {
+    .Call(`_trajeR_likelihoodLOGIT_cpp`, param, ng, nx, n, nbeta, A, Y, X, TCOV, nw)
+}
+
+ftauxLOGIT_cpp <- function(pi, beta, ng, nbeta, n, A, Y, TCOV, delta, nw, nx, X) {
+    .Call(`_trajeR_ftauxLOGIT_cpp`, pi, beta, ng, nbeta, n, A, Y, TCOV, delta, nw, nx, X)
+}
+
+QbetakLOGIT_cpp <- function(betak, taux, k, n, ng, nbeta, A, Y, TCOV, deltainit, nw) {
+    .Call(`_trajeR_QbetakLOGIT_cpp`, betak, taux, k, n, ng, nbeta, A, Y, TCOV, deltainit, nw)
+}
+
+QdeltakLOGIT_cpp <- function(deltak, taux, k, n, ng, nbeta, A, Y, TCOV, beta, nw) {
+    .Call(`_trajeR_QdeltakLOGIT_cpp`, deltak, taux, k, n, ng, nbeta, A, Y, TCOV, beta, nw)
+}
+
+difQbetakLOGIT_cpp <- function(betak, taux, k, n, ng, nbeta, A, Y, TCOV, deltainit, nw) {
+    .Call(`_trajeR_difQbetakLOGIT_cpp`, betak, taux, k, n, ng, nbeta, A, Y, TCOV, deltainit, nw)
+}
+
+difQdeltakLOGIT_cpp <- function(deltak, taux, k, n, ng, nbeta, A, Y, TCOV, beta, nw) {
+    .Call(`_trajeR_difQdeltakLOGIT_cpp`, deltak, taux, k, n, ng, nbeta, A, Y, TCOV, beta, nw)
+}
+
+QbetaLOGIT_cpp <- function(beta, taux, n, ng, nbeta, A, Y, TCOV, delta, nw) {
+    .Call(`_trajeR_QbetaLOGIT_cpp`, beta, taux, n, ng, nbeta, A, Y, TCOV, delta, nw)
+}
+
+difQbetaLOGIT_cpp <- function(beta, taux, n, ng, nbeta, A, Y, TCOV, delta, nw) {
+    .Call(`_trajeR_difQbetaLOGIT_cpp`, beta, taux, n, ng, nbeta, A, Y, TCOV, delta, nw)
+}
+
+likelihoodEMLOGIT_cpp <- function(n, ng, nbeta, beta, pi, A, Y, TCOV, delta, nw) {
+    .Call(`_trajeR_likelihoodEMLOGIT_cpp`, n, ng, nbeta, beta, pi, A, Y, TCOV, delta, nw)
+}
+
+EMLOGIT_cpp <- function(param, ng, nx, n, nbeta, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr) {
+    .Call(`_trajeR_EMLOGIT_cpp`, param, ng, nx, n, nbeta, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr)
+}
+
+EMLOGITIRLS_cpp <- function(param, ng, nx, n, nbeta, A, Y, X, TCOVinit, nw, itermax, EMIRLS, refgr) {
+    .Call(`_trajeR_EMLOGITIRLS_cpp`, param, ng, nx, n, nbeta, A, Y, X, TCOVinit, nw, itermax, EMIRLS, refgr)
 }
 
 # Register entry points for exported C++ functions

@@ -2,25 +2,32 @@
 % Please edit documentation in R/GroupProfiles.R
 \name{GroupProfiles}
 \alias{GroupProfiles}
-\title{GroupProfiles}
+\title{Profiles of each group}
 \usage{
 GroupProfiles(sol, Y, A, X)
 }
 \arguments{
-\item{sol}{a object of type trajectory.}
+\item{sol}{A object of type trajectory.}
 
-\item{Y}{a matrix containing the variables in the model.}
+\item{Y}{A matrix containing the variables in the model.}
 
-\item{A}{a matrix containing the time variable data.}
+\item{A}{A matrix containing the time variable data.}
 
-\item{X}{an optionnal matrix that modifie the probabilty of belong to group. By default its value is a mtrix
-with one column  with value 1.}
+\item{X}{An optionnal matrix that modifie the probabilty of belong to group.
+By default its value is a mtrix with one column  with value 1.}
 }
 \value{
-a table of real.
+A table of real.
 }
 \description{
-Calculate the group profil regarding covariate. It is a cross tabulation
- of individual level trajectory group assignments with individual
- level characteristic that might be associated with trajectory group membership.
+\code{GroupProfiles} calculate the profil of a group regarding covariate. It is a
+cross tabulation of individual level trajectory group assignments with
+individual level characteristic that might be associated with trajectory
+group membership.
+}
+\examples{
+load("data/dataNORM01.RData")
+sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
+Method = "L", ssigma = FALSE, hessian = FALSE)
+GroupProfles(sol, Y = data[,1:5], A = data[, 6:10])
 }

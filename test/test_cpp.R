@@ -108,12 +108,19 @@ k=1
 difLdeltakalpha(c(pi, unlist(beta), sigma,unlist(delta)), k, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
 difLdeltakalpha_cpp(pi, beta, sigma,delta, k-1, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
 
-  
 
+  paraminitL = c(0.3333333, 0.3333333, 0.3333333, 0.7631785, 0, 0, 3.731205, 0, 0,
+                 6.699231, 0, 0, 3.067976, 3.067976, 3.067976)
+tmp=optim(par = paraminitL, fn = Likelihoodalpha_cpp, gr=difLalpha_cpp,
+      method = "BFGS",
+      hessian = TRUE,
+      control = list(fnscale=-1, trace=1, REPORT=1, maxit = itermax),
+      ng = ng, nx = nx, n =n, A = A, Y = Y, X = X, nbeta = nbeta,
+      ymin = ymin, ymax = ymax, nw = nw, TCOV = TCOV)
 
 #################################################
 sol1 = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
-                 Model="CNORM", Method = "L", ssigma = TRUE, 
+                 Model="CNORM", Method = "L", ssigma = FALSE, 
                  hessian = FALSE)
 sol2 = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
                   Model="CNORM", Method = "L", ssigma = FALSE, 
@@ -123,7 +130,7 @@ sol1EM = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2),
                    hessian = FALSE)
 sol2R = trajeR(data[,1:5], data[,6:10], Risk = data[, 11:15], ng = 3, degre=c(2,2,2), 
               Model="CNORM", Method = "L", ssigma = FALSE, 
-              hessian = TRUE)
+              hessian = FALSE)
 sol2EMR = trajeR(data[,1:5], data[,6:10], Risk = data[, 11:15], ng = 3, degre=c(2,2,2), 
                 Model="CNORM", Method = "EM", ssigma = FALSE, 
                 hessian = FALSE)
@@ -146,7 +153,7 @@ solLRisks = trajeR(Y = data[,2:11], A = data[,12:21], Risk = data[,42:43],
                    Model = "CNORM", Method = "L", ssigma = TRUE, hessian = FALSE)
 solEMRisk = trajeR(Y = data[,2:11], A = data[,12:21], Risk = data[,42:43],
                    ng = 3, degre = c(0,3,4),
-                   Model = "CNORM", Method = "EM", ssigma = FALSE, hessian = FALSE)
+                   Model = "CNORM", Method = "EM", ssigma = FALSE, hessian = TRUE)
 solLRisk = trajeR(Y = data[,2:11], A = data[,12:21], Risk = data[,42:43],
                    ng = 3, degre = c(0,3,4),
                    Model = "CNORM", Method = "L", ssigma = FALSE, hessian = FALSE)

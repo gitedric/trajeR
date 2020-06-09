@@ -753,6 +753,7 @@ double Likelihoodalpha_cpp(NumericVector param,
 // ----------------------------------------------------------------------------
 // Likelihood 
 // ----------------------------------------------------------------------------
+// [[Rcpp::export]]
 double likelihoodCNORM_cpp(NumericVector param,
                            int ng, 
                            int nx,
@@ -810,6 +811,7 @@ double likelihoodCNORM_cpp(NumericVector param,
 // Algorithm EM
 //
 // ----------------------------------------------------------------------------
+// [[Rcpp::export]]
 double likelihoodEM_cpp(int n,
                         int ng,
                         IntegerVector nbeta,

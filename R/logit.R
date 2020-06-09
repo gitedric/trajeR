@@ -281,7 +281,7 @@ difQdeltak <- function(delta, taux, k, n, nbeta, A, Y, TCOV, beta, nw){
     a=0
     for (i in 1:n){
       tmp = exp(sapply(1:period, function(s){
-        sum(beta[(nbetacum[k]+1):(nbetacum[k+1])]*A[i,s]**(0:(nbeta[k]-1))) +  sum(delta*TCOV[i, seq(from = t, to = t+(nw-1)*period, by = period)])
+        sum(beta[(nbetacum[k]+1):(nbetacum[k+1])]*A[i,s]**(0:(nbeta[k]-1))) +  Wit(TCOV, period, delta, nw, i, s, k)
       }))
       a = a+ sum(taux[i,k]*TCOV[i, 1:period + (l-1)*period]*(Y[i,]-tmp/(1+tmp)))
     }
@@ -293,7 +293,8 @@ difQdeltak <- function(delta, taux, k, n, nbeta, A, Y, TCOV, beta, nw){
 # Q function for beta
 #################################################################################
 Qbeta <- function(beta, taux, ng, n, nbeta, A, Y, TCOV, delta, nw){
-  sum(sapply(1:ng, function(s){Qbetak(beta ,taux, s, n, nbeta, A, Y, TCOV, delta, nw)}))
+  nbetacum = cumsum(c(0, nbeta))
+  sum(sapply(1:ng, function(s){Qbetak(beta[(nbetacum[s]+1):(nbetacum[s+1])] ,taux, s, n, nbeta, A, Y, TCOV, delta, nw)}))
 }
 #################################################################################
 # Differential of Q beta
@@ -758,7 +759,7 @@ covBetakDeltal <- function(k, l, n, nbeta, nbetacum, A, Y, taux, beta, TCOV, per
         }
       }else{
         for (i in 1:n){
-          tmp = tmp - BLikl(i, k, p, nbeta, nbetacum, A, Y, beta, TCOV, period, delta, ndeltacum, nw)*DLikl(i, k, q, nbeta, nbetacum, A, Y, beta, TCOV, period, delta, ndeltacum, nw)*taux[i,k]*taux[i,l]
+          tmp = tmp - BLikl(i, k, p, nbeta, nbetacum, A, Y, beta, TCOV, period, delta, ndeltacum, nw)*DLikl(i, l, q, nbeta, nbetacum, A, Y, beta, TCOV, period, delta, ndeltacum, nw)*taux[i,k]*taux[i,l]
         }
       }
       rcovBetakDeltal[p,q] = tmp

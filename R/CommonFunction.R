@@ -53,9 +53,9 @@ piik <- function(theta, i, k, ng, X){
 Likelihood <- function(param, model, method, ng, nx, n, nbeta, nw, A, Y, X, TCOV, ymin = NULL, ymax = NULL, nnu = NULL, fct = NULL){
   if (model == "CNORM"){
     if (method == "L"){
-      a = LikelihoodCNORM(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
+      a = likelihoodCNORM_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
     }else{
-      a = likelihoodEM(n, ng, nbeta, beta=param[(ng+1):(ng+sum(nbeta))],
+      a = likelihoodEM_cpp(n, ng, nbeta, beta=param[(ng+1):(ng+sum(nbeta))],
                        sigma=param[(ng+sum(nbeta)+1):(ng+sum(nbeta)+ng)],
                        pi=param[1:(ng)],
                        A, Y, ymin, ymax, TCOV,

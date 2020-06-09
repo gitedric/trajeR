@@ -199,10 +199,10 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     if (is.null(paraminit)){
       paraminit = c(theta, unlist(beta), unlist(delta))
     }
-    newparam = optim(par = paraminit, fn = LikelihoodLogit, gr = difLLogit,
+    newparam = optim(par = paraminit, fn = likelihoodLOGIT_cpp, gr = difLLOGIT_cpp,
                      method = "BFGS",
                      hessian = hessian,
-                     control = list(fnscale=-1, trace = 6, maxit = itermax),
+                     control = list(fnscale=-1, trace=1, REPORT=1, maxit = itermax),
                      ng = ng, nx = nx, n = n, A = A, Y = Y, X = X, nbeta = nbeta,
                      nw = nw, TCOV = TCOV)
     param = newparam$par
@@ -228,9 +228,9 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
         paraminitEM = paraminit
       }
     }
-    param = EMLogit(paraminitEM, ng, nx, n, nbeta, A, Y, X, TCOV, delta, nw, itermax, EMIRLS, refgr)
+    param = EMLOGIT_cpp(paraminitEM, ng, nx, n, nbeta, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr)
     if (hessian == TRUE){
-      SE = IEML(param, ng, nx, n, nbeta, A, Y, X, TCOV, delta, nw, refgr)
+      SE = IEMLOGIT_cpp(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr)
       if (nx == 1){
         SE = c(SE[-c(1:(ng-1))], SE[1:(ng-1)], NA)
       }else{
@@ -240,7 +240,7 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
       SE = NA
     }
     if (nx == 1){
-      param = c(param[-c(1:(ng-1))], param[1:(ng-1)], 1-sum(param[1:(ng-1)]))
+      param = c(param[-c(1:ng)], param[1:ng])
     }else{
       param = c(param[-c(1:(ng*nx))], param[1:(ng*nx)])
     }
@@ -259,9 +259,9 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
         paraminitEM = paraminit
       }
     }
-    param = EMLogitIRLS(paraminitEM, ng, nx, n, nbeta, A, Y, X, TCOV, delta, nw, itermax, EMIRLS, refgr)
+    param = EMLOGITIRLS_cpp(paraminitEM, ng, nx, n, nbeta, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr)
     if (hessian == TRUE){
-      SE = IEML(param, ng, nx, n, nbeta, A, Y, X, TCOV, delta, nw, refgr)
+      SE =  IEMLOGIT_cpp(param, ng, nx, n, nbeta, A, Y, X, TCOV, delta, nw, refgr)
       if (nx == 1){
         SE = c(SE[-c(1:(ng-1))], SE[1:(ng-1)],  sqrt(sum(SE[1:(ng-1)]**2)))
       }else{
@@ -271,7 +271,7 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
       SE = NA
     }
     if (nx == 1){
-      param = c(param[-c(1:(ng-1))], param[1:(ng-1)], 1-sum(param[1:(ng-1)]))
+      param = param = c(param[-c(1:ng)], param[1:ng])
     }else{
       param = c(param[-c(1:(ng*nx))], param[1:(ng*nx)])
     }

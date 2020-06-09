@@ -2,27 +2,30 @@
 % Please edit documentation in R/model_adequacy.R
 \name{propAssign}
 \alias{propAssign}
-\title{propAssign
- Calculate the proportion of individuals in a given group. That is the ratio of the number of
- individuals in one group and all the individuals.}
+\title{Assignment proportion}
 \usage{
 propAssign(sol, Y, A, X = NULL)
 }
 \arguments{
-\item{sol}{a object of type trajectory.}
+\item{sol}{An object of type trajectory.}
 
-\item{Y}{a matrix containing the variables in the model.}
+\item{Y}{A matrix containing the variables in the model.}
 
-\item{A}{a matrix containing the time variable data.}
+\item{A}{A matrix containing the time variable data.}
 
-\item{X}{an optionnal matrix that modifie the probabilty of belong to group. By default its value is a mtrix
-with one column  with value 1.}
+\item{X}{An optionnal matrix that modifie the probabilty of belong to group.
+By default its value is a mtrix with one column  with value 1.}
 }
 \value{
-a vector of real. The  proportion.
+A vector of real. The  proportion.
 }
 \description{
-propAssign
- Calculate the proportion of individuals in a given group. That is the ratio of the number of
- individuals in one group and all the individuals.
+Calculate the proportion of individuals in a given group. That is the ratio of
+the number of individuals in one group and all the individuals.
+}
+\examples{
+load("data/dataNORM01.RData")
+sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
+Method = "L", ssigma = FALSE, hessian = FALSE)
+propAssign(sol, Y = data[, 1;5], A = data[, 6:10])
 }

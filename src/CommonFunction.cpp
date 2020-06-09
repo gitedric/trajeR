@@ -4,6 +4,20 @@ using namespace Rcpp;
 using namespace arma;
 #include "CommonFunction.h"
 
+//' piik_cpp
+//' 
+//' Calculate the membership probability to group k for a individual i.
+//'
+//' @param theta a vector of real with the value of theta parameters.
+//' @param i a integer. The index of the data which is used to calculate the probability of group belonging.
+//' @param k a integer. The numerous of group.
+//' @param ng a integer. The number of groups.
+//' @param X a matrix. The covariate that influence the group belonging probability.
+//'
+//' @return A vector of real. The probability for an individual to belonging at each group.
+//' @export
+//'
+//' piik(theta, i, k, ng, X)
 // [[Rcpp::export]]
 double piik_cpp(NumericVector theta,
                 int i,
@@ -203,7 +217,7 @@ Rcpp::NumericVector thethaIRLS_cpp(Rcpp::NumericVector thetaIRLS,
   arma::vec precIRLS(thetaIRLS.length());
   precIRLS.fill(1);
 
-  while(any(precIRLS > 0.000001) &&  stop < 300){
+  while(all(abs(precIRLS) > 0.000001) &&  stop < 300){
     stop +=1;
 
     Rcpp::NumericVector tmpPiik(1);
