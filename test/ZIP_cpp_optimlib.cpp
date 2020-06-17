@@ -5,6 +5,10 @@
 using namespace Rcpp;
 using namespace arma;
 // [[Rcpp::interfaces(r, cpp)]]
+#define USE_RCPP_ARMADILLO
+#include "optim.hpp"
+
+
 
 // compute sum of product nu by AI
 NumericVector nuikt_cpp(NumericVector nu,
@@ -215,6 +219,7 @@ NumericVector difLbetakZIP_cpp(NumericVector theta,
   }
   return(betas); 
 }
+
 // ----------------------------------------------------------------------------
 // dif likelihood nuk
 // ----------------------------------------------------------------------------
@@ -328,6 +333,7 @@ NumericVector difLnukZIP_cpp(NumericVector theta,
   }
   return(nus); 
 }
+
 // ----------------------------------------------------------------------------
 // dif likelihood deltak
 // ----------------------------------------------------------------------------
@@ -753,12 +759,6 @@ double fzkSikt_cpp(NumericVector pi,
   if (Y(i, t) > 0){
     prob = 0;
   }else{
-    NumericVector deltak;
-    if (nw != 0){
-      NumericVector vtmp(delta.get());
-      NumericVector ntmp(ndeltacum.get());
-      deltak = vtmp[Range(ntmp[k], ntmp[k+1]-1)]; 
-    }
     NumericVector nuk = nu[Range(nnucum[k], nnucum[k+1]-1)];
     NumericVector vtmp1;
     for (int po = 0; po < nnu[k]; ++po){
@@ -770,11 +770,12 @@ double fzkSikt_cpp(NumericVector pi,
       vtmp2.push_back(pow(A(i,t), po));
     }
     NumericVector betak = beta[Range(nbetacum[k], nbetacum[k+1]-1)];
-    double lambdaikt =  exp(sum(betak*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, t, k));
+    double lambdaikt =  exp(sum(betak*vtmp2) + WitEM_cpp(TCOV, period, delta, nw, i, t, k));
     prob = zk(i, k)/(1+exp(-nuikt-lambdaikt));
   }
   return(prob);
 }
+
 // ----------------------------------------------------------------------------
 // Function rate
 // ----------------------------------------------------------------------------
@@ -785,6 +786,7 @@ double fSikt_cpp(NumericVector pi,
                  int k,
                  int i, 
                  int t,
+                 int ng,
                  IntegerVector nbeta,
                  IntegerVector nnu,
                  int n,
@@ -801,25 +803,20 @@ double fSikt_cpp(NumericVector pi,
   if (Y(i, t) > 0){
     prob = 0;
   }else{
-    NumericVector deltak;
-    if (nw != 0){
-      NumericVector vtmp(delta.get());
-      NumericVector ntmp(ndeltacum.get());
-      deltak = vtmp[Range(ntmp[k], ntmp[k+1]-1)]; 
-    }
     NumericVector betak = beta[Range(nbetacum[k], nbetacum[k+1]-1)];
     NumericVector nuk = nu[Range(nnucum[k], nnucum[k+1]-1)];
     NumericVector vtmp1;
     for (int po = 0; po < nnu[k]; ++po){
       vtmp1.push_back(pow(A(i,t), po));
     }
-    double nuikt = sum(nuk*vtmp1);
+    double nuikt = sum(nu*vtmp1);
     double muikt = 0;
     NumericVector vtmp2;
     for (int po = 0; po < nbeta[k]; ++po){
       vtmp2.push_back(pow(A(i,t), po));
     }
-    double lambdaikt =  exp(sum(betak*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, t, k));
+    muikt = sum(betak*vtmp2) + WitEM_cpp(TCOV, period, delta, nw, i, t, k);
+    double lambdaikt =  exp(muikt + WitEM_cpp(TCOV, period, delta, nw, i, t, k));
     prob = 1/(1+exp(-nuikt-lambdaikt));
   }
   return(prob);
@@ -831,7 +828,7 @@ double fSikt_cpp(NumericVector pi,
 // [[Rcpp::export]]
 double QbetakZIP_cpp(NumericVector beta,
                      NumericMatrix zk, 
-                     NumericMatrix Sikt,
+                     NumericMatrix zkSit,
                      int k, 
                      int nbeta,
                      int nnu,
@@ -843,23 +840,17 @@ double QbetakZIP_cpp(NumericVector beta,
                      int nw,
                      Nullable<IntegerVector> ndeltacum){
   int period = A.ncol();
-  NumericVector vtmp(delta.get());
-  NumericVector ntmp(ndeltacum.get());
-  NumericVector deltak;
-  if (nw != 0){
-    NumericVector deltak = vtmp[Range(ntmp[k], ntmp[k+1]-1)];
-  }
   double a = 0;
   for (int i = 0; i < n; ++i){
     double zik = zk(i, k);
     for (int t = 0; t < period; ++t){
-      double sikt = Sikt(i, t);
+      double ziksit = zkSit(i, k*period+t);
       NumericVector vtmp2;
       for (int po = 0; po < nbeta; ++po){
         vtmp2.push_back(pow(A(i,t), po));
       }
-      double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, t, k); 
-      a += zik*(1 - sikt)*(Y(i,t)*betaAit - exp(betaAit));
+      double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, delta, nw, i, t, k); 
+      a += (zik - ziksit)*(Y(i,t)*betaAit - exp(betaAit));
     }
   }
   return(a);
@@ -867,7 +858,7 @@ double QbetakZIP_cpp(NumericVector beta,
 // [[Rcpp::export]]
 double QnukZIP_cpp(NumericVector nu,
                    NumericMatrix zk, 
-                   NumericMatrix Sikt,
+                   NumericMatrix zkSit,
                    int k, 
                    int nbeta,
                    int nnu,
@@ -879,13 +870,13 @@ double QnukZIP_cpp(NumericVector nu,
   for (int i = 0; i < n; ++i){
     double zik = zk(i, k);
     for (int t = 0; t < period; ++t){
-      double sikt = Sikt(i, t);
+      double ziksit = zkSit(i, k*period+t);
       NumericVector vtmp1;
       for (int po = 0; po < nnu; ++po){
         vtmp1.push_back(pow(A(i,t), po));
       }
       double nuAit = sum(nu*vtmp1);
-      a += zik*(sikt*nuAit - log(1+exp(nuAit)));
+      a += ziksit*nuAit - zik*log(1+exp(nuAit));
     }
   }
   return(a);
@@ -905,8 +896,6 @@ double QdeltakZIP_cpp(NumericVector delta,
                       int nw,
                       Nullable<IntegerVector> ndeltacum){
   int period = A.ncol();
-  NumericVector ntmp(ndeltacum.get());
-  NumericVector deltak = delta[Range(ntmp[k], ntmp[k+1]-1)];
   double a = 0;
   for (int i = 0; i < n; ++i){
     double zik = zk(i, k);
@@ -916,51 +905,20 @@ double QdeltakZIP_cpp(NumericVector delta,
       for (int po = 0; po < nbeta; ++po){
         vtmp2.push_back(pow(A(i,t), po));
       }
-      double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, t, k); 
+      double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, delta, nw, i, t, k); 
       a += (zik - ziksit)*(Y(i,t)*betaAit - exp(betaAit));
     }
   }
   return(a);
 }
-// [[Rcpp::export]]
-double QbetadeltakZIP_cpp(NumericVector betadelta,
-                     NumericMatrix zk, 
-                     NumericMatrix Sikt,
-                     int k, 
-                     int nbeta,
-                     int nnu,
-                     int n,
-                     NumericMatrix A,
-                     NumericMatrix Y,
-                     NumericMatrix TCOV,
-                     int nw){
-  int period = A.ncol();
-  
-  
-  NumericVector betak = betadelta[Range(0, nbeta-1)];
-  NumericVector deltak = betadelta[Range(nbeta, betadelta.length()-1)];
-  double a = 0;
-  for (int i = 0; i < n; ++i){
-    double zik = zk(i, k);
-    for (int t = 0; t < period; ++t){
-      double sikt = Sikt(i, t);
-      NumericVector vtmp2;
-      for (int po = 0; po < nbeta; ++po){
-        vtmp2.push_back(pow(A(i,t), po));
-      }
-      double betaAit = sum(betak*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, t, k); 
-      a += zik*(1- sikt)*(Y(i,t)*betaAit - exp(betaAit));
-    }
-  }
-  return(a);
-}
+
 // ----------------------------------------------------------------------------
 //  Differential of betak, nuk and deltak Q function
 // ----------------------------------------------------------------------------
 // [[Rcpp::export]]
 NumericVector difQbetakZIP_cpp(NumericVector beta,
                                NumericMatrix zk, 
-                               NumericMatrix Sikt,
+                               NumericMatrix zkSit,
                                int k, 
                                int nbeta,
                                int nnu,
@@ -972,25 +930,19 @@ NumericVector difQbetakZIP_cpp(NumericVector beta,
                                int nw,
                                Nullable<IntegerVector> ndeltacum){
   int period = A.ncol();
-  NumericVector vtmp(delta.get());
-  NumericVector ntmp(ndeltacum.get());
-  NumericVector deltak;
-  if (nw != 0){
-    NumericVector deltak = vtmp[Range(ntmp[k], ntmp[k+1]-1)];
-  }
   NumericVector betas;
   for (int l = 0; l < nbeta; ++l){
     double a = 0;
     for (int i = 0; i < n; ++i){
       double zik = zk(i, k);
       for (int t = 0; t < period; ++t){
-        double sikt = Sikt(i, t);
+        double ziksit = zkSit(i, k*period+t);
         NumericVector vtmp2;
         for (int po = 0; po < nbeta; ++po){
           vtmp2.push_back(pow(A(i,t), po));
         }
-        double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, t, k); 
-        a += pow(A(i,t), l)*zik*(1-sikt)*(Y(i,t)-exp(betaAit));
+        double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, delta, nw, i, t, k); 
+        a += pow(A(i,t), l)*(zik-ziksit)*(Y(i,t)-exp(betaAit));
       }
     }  
     betas.push_back(a);
@@ -999,9 +951,9 @@ NumericVector difQbetakZIP_cpp(NumericVector beta,
 }
 // [[Rcpp::export]]
 NumericVector difQnukZIP_cpp(NumericVector nu,
-                             NumericMatrix zk, 
-                             NumericMatrix Sikt,
                              int k, 
+                             NumericMatrix zk, 
+                             NumericMatrix zkSit,
                              int nbeta,
                              int nnu,
                              int n,
@@ -1014,13 +966,13 @@ NumericVector difQnukZIP_cpp(NumericVector nu,
     for (int i = 0; i < n; ++i){
       double zik = zk(i, k);
       for (int t = 0; t < period; ++t){
-        double sikt = Sikt(i, t);
+        double ziksit = zkSit(i, k*period+t);
         NumericVector vtmp1;
         for (int po = 0; po < nnu; ++po){
           vtmp1.push_back(pow(A(i,t), po));
         }
         double nuAit = sum(nu*vtmp1);
-        a += pow(A(i, t), l)*zik*(sikt-exp(nuAit)/(1+exp(nuAit)));
+        a += pow(A(i, t), l)*(ziksit-zik*exp(nuAit)/(1+exp(nuAit)));
       }
     }
     nus.push_back(a);
@@ -1029,9 +981,9 @@ NumericVector difQnukZIP_cpp(NumericVector nu,
 }
 // [[Rcpp::export]]
 NumericVector difQdeltakZIP_cpp(NumericVector delta,
+                                int k, 
                                 NumericMatrix zk, 
                                 NumericMatrix zkSit,
-                                int k, 
                                 int nbeta,
                                 int nnu,
                                 int n,
@@ -1043,7 +995,7 @@ NumericVector difQdeltakZIP_cpp(NumericVector delta,
                                 Nullable<IntegerVector> ndeltacum){
   int period = A.ncol();
   NumericVector deltas;
-  for (int l = 0; l < nw; ++l){
+  for (int l = 0; l < nbeta; ++l){
     double a = 0;
     for (int i = 0; i < n; ++i){
       double zik = zk(i, k);
@@ -1061,62 +1013,94 @@ NumericVector difQdeltakZIP_cpp(NumericVector delta,
   }
   return(deltas);
 }
-// [[Rcpp::export]]
-NumericVector difQbetadeltakZIP_cpp(NumericVector betadelta,
-                               NumericMatrix zk, 
-                               NumericMatrix Sikt,
-                               int k, 
-                               int nbeta,
-                               int nnu,
-                               int n,
-                               NumericMatrix A,
-                               NumericMatrix Y,
-                               NumericMatrix TCOV,
-                               int nw){
-  int period = A.ncol();
-  NumericVector betak = betadelta[Range(0, nbeta-1)];
-  NumericVector deltak = betadelta[Range(nbeta, betadelta.length()-1)];
+
+struct optim_opt
+{
+  mat zk; 
+  mat zkSit;
+  int k; 
+  int nbeta;
+  int nnu;
+  int n;
+  mat A;
+  mat Y;
+  Nullable<NumericMatrix> TCOV;
+  Nullable<NumericVector> delta;
+  int nw;
+  Nullable<IntegerVector> ndeltacum;
+};
+
+double optimQbetakZIP_cpp(const arma::vec& beta,
+                          vec* grad_out,
+                          void* opt){
+  // defintion of the parameters
+  optim_opt* obj = reinterpret_cast<optim_opt*>(opt);
+  mat zk = obj->zk; 
+  mat zkSit = obj->zkSit ;
+  int k = obj->k; 
+  int nbeta = obj->nbeta;
+  int nnu = obj->nnu;
+  int n = obj->n;
+  mat A = obj->A;
+  mat Y = obj->Y;
+  // Nullable<NumericMatrix> TCOV = obj->TCOV;
+  // Nullable<NumericVector> delta = obj-> delta;
+  int nw = obj->nw;
+  //Nullable<IntegerVector> ndeltacum = obj->ndeltacum;
   
-  NumericVector betadeltas;
-  for (int l = 0; l < nbeta; ++l){
-    double a = 0;
-    for (int i = 0; i < n; ++i){
-      double zik = zk(i, k);
-      for (int t = 0; t < period; ++t){
-        double sikt = Sikt(i, t);
-        NumericVector vtmp2;
-        for (int po = 0; po < nbeta; ++po){
-          vtmp2.push_back(pow(A(i,t), po));
-        }
-        double betaAit = sum(betak*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, t, k); 
-        a += pow(A(i,t), l)*zik*(1-sikt)*(Y(i,t)-exp(betaAit));
+  
+  //double res = QbetakZIP_cpp(NumericVector(beta.begin(), beta.end()), zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum);
+  
+  // defintion of function QbetakZIP
+  int period = A.n_cols;
+  double res = 0;
+  for (int i = 0; i < n; ++i){
+    double zik = zk(i, k);
+    for (int t = 0; t < period; ++t){
+      double ziksit = zkSit(i, k*period+t);
+      double betaAit = 0;
+      for (int po = 0; po < nbeta; ++po){
+        betaAit += pow(A(i,t), po)*beta[po];
       }
-    }  
-    betadeltas.push_back(a);
+      //   betaAit += WitEM_cpp(TCOV, period, delta, nw, i, t, k); 
+      res += (zik - ziksit)*(Y(i,t)*betaAit - exp(betaAit));
+    }
   }
-  for (int l = 0; l < nw; ++l){
-    double a = 0;
-    for (int i = 0; i < n; ++i){
-      double zik = zk(i, k);
-      for (int t = 0; t < period; ++t){
-        double sikt = Sikt(i, t);
-        NumericVector vtmp2;
-        for (int po = 0; po < nbeta; ++po){
-          vtmp2.push_back(pow(A(i,t), po));
-        }
-        double betaAit = sum(betak*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, t, k); 
-        a += TCOV(i, t + l*period)*zik*(1-sikt)*(Y(i,t)-exp(betaAit));
-      }
-    }  
-    betadeltas.push_back(a);
-  }
-  return(betadeltas);
+  
+  // if (grad_out)
+  // {
+  //   *grad_out = difQbetakZIP_cpp(NumericVector(beta.begin(), beta.end()), k, zk, zkSit, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum);
+  // }
+  // 
+  //   if (grad_out){
+  //     for (int l = 0; l < nbeta; ++l){
+  //       double a = 0;
+  //       for (int i = 0; i < n; ++i){
+  //         double zik = zk(i, k);
+  //         for (int t = 0; t < period; ++t){
+  //           double ziksit = zkSit(i, k*period+t);
+  //           double betaAit =0;
+  //           for (int po = 0; po < nbeta; ++po){
+  //             betaAit += pow(A(i,t), po)*beta[po];
+  //           }
+  //           //   betaAit += WitEM_cpp(TCOV, period, delta, nw, i, t, k); 
+  //           a += pow(A(i,t), l)*(zik-ziksit)*(Y(i,t)-exp(betaAit));
+  //         }
+  //       }  
+  //       (*grad_out)(l) = a;
+  //     }
+  //   }
+  //Rcout << (*grad_out);
+  Rcout << res;
+  
+  return(res);
 }
+
 // ----------------------------------------------------------------------------
 //  EM 
 // ----------------------------------------------------------------------------
 // [[Rcpp::export]]
-NumericVector EMZIP_cpp(NumericVector param,
+NumericMatrix EMZIP_cpp(NumericVector param,
                         int ng,
                         int nx,
                         int n,
@@ -1130,241 +1114,9 @@ NumericVector EMZIP_cpp(NumericVector param,
                         int itermax,
                         bool EMIRLS,
                         int refgr){
-  int period = A.ncol();
-  double prec = 0.000001;
-  NumericVector pi(ng);
-  NumericVector beta;
-  NumericVector nu;
-  NumericVector delta;
+  NumericMatrix mm;
   
-  IntegerVector nbetacum(nbeta.size());
-  std::partial_sum(nbeta.begin(), nbeta.end(), nbetacum.begin());
-  nbetacum.push_front(0);
-  IntegerVector nnucum(nnu.size());
-  std::partial_sum(nnu.begin(), nnu.end(), nnucum.begin());
-  nnucum.push_front(0);
-  IntegerVector ndeltacum;
-  
-  if (nx == 1){
-    pi = param[Range(0,ng-2)];
-    beta = param[Range(ng-1,ng+sum(nbeta)-2)];
-    nu = param[Range(ng+sum(nbeta)-1, ng+sum(nbeta)+sum(nnu)-2)];
-    if (param.length() > ng*nx+sum(nbeta)+sum(nnu)-1){
-      delta = param[Range(ng+sum(nbeta)+sum(nnu)-1, param.length()-1)];
-      NumericVector deltatmp(ng);
-      IntegerVector ndeltacumtmp(nw*ng);
-      deltatmp.fill(nw);
-      std::partial_sum(deltatmp.begin(), deltatmp.end(), ndeltacumtmp.begin());
-      ndeltacumtmp.push_front(0);
-      ndeltacum = ndeltacumtmp;
-    }
-    pi.push_back(1-sum(pi));
-  }else{
-    pi = param[Range(0,ng*nx-1)];
-    beta = param[Range(ng*nx,ng*nx+sum(nbeta)-1)];
-    nu = param[Range(ng*nx+sum(nbeta), ng*nx+sum(nbeta)+sum(nnu)-1)];
-    if (param.length() > ng*nx+sum(nbeta)+sum(nnu)){
-      delta = param[Range(ng*nx+sum(nbeta)+sum(nnu), param.length()-1)];
-      NumericVector deltatmp(ng);
-      IntegerVector ndeltacumtmp(nw*ng);
-      deltatmp.fill(nw);
-      std::partial_sum(deltatmp.begin(), deltatmp.end(), ndeltacumtmp.begin());
-      ndeltacumtmp.push_front(0);
-      ndeltacum = ndeltacumtmp;
-    }
-  }
-  rowvec vparam = join_rows(as<arma::rowvec>(pi), as<arma::rowvec>(beta),  as<arma::rowvec>(nu), as<arma::rowvec>(delta));
-  int tour = 1;
-  while (tour < itermax){
-    if (nx == 1){
-      Rprintf("iter %3d value ", tour);
-      Rprintf("%.6f\n", -likelihoodEMZIP_cpp(n, ng, nbeta, nnu, beta, nu, pi, A, Y, TCOV, delta, nw));
-    }else{
-      // a modifier
-      Rprintf("iter %3d value ", tour);
-      Rprintf("%.6f\n", -likelihoodZIP_cpp(NumericVector(vparam.begin(), vparam.end()), ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw));
-    }
-    // E-step
-    NumericMatrix zk = ftauxZIP_cpp(pi, beta, nu, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, nx, X);
-    
-    
-    NumericVector newbeta;
-    NumericVector newnu;
-    NumericVector newdelta;
-    Rcpp::Environment stats("package:stats");
-    Rcpp::Function optim = stats["optim"];
-    
-    vec vtmp;
-    vec vtmpnu; 
-    if (nw == 0){
-      for (int k = 0; k < ng; ++k){
-        NumericVector betak = beta[Range(nbetacum[k], nbetacum[k+1]-1)];
-        NumericVector nuk = nu[Range(nnucum[k], nnucum[k+1]-1)];
-        
-        NumericMatrix Sikt(n, period);
-        for (int i = 0; i < n; ++i){
-          for (int t = 0; t < period; ++t){
-            Sikt(i, t) = fSikt_cpp(pi, beta, nu, k, i, t, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum);
-          }
-        } 
-        
-        List tmp = optim(Rcpp::_["par"] = betak,
-                         Rcpp::_["fn"] = Rcpp::InternalFunction(&QbetakZIP_cpp),
-                         Rcpp::_["gr"] = Rcpp::InternalFunction(&difQbetakZIP_cpp),
-                         Rcpp::_["method"] = "BFGS",
-                         Rcpp::_["zk"] = zk,
-                         Rcpp::_["Sikt"] = Sikt,
-                         Rcpp::_["k"] = k,
-                         Rcpp::_["nbeta"] = nbeta[k],
-                         Rcpp::_["nnu"] = nnu[k],
-                         Rcpp::_["n"] = n,
-                         Rcpp::_["A"] =  A,
-                         Rcpp::_["Y"] =  Y,
-                         Rcpp::_["TCOV"] = TCOV,
-                         Rcpp::_["delta"] = delta,
-                         Rcpp::_["nw"] = nw,
-                         Rcpp::_["ndeltacum"] = ndeltacum,
-                         Rcpp::_["hessian"] =  0,
-                         Rcpp::_["control"] = List::create(Named("fnscale")=-1)
-        );
-        List tmpnu = optim(Rcpp::_["par"] = nuk,
-                           Rcpp::_["fn"] = Rcpp::InternalFunction(&QnukZIP_cpp),
-                           Rcpp::_["gr"] = Rcpp::InternalFunction(&difQnukZIP_cpp),
-                           Rcpp::_["method"] = "BFGS",
-                           Rcpp::_["zk"] = zk,
-                           Rcpp::_["Sikt"] = Sikt,
-                           Rcpp::_["k"] = k,
-                           Rcpp::_["nbeta"] = nbeta[k],
-                           Rcpp::_["nnu"] = nnu[k],
-                           Rcpp::_["n"] = n,
-                           Rcpp::_["A"] = A,
-                           Rcpp::_["Y"] = Y,
-                           Rcpp::_["hessian"] =  0,
-                           Rcpp::_["control"] = List::create(Named("fnscale")=-1)
-        );
-        vtmp = join_cols(vtmp, as<arma::vec>(tmp[0]));
-        vtmpnu = join_cols(vtmpnu, as<arma::vec>(tmpnu[0]));
-      }
-      newbeta = NumericVector(vtmp.begin(), vtmp.end());
-      newnu = NumericVector(vtmpnu.begin(), vtmpnu.end());
-    }else{
-      IntegerVector ndeltacum(ng);
-      NumericVector deltatmp(ng);
-      deltatmp.fill(nw);
-      std::partial_sum(deltatmp.begin(), deltatmp.end(), ndeltacum.begin());
-      ndeltacum.push_front(0);
-      
-      for (int k = 0; k < ng; ++k){
-        NumericVector betak = beta[Range(nbetacum[k], nbetacum[k+1]-1)];
-        NumericVector nuk = nu[Range(nnucum[k], nnucum[k+1]-1)];
-        NumericVector deltak = delta[Range(ndeltacum[k], ndeltacum[k+1]-1)];
-        NumericVector betadeltak = betak;
-        for (int i = 0; i < deltak.size(); i++){
-          betadeltak.push_back(deltak[i]);
-        }
-        
-        NumericMatrix Sikt(n, period);
-        for (int i = 0; i < n; ++i){
-          for (int t = 0; t < period; ++t){
-            Sikt(i, t) = fSikt_cpp(pi, beta, nu, k, i, t, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum);
-          }
-        } 
-        
-        List tmpnu = optim(Rcpp::_["par"] = nuk,
-                           Rcpp::_["fn"] = Rcpp::InternalFunction(&QnukZIP_cpp),
-                           Rcpp::_["gr"] = Rcpp::InternalFunction(&difQnukZIP_cpp),
-                           Rcpp::_["method"] = "BFGS",
-                           Rcpp::_["zk"] = zk,
-                           Rcpp::_["Sikt"] = Sikt,
-                           Rcpp::_["k"] = k,
-                           Rcpp::_["nbeta"] = nbeta[k],
-                           Rcpp::_["nnu"] = nnu[k],                    
-                           Rcpp::_["n"] = n,
-                           Rcpp::_["A"] = A,
-                           Rcpp::_["Y"] = Y,
-                           Rcpp::_["hessian"] =  0,
-                           Rcpp::_["control"] = List::create(Named("fnscale")=-1)
-        );
-        List tmp = optim(Rcpp::_["par"] = betadeltak,
-                         Rcpp::_["fn"] = Rcpp::InternalFunction(&QbetadeltakZIP_cpp),
-                         Rcpp::_["gr"] = Rcpp::InternalFunction(& difQbetadeltakZIP_cpp),
-                         Rcpp::_["method"] = "BFGS",
-                         Rcpp::_["zk"] = zk,
-                         Rcpp::_["Sikt"] = Sikt,
-                         Rcpp::_["k"] = k,
-                         Rcpp::_["nbeta"] = nbeta[k],
-                         Rcpp::_["nnu"] = nnu[k],
-                         Rcpp::_["n"] = n,
-                         Rcpp::_["A"] =  A,
-                         Rcpp::_["Y"] =  Y,
-                         Rcpp::_["TCOV"] = TCOV,
-                         Rcpp::_["nw"] = nw,
-                         Rcpp::_["hessian"] =  0,
-                         Rcpp::_["control"] = List::create(Named("fnscale")=-1)
-        );
-        vtmpnu = join_cols(vtmpnu, as<arma::vec>(tmpnu[0]));
-        NumericVector vtmp;
-        vtmp = tmp[0];
-        for (int i = 0 ; i < nbeta[k]; ++i){
-          newbeta.push_back(vtmp[i]);
-        }
-        for (int i = 0 ; i < nw; ++i){
-          newdelta.push_back(vtmp[i+nbeta[k]-1]);
-        }
-      }
-      newnu = NumericVector(vtmpnu.begin(), vtmpnu.end());
-    }
-    
-    // calculus of pi
-    NumericVector newpi;
-    if (nx == 1){
-      NumericVector tmp(ng);
-      for (int i = 0; i < ng; ++i){
-        tmp[i] = sum(zk(_, i));
-      }
-      newpi = tmp/n;
-    }else{
-      newpi = findtheta_cpp(pi, zk, X, n, ng, nx, period, EMIRLS, refgr);
-    }
-    // stop test
-    rowvec newparam = join_rows(as<arma::rowvec>(newpi), as<arma::rowvec>(newbeta), as<arma::rowvec>(newnu), as<arma::rowvec>(newdelta));
-    rowvec tmp1(newparam.size());
-    tmp1.fill(prec);
-    if (all(abs(newparam-vparam)<tmp1)){
-      tour = itermax + 2;
-    }
-    ++tour;
-    vparam = newparam;
-    beta = newbeta;
-    nu = newnu;
-    delta = newdelta;
-    pi = newpi;
-    
-  }
-  return(NumericVector(vparam.begin(), vparam.end()));
-}
-
-// ----------------------------------------------------------------------------
-//  EM IRLS
-// ----------------------------------------------------------------------------
-// [[Rcpp::export]]
-NumericVector EMZIPIRLS_cpp(NumericVector param,
-                        int ng,
-                        int nx,
-                        int n,
-                        IntegerVector nbeta,
-                        IntegerVector nnu,
-                        NumericMatrix A,
-                        NumericMatrix Y,
-                        NumericMatrix X,
-                        Nullable<NumericMatrix> TCOVinit,
-                        int nw,
-                        int itermax,
-                        bool EMIRLS,
-                        int refgr){
-
   int period = A.ncol();
-  NumericMatrix TCOV;
   double prec = 0.000001;
   NumericVector pi(ng);
   NumericVector beta;
@@ -1383,8 +1135,8 @@ NumericVector EMZIPIRLS_cpp(NumericVector param,
     pi = param[Range(0,ng-2)];
     beta = param[Range(ng-1,ng+sum(nbeta)-2)];
     nu = param[Range(ng+sum(nbeta)-1, ng+sum(nbeta)+sum(nnu)-2)];
-    if (param.length() > ng*nx+sum(nbeta)+sum(nnu)-1){
-      delta = param[Range(ng+sum(nbeta)+sum(nnu)- 1, param.length()-1)];
+    if (param.length() > ng*nx+sum(nbeta)+sum(nnu)){
+      delta = param[Range(ng+sum(nbeta)+sum(nnu)- 1, param.length() - 1)];
     }
     pi.push_back(1-sum(pi));
   }else{
@@ -1392,11 +1144,9 @@ NumericVector EMZIPIRLS_cpp(NumericVector param,
     beta = param[Range(ng*nx,ng*nx+sum(nbeta)-1)];
     nu = param[Range(ng*nx+sum(nbeta), ng*nx+sum(nbeta)+sum(nnu)-1)];
     if (param.length() > ng*nx+sum(nbeta)+sum(nnu)){
-      delta = param[Range(ng*nx+sum(nbeta)+sum(nnu), param.length()-1)];
+      delta = param[Range(ng*nx+sum(nbeta)+sum(nnu), param.length() - 1)];
     }
   }
-
-
   rowvec vparam = join_rows(as<arma::rowvec>(pi), as<arma::rowvec>(beta),  as<arma::rowvec>(nu), as<arma::rowvec>(delta));
   int tour = 1;
   while (tour < itermax){
@@ -1410,210 +1160,178 @@ NumericVector EMZIPIRLS_cpp(NumericVector param,
     }
     // E-step
     NumericMatrix zk = ftauxZIP_cpp(pi, beta, nu, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, nx, X);
-
-    rowvec  newbeta;
-    rowvec  newnu;
-    rowvec  newdelta;
-
-    if (nw == 0){
-      for (int k = 0; k < ng; ++k){
-        vec newbetaIRLS;
-        NumericVector betaIRLS = beta[Range(nbetacum[k], nbetacum[k+1]-1)];
-        vec newnuIRLS;
-        NumericVector nuIRLS = nu[Range(nnucum[k], nnucum[k+1]-1)];
-        arma::vec precIRLS(betaIRLS.length());
-        precIRLS.fill(1);
-        int stop = 0;
-        
-        while(all(abs(precIRLS) > 0.000001) &&  stop < 300){
-          stop +=1;
-          mat Aw(nnu[k], n*period);
-          mat Awp(nbeta[k], n*period);
-          vec Sn(n*period);
-          vec Sw(n*period);
-          vec Sp(n*period);
-          vec W(n*period);
-          vec Wp(n*period);
-          vec Z(n*period);
-          
-          for (int i = 0; i < n; ++i){
-            for (int t = 0; t < period; ++t){
-              
-              double sikt = fSikt_cpp(pi, beta, nu, k, i, t, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum);
-              double nuAit = 0;
-              for (int po = 0; po < nnu[k]; ++po){
-                nuAit += pow(A(i, t), po)*nuIRLS[po];
-                Aw(po, period*i + t) = pow(A(i, t), po);
-              }
-              
-              double rhoikt = exp(nuAit)/(1+exp(nuAit));
-              W[period*i + t] = rhoikt*(1-rhoikt);
-              Sn[period*i + t] = nuAit + (sikt - rhoikt)/(rhoikt*(1-rhoikt));
-              
-              double betaAit = 0;
-              for (int po = 0; po < nbeta[k]; ++po){
-                betaAit += pow(A(i, t), po)*betaIRLS[po];
-                Awp(po, period*i + t) = pow(A(i, t), po);
-              }
-              
-              double lambdaikt = exp(betaAit);
-              Sp[period*i + t] = 1-sikt;
-              Sw[period*i + t] = betaAit+Y(i,t)/lambdaikt-1;
-              Wp[period*i + t] = lambdaikt;
-              
-              Z[period*i + t] = zk(i, k);
-            }
-          }
-          
-          mat Q;
-          mat R;
-          mat ZW = diagmat(Z % W);
-          qr(Q, R, trans(Aw*sqrt(ZW)));
-          mat Rc = R.submat(0, 0, ng-1, ng-1);
-          mat Qc = Q.submat(0, 0, Q.n_rows-1, ng-1);
-          newnuIRLS = solve(R, trans(Q)*sqrt(ZW)*Sn);
-          
-          mat SpZWp = diagmat(Sp % Z % Wp);
-          qr(Q, R, trans(Awp*sqrt(SpZWp)));
-          Rc = R.submat(0, 0, ng-1, ng-1);
-          Qc = Q.submat(0, 0, Q.n_rows-1, ng-1);
-          newbetaIRLS = solve(R, trans(Q)*sqrt(SpZWp)*Sw);
-          
-          precIRLS = join_cols(Rcpp::as<arma::vec>(betaIRLS),Rcpp::as<arma::vec>(nuIRLS))-join_cols(newbetaIRLS, newnuIRLS);
-          betaIRLS = Rcpp::NumericVector(newbetaIRLS.begin(), newbetaIRLS.end());
-          nuIRLS = Rcpp::NumericVector(newnuIRLS.begin(), newnuIRLS.end());
+    NumericMatrix zkSit(n, period*ng);
+    for (int k = 0; k < ng; ++k){
+      for (int i = 0; i < n; ++i){
+        for (int t = 0; t < period; ++t){
+          zkSit(i, k*period + t) = fzkSikt_cpp(pi, beta, nu, zk, k, i, t, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum);
         }
-        newbeta = join_rows(newbeta, as<arma::rowvec>(betaIRLS));
-        newnu = join_rows(newnu, as<arma::rowvec>(nuIRLS));
       }
-    }else{
-      IntegerVector ndeltacum(ng);
-      NumericVector deltatmp(ng);
-      deltatmp.fill(nw);
-      std::partial_sum(deltatmp.begin(), deltatmp.end(), ndeltacum.begin());
-      ndeltacum.push_front(0);
-      NumericMatrix tmp1(TCOVinit.get());  
-      TCOV = tmp1;
+    }
+    
+    NumericVector newbeta;
+    NumericVector newnu;
+    NumericVector newdelta;
+    Rcpp::Environment stats("package:stats");
+    Rcpp::Function optim = stats["optim"];
+    
+    vec vtmp;
+    vec vtmpnu;
+    for (int k = 0; k < ng; ++k){
+      NumericVector betak = beta[Range(nbetacum[k], nbetacum[k+1]-1)];
+      NumericVector nuk = nu[Range(nnucum[k], nnucum[k+1]-1)];
       
-      for (int k = 0; k < ng; ++k){
-        
-        vec newbetaIRLS;
-        NumericVector betaIRLS = beta[Range(nbetacum[k], nbetacum[k+1]-1)];
-        vec newnuIRLS;
-        NumericVector nuIRLS = nu[Range(nnucum[k], nnucum[k+1]-1)];
-        vec newdeltaIRLS;
-        NumericVector deltaIRLS = delta[Range(ndeltacum[k], ndeltacum[k+1]-1)];
-        NumericVector deltak = delta[Range(ndeltacum[k], ndeltacum[k+1]-1)];
-        arma::vec precIRLS(betaIRLS.length());
-        precIRLS.fill(1);
-        int stop = 0;
-        
-        while(all(abs(precIRLS) > 0.000001) &&  stop < 300){
-          stop +=1;
-          mat Aw(nnu[k], n*period);
-          mat Awp(nbeta[k], n*period);
-          mat Ww(nw, n*period);
-          vec Sn(n*period);
-          vec Sb(n*period);
-          vec Sp(n*period);
-          vec Sw(n*period);
-          vec W(n*period);
-          vec Wp(n*period);
-          vec Z(n*period);
-          
-          for (int i = 0; i < n; ++i){
-            for (int t = 0; t < period; ++t){
-              
-              double sikt = fSikt_cpp(pi, beta, nu, k, i, t, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum);
-              double nuAit = 0;
-              for (int po = 0; po < nnu[k]; ++po){
-                nuAit += pow(A(i, t), po)*nuIRLS[po];
-                Aw(po, period*i + t) = pow(A(i, t), po);
-              }
-              for (int kk = 0; kk < nw; ++kk){
-                Ww(kk, period*i + t) = TCOV(i, t + kk*period);
-              }
-              
-              double rhoikt = exp(nuAit)/(1+exp(nuAit));
-              W[period*i + t] = rhoikt*(1-rhoikt);
-              Sn[period*i + t] = nuAit + (sikt - rhoikt)/(rhoikt*(1-rhoikt));
-              
-              double betaAit = 0;
-              for (int po = 0; po < nbeta[k]; ++po){
-                betaAit += pow(A(i, t), po)*betaIRLS[po];
-                Awp(po, period*i + t) = pow(A(i, t), po);
-              }
-              
-              double lambdaikt = exp(betaAit +  WitEM_cpp(TCOV, period, deltak, nw, i, t, k));
-              Sp[period*i + t] = 1-sikt;
-              Sb[period*i + t] = betaAit+Y(i,t)/lambdaikt-1;
-              Wp[period*i + t] = lambdaikt;
-              
-              Sw[period*i + t] = WitEM_cpp(TCOV, period, deltak, nw, i, t, k)+Y(i,t)/lambdaikt-1;
-              
-              Z[period*i + t] = zk(i, k);
-            }
-          }
-          
-          mat Q;
-          mat R;
-          mat ZW = diagmat(Z % W);
-          qr(Q, R, trans(Aw*sqrt(ZW)));
-          mat Rc = R.submat(0, 0, nnu[k]-1, nnu[k]-1);
-          mat Qc = Q.submat(0, 0, ZW.n_rows-1, nnu[k]-1);
-          newnuIRLS = solve(Rc, trans(Qc)*sqrt(ZW)*Sn);
-          
-          mat SpZWp = diagmat(Sp % Z % Wp);
-          qr(Q, R, trans(Awp*sqrt(SpZWp)));
-          Rc = R.submat(0, 0, nbeta[k]-1, nbeta[k]-1);
-          Qc = Q.submat(0, 0, SpZWp.n_rows-1, nbeta[k]-1);
-          newbetaIRLS = solve(Rc, trans(Qc)*sqrt(SpZWp)*Sb);
-         
-          mat ZsWp = diagmat(Z % Sp % Wp);
-          qr(Q, R, trans(Ww*sqrt(ZsWp)));
-          
-          Rc = R.submat(0, 0, nw-1, nw-1);
-          Qc = Q.submat(0, 0, ZsWp.n_rows-1, nw-1);
-          
-          newdeltaIRLS = solve(R, trans(Q)*(sqrt(ZsWp)*Sw));
-          
-          precIRLS = join_cols(Rcpp::as<arma::vec>(betaIRLS),Rcpp::as<arma::vec>(nuIRLS), Rcpp::as<arma::vec>(deltaIRLS))-join_cols(newbetaIRLS, newnuIRLS, newdeltaIRLS);
-          
-          betaIRLS = Rcpp::NumericVector(newbetaIRLS.begin(), newbetaIRLS.end());
-          nuIRLS = Rcpp::NumericVector(newnuIRLS.begin(), newnuIRLS.end());
-          deltaIRLS = Rcpp::NumericVector(newdeltaIRLS.begin(), newdeltaIRLS.end());
-        }
-        newbeta = join_rows(newbeta, as<arma::rowvec>(betaIRLS));
-        newnu = join_rows(newnu, as<arma::rowvec>(nuIRLS));
-        newdelta = join_rows(newdelta, as<arma::rowvec>(deltaIRLS));
-      }
+      //    mat azk = as<arma::mat>(zk);
+      //    
+      //    optim_opt opt;
+      //    opt.zk = std::move(azk);
+      //    opt.zkSit = std::move(as<arma::mat>(zkSit));
+      //    opt.k = std::move(k);
+      //    opt.nbeta = std::move(nbeta[k]);
+      //    opt.nnu = std::move(nnu[k]);
+      //    opt.n = std::move(n);
+      //    opt.A = std::move(as<arma::mat>(A));
+      //    opt.Y = std::move(as<arma::mat>(Y));
+      //    opt.TCOV = std::move(TCOV);
+      //    //opt.delta = std::move(delta);
+      //    opt.delta = nullptr;
+      //    opt.nw = std::move(nw);
+      //    // opt.ndeltacum = std::move(ndeltacum);
+      //    opt.ndeltacum = nullptr;
+      //    
+      //    vec vtmp = as<arma::vec>(betak);
+      // 
+      // vtmp = {-10,100,-10} ;
+      //    bool succes = optim::bfgs(vtmp, optimQbetakZIP_cpp,&opt);
+      
+      
+      //Rcout << vtmp;
+      
+      
+      //bool success = optim::bfgs(as>arma::vec>(betak), QbetakZIP_cpp , zk, zkSit, k, nbeta[k], nnu[k], n, A, Y, TCOV, delta, nw, ndeltacum);
+      List tmp = optim(Rcpp::_["par"] = betak,
+                       Rcpp::_["fn"] = Rcpp::InternalFunction(&QbetakZIP_cpp),
+                       Rcpp::_["gr"] = Rcpp::InternalFunction(&difQbetakZIP_cpp),
+                       Rcpp::_["method"] = "BFGS",
+                       Rcpp::_["zk"] = zk,
+                       Rcpp::_["zkSit"] = zkSit,
+                       Rcpp::_["k"] = k,
+                       Rcpp::_["nbeta"] = nbeta[k],
+                                               Rcpp::_["nnu"] = nnu[k],
+                                                                   Rcpp::_["n"] = n,
+                                                                   Rcpp::_["A"] =  A,
+                                                                   Rcpp::_["Y"] =  Y,
+                                                                   Rcpp::_["TCOV"] = TCOV,
+                                                                   Rcpp::_["delta"] = delta,
+                                                                   Rcpp::_["nw"] = nw,
+                                                                   Rcpp::_["ndeltacum"] = ndeltacum,
+                                                                   Rcpp::_["hessian"] =  0,
+                                                                   Rcpp::_["control"] = List::create(Named("fnscale")=-1)
+      );
+      //  List tmpnu = optim(Rcpp::_["par"] = nuk,
+      //                     Rcpp::_["fn"] = Rcpp::InternalFunction(&QnukZIP_cpp),
+      //                     Rcpp::_["gr"] = Rcpp::InternalFunction(&difQnukZIP_cpp),
+      //                     Rcpp::_["method"] = "BFGS",
+      //                     Rcpp::_["zk"] = zk,
+      //                     Rcpp::_["zkSit"] = zkSit,
+      //                     Rcpp::_["k"] = k,
+      //                     Rcpp::_["n"] = n,
+      //                     Rcpp::_["nbeta"] = nbeta[k],
+      //                     Rcpp::_["nnu"] = nnu[k],
+      //                     Rcpp::_["A"] = A,
+      //                     Rcpp::_["Y"] = Y,
+      //                     Rcpp::_["TCOV"] = TCOV,
+      //                     Rcpp::_["delta"] = delta,
+      //                     Rcpp::_["nw"] = nw,
+      //                     Rcpp::_["hessian"] =  0,
+      //                     Rcpp::_["control"] = List::create(Named("fnscale")=-1)
+      //  );
+      vtmp = join_cols(vtmp, as<arma::vec>(tmp[0]));
+      
+      Rcout << vtmp;
+      // vtmpnu = join_cols(vtmpnu, as<arma::vec>(tmpnu[0]));
     }
-
+    // newbeta = NumericVector(vtmp.begin(), vtmp.end());
+    // newnu = NumericVector(vtmpnu.begin(), vtmpnu.end());
+    
+    // if (nw!=0){
+    //   vec vtmp;
+    //   NumericVector ndeltacum(ng);
+    //   NumericVector deltatmp(ng);
+    //   deltatmp.fill(nw);
+    //   std::partial_sum(deltatmp.begin(), deltatmp.end(), ndeltacum.begin());
+    //   ndeltacum.push_front(0);
+    //   for (int k = 0; k < ng; ++k){
+    //     NumericVector deltak = beta[Range(ndeltacum[k], ndeltacum[k+1]-1)];
+    //     List tmp = optim(Rcpp::_["par"] = deltak,
+    //                      Rcpp::_["fn"] = Rcpp::InternalFunction(&QdeltakLOGIT_cpp),
+    //                      Rcpp::_["gr"] = Rcpp::InternalFunction(&difQdeltakLOGIT_cpp),
+    //                      Rcpp::_["method"] = "BFGS",
+    //                      Rcpp::_["taux"] = taux,
+    //                      Rcpp::_["k"] = k,
+    //                      Rcpp::_["n"] = n,
+    //                      Rcpp::_["ng"] = ng,
+    //                      Rcpp::_["nbeta"] = nbeta,
+    //                      Rcpp::_["A"] = A,
+    //                      Rcpp::_["Y"] = Y,
+    //                      Rcpp::_["TCOV"] = TCOV,
+    //                      Rcpp::_["beta"] = beta,
+    //                      Rcpp::_["nw"] = nw,
+    //                      Rcpp::_["hessian"] =  0,
+    //                      Rcpp::_["control"] = List::create(Named("fnscale")=-1)
+    //     );
+    //     vtmp = join_cols(vtmp, as<arma::vec>(tmp[0]));
+    //   }
+    //   newdelta = NumericVector(vtmp.begin(), vtmp.end());
+    // }
     // calculus of pi
-    NumericVector newpi;
-    if (nx == 1){
-      NumericVector tmp(ng);
-      for (int i = 0; i < ng; ++i){
-        tmp[i] = sum(zk(_, i));
-      }
-      newpi = tmp/n;
-    }else{
-      newpi = findtheta_cpp(pi, zk, X, n, ng, nx, period, EMIRLS, refgr);
-    }
-    // stop test
-    rowvec newparam = join_rows(as<arma::rowvec>(newpi), newbeta, newnu, newdelta);
-    rowvec tmp1(newparam.size());
-    tmp1.fill(prec);
-    if (all(abs(newparam-vparam)<tmp1)){
-      tour = itermax + 2;
-    }
+    // NumericVector newpi;
+    // if (nx == 1){
+    //   NumericVector tmp(ng);
+    //   for (int i = 0; i < ng; ++i){
+    //     tmp[i] = sum(zk(_, i));
+    //   }
+    //   newpi = tmp/n;
+    // }else{
+    //   newpi = findtheta_cpp(pi, zk, X, n, ng, nx, period, EMIRLS, refgr);
+    // }
+    // // stop test
+    // rowvec newparam = join_rows(as<arma::rowvec>(newpi), as<arma::rowvec>(newbeta), as<arma::rowvec>(newnu), as<arma::rowvec>(newdelta));
+    // rowvec tmp1(newparam.size());
+    // tmp1.fill(prec);
+    // if (all(abs(newparam-vparam)<tmp1)){
+    //   tour = itermax + 2;
+    // }
     ++tour;
-    vparam = newparam;
-    beta = newbeta;
-    nu = newnu;
-    delta = newdelta;
-    pi = newpi;
+    // vparam = newparam;
+    // beta = newbeta;
+    // nu = newnu;
+    // delta = newdelta;
+    // pi = newpi;
     
   }
- return(NumericVector(vparam.begin(), vparam.end()));
+  //return(NumericVector(vparam.begin(), vparam.end()));
+  return(mm);
 }
+
+
+
+/***R
+
+itermax=2
+#a1=
+#  EMZIP(param[-1], ng, nx, nbeta, nnu, n, A, Y, X, TCOV, delta, nw, itermax, EMIRLS, refgr)
+
+
+
+
+#a2=
+z=EMZIP_cpp(param[-2], ng, nx, n, nbeta, nnu, A, Y, X, TCOV, nw, itermax=2, EMIRLS, refgr)
+
+
+all(abs(a1-a2[-2])<10**(-6))
+
+
+
+
+*/

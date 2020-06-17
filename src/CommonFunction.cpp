@@ -91,6 +91,7 @@ double Wit_cpp(Nullable<NumericMatrix> TCOV,
   }
 }
 // compute muikt
+// [[Rcpp::export]]
 NumericVector muikt_cpp(NumericVector beta,
                         int nbeta,
                         int i,
@@ -124,10 +125,10 @@ double WitEM_cpp(Nullable<NumericMatrix> TCOV,
     return(0);
   }else{
     double a = 0;
+    NumericVector deltak(delta.get());
     NumericMatrix mTCOV(TCOV.get());
-    NumericVector vtmp(delta.get());
     for (int s = 0; s < nw; ++s){
-      a += vtmp[s]*mTCOV(i, t + s*period);
+      a += deltak[s]*mTCOV(i, t + s*period);
     }
     return(a);
   }

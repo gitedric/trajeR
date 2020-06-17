@@ -261,7 +261,7 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     }
     param = EMLOGITIRLS_cpp(paraminitEM, ng, nx, n, nbeta, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr)
     if (hessian == TRUE){
-      SE =  IEMLOGIT_cpp(param, ng, nx, n, nbeta, A, Y, X, TCOV, delta, nw, refgr)
+      SE =  IEMLOGIT_cpp(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr)
       if (nx == 1){
         SE = c(SE[-c(1:(ng-1))], SE[1:(ng-1)],  sqrt(sum(SE[1:(ng-1)]**2)))
       }else{
@@ -340,10 +340,10 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
     if (is.null(paraminit)){
       paraminit = c(theta, unlist(beta), unlist(nu), delta)
     }
-    newparam = optim(par = paraminit, fn = LikelihoodZIP, gr = difLZIP,
+    newparam = optim(par = paraminit, fn = likelihoodZIP_cpp, gr = difLZIP_cpp,
                      method = "BFGS",
                      hessian = hessian,
-                     control = list(fnscale=-1, trace=6, maxit = itermax),
+                     control = list(fnscale=-1, trace=1, REPORT=1, maxit = itermax),
                      ng = ng, nx = nx, n = n, nnu = nnu, A = A, Y = Y, X = X, nbeta = nbeta,
                      nw = nw, TCOV = TCOV)
     param = newparam$par
@@ -369,9 +369,9 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
         paraminitEM = paraminit
       }
     }
-    param = EMZIP(paraminitEM, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, delta, nw, itermax, EMIRLS, refgr)
+    param = EMZIP_cpp(paraminitEM, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr)
     if (hessian == TRUE){
-      SE = IEMZIP(param, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, delta, nw, refgr)
+      SE = IEMZIP_cpp(param, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw, refgr)
       if (nx == 1){
         SE = c(SE[-c(1:(ng-1))], SE[1:(ng-1)],  sqrt(sum(SE[1:(ng-1)]**2)))
       }else{
@@ -381,7 +381,7 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
       SE = NA
     }
     if (nx == 1){
-      param = c(param[-c(1:(ng-1))], param[1:(ng-1)], 1-sum(param[1:(ng-1)]))
+      param = c(param[-c(1:ng)], param[1:ng])
     }else{
       param = c(param[-c(1:(ng*nx))], param[1:(ng*nx)])
     }
@@ -400,9 +400,9 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
         paraminitEM = paraminit
       }
     }
-    param = EMZIPIRLS(paraminitEM, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, delta, nw, itermax, EMIRLS, refgr)
+    param = EMZIPIRLS_cpp(paraminitEM, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr)
     if (hessian == TRUE){
-      SE = IEMZIP(param, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, delta, nw, refgr)
+      SE = IEMZIP_cpp(param, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw, refgr)
       if (nx == 1){
         SE = c(SE[-c(1:(ng-1))], SE[1:(ng-1)],  sqrt(sum(SE[1:(ng-1)]**2)))
       }else{
@@ -412,7 +412,7 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
       SE = NA
     }
     if (nx == 1){
-      param = c(param[-c(1:(ng-1))], param[1:(ng-1)], 1-sum(param[1:(ng-1)]))
+      param = c(param[-c(1:ng)], param[1:ng])
     }else{
       param = c(param[-c(1:(ng*nx))], param[1:(ng*nx)])
     }
@@ -463,7 +463,8 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
              nu = nu,
              sd = SE, tab = d, Model = "ZIP",
              groups = ng, Names = d.names, Method = Method, Size = n,
-             Likelihood = Likelihood(param = c(theta, beta, nu, delta), model = "ZIP", ng =ng, 
+             Likelihood = Likelihood(param = c(theta, beta, nu, delta), model = "ZIP", 
+                                     method =method, ng =ng, 
                                      nx = nx, n = n, nbeta = nbeta, nw = nw, A = A, Y = Y, X = X, 
                                      TCOV = TCOV, nnu = nnu),
              Time = A[1,], degre = degre - 1, degre.nu = degre.nu - 1)

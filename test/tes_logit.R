@@ -31,6 +31,8 @@ ndeltacum=c(0,1,2,3)
 
 param=c(pi[-1], beta, delta)
 
+
+EMLOGIT_cpp(param, ng, nx, n , nbeta, A, Y, X , TCOV, nw, itermax,EMIRLS, refgr )
 j = 1
 betaL = list()
 for (i in 1:ng){

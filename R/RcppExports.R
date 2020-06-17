@@ -67,6 +67,10 @@ piik_cpp <- function(theta, i, k, ng, X) {
     .Call(`_trajeR_piik_cpp`, theta, i, k, ng, X)
 }
 
+muikt_cpp <- function(beta, nbeta, i, period, A, TCOV, delta, nw, k) {
+    .Call(`_trajeR_muikt_cpp`, beta, nbeta, i, period, A, TCOV, delta, nw, k)
+}
+
 ftheta_cpp <- function(theta, taux, X, n, ng, period) {
     .Call(`_trajeR_ftheta_cpp`, theta, taux, X, n, ng, period)
 }
@@ -149,6 +153,102 @@ EMLOGIT_cpp <- function(param, ng, nx, n, nbeta, A, Y, X, TCOV, nw, itermax, EMI
 
 EMLOGITIRLS_cpp <- function(param, ng, nx, n, nbeta, A, Y, X, TCOVinit, nw, itermax, EMIRLS, refgr) {
     .Call(`_trajeR_EMLOGITIRLS_cpp`, param, ng, nx, n, nbeta, A, Y, X, TCOVinit, nw, itermax, EMIRLS, refgr)
+}
+
+gkZIP_cpp <- function(beta, nu, i, k, nbeta, nnu, A, Y, TCOV, delta, nw) {
+    .Call(`_trajeR_gkZIP_cpp`, beta, nu, i, k, nbeta, nnu, A, Y, TCOV, delta, nw)
+}
+
+difLthetakZIP_cpp <- function(theta, beta, nu, delta, k, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw) {
+    .Call(`_trajeR_difLthetakZIP_cpp`, theta, beta, nu, delta, k, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw)
+}
+
+difLbetakZIP_cpp <- function(theta, beta, nu, delta, k, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw) {
+    .Call(`_trajeR_difLbetakZIP_cpp`, theta, beta, nu, delta, k, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw)
+}
+
+difLnukZIP_cpp <- function(theta, beta, nu, delta, k, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw) {
+    .Call(`_trajeR_difLnukZIP_cpp`, theta, beta, nu, delta, k, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw)
+}
+
+difLdeltakZIP_cpp <- function(theta, beta, nu, delta, k, ng, nx, nbeta, nnu, n, A, Y, X, TCOVinit, nw) {
+    .Call(`_trajeR_difLdeltakZIP_cpp`, theta, beta, nu, delta, k, ng, nx, nbeta, nnu, n, A, Y, X, TCOVinit, nw)
+}
+
+difLZIP_cpp <- function(param, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw) {
+    .Call(`_trajeR_difLZIP_cpp`, param, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw)
+}
+
+likelihoodZIP_cpp <- function(param, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw) {
+    .Call(`_trajeR_likelihoodZIP_cpp`, param, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw)
+}
+
+likelihoodEMZIP_cpp <- function(n, ng, nbeta, nnu, beta, nu, pi, A, Y, TCOV, delta, nw) {
+    .Call(`_trajeR_likelihoodEMZIP_cpp`, n, ng, nbeta, nnu, beta, nu, pi, A, Y, TCOV, delta, nw)
+}
+
+ftauxZIP_cpp <- function(pi, beta, nu, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, nx, X) {
+    .Call(`_trajeR_ftauxZIP_cpp`, pi, beta, nu, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, nx, X)
+}
+
+fzkSikt_cpp <- function(pi, beta, nu, zk, k, i, t, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum) {
+    .Call(`_trajeR_fzkSikt_cpp`, pi, beta, nu, zk, k, i, t, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum)
+}
+
+fSikt_cpp <- function(pi, beta, nu, k, i, t, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum) {
+    .Call(`_trajeR_fSikt_cpp`, pi, beta, nu, k, i, t, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum)
+}
+
+QbetakZIP_cpp <- function(beta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum) {
+    .Call(`_trajeR_QbetakZIP_cpp`, beta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum)
+}
+
+QnukZIP_cpp <- function(nu, zk, Sikt, k, nbeta, nnu, n, A, Y) {
+    .Call(`_trajeR_QnukZIP_cpp`, nu, zk, Sikt, k, nbeta, nnu, n, A, Y)
+}
+
+QdeltakZIP_cpp <- function(delta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, beta, nw, ndeltacum) {
+    .Call(`_trajeR_QdeltakZIP_cpp`, delta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, beta, nw, ndeltacum)
+}
+
+QbetadeltakZIP_cpp <- function(betadelta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, nw) {
+    .Call(`_trajeR_QbetadeltakZIP_cpp`, betadelta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, nw)
+}
+
+difQbetakZIP_cpp <- function(beta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum) {
+    .Call(`_trajeR_difQbetakZIP_cpp`, beta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum)
+}
+
+difQnukZIP_cpp <- function(nu, zk, Sikt, k, nbeta, nnu, n, A, Y) {
+    .Call(`_trajeR_difQnukZIP_cpp`, nu, zk, Sikt, k, nbeta, nnu, n, A, Y)
+}
+
+difQdeltakZIP_cpp <- function(delta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, beta, nw, ndeltacum) {
+    .Call(`_trajeR_difQdeltakZIP_cpp`, delta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, beta, nw, ndeltacum)
+}
+
+difQbetadeltakZIP_cpp <- function(betadelta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, nw) {
+    .Call(`_trajeR_difQbetadeltakZIP_cpp`, betadelta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, nw)
+}
+
+EMZIP_cpp <- function(param, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr) {
+    .Call(`_trajeR_EMZIP_cpp`, param, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr)
+}
+
+EMZIPIRLS_cpp <- function(param, ng, nx, n, nbeta, nnu, A, Y, X, TCOVinit, nw, itermax, EMIRLS, refgr) {
+    .Call(`_trajeR_EMZIPIRLS_cpp`, param, ng, nx, n, nbeta, nnu, A, Y, X, TCOVinit, nw, itermax, EMIRLS, refgr)
+}
+
+lambdaikt_cpp <- function(k, i, t, nbeta, nbetacum, A, beta, TCOV, period, delta, ndeltacum, nw) {
+    .Call(`_trajeR_lambdaikt_cpp`, k, i, t, nbeta, nbetacum, A, beta, TCOV, period, delta, ndeltacum, nw)
+}
+
+rhoikt_cpp <- function(k, i, t, nnu, nnucum, A, nu) {
+    .Call(`_trajeR_rhoikt_cpp`, k, i, t, nnu, nnucum, A, nu)
+}
+
+IEMZIP_cpp <- function(param, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw, refgr) {
+    .Call(`_trajeR_IEMZIP_cpp`, param, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw, refgr)
 }
 
 # Register entry points for exported C++ functions

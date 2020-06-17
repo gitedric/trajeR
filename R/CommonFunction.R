@@ -56,24 +56,24 @@ Likelihood <- function(param, model, method, ng, nx, n, nbeta, nw, A, Y, X, TCOV
       a = likelihoodCNORM_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
     }else{
       a = likelihoodEM_cpp(n, ng, nbeta, beta=param[(ng+1):(ng+sum(nbeta))],
-                       sigma=param[(ng+sum(nbeta)+1):(ng+sum(nbeta)+ng)],
-                       pi=param[1:(ng)],
-                       A, Y, ymin, ymax, TCOV,
-                       delta=param[-c(1:(ng+sum(nbeta)+ng))], nw)
+                           sigma=param[(ng+sum(nbeta)+1):(ng+sum(nbeta)+ng)],
+                           pi=param[1:(ng)],
+                           A, Y, ymin, ymax, TCOV,
+                           delta=param[-c(1:(ng+sum(nbeta)+ng))], nw)
     }
   } else if (model == "LOGIT"){
     a = LikelihoodLogit(param, ng, nx, n, nbeta, A, Y, X, TCOV, nw)
   } else if (model == "ZIP"){
-    beta = param[1:(ng*nbeta)]
-    nu = param[(ng*nbeta+1):(ng*nbeta+ng*nnu)]
-    pi = param[-c(1:(ng*nbeta+ng*nnu))]
-    a = 0
-    for (i in 1:n){
-      a = a + log(sum(sapply(1:ng, function(s){
-        pi[s]*gkZIP(beta, nu, i, s, nbeta, nnu, A, Y)
-      }))
-      )
-    }
+   if (method == "L"){
+     a = likelihoodZIP_cpp(param, ng,nx, nbeta, nnu, n, A, Y, X, TCOV, nw)
+   }else{
+     a = likelihoodEMZIP_cpp(n, ng, nbeta, nnu, 
+                             beta=param[(ng+1):(ng+sum(nbeta))],
+                             nu=param[(ng+sum(nbeta)+1): (ng+sum(nbeta)+sum(nnu))],
+                             pi=param[1:(ng)],
+                             A, Y, TCOV,
+                             delta=param[-c(1:(ng+sum(nbeta)+sum(nnu)))], nw)
+   }
   }else{
     a = LikelihoodNL(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct)
   }

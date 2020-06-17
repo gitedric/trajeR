@@ -590,7 +590,8 @@ fzkSikt <- function(pi, beta, nu, zk, k, i, t, ng, nbeta, nnu, n, A, Y, TCOV, de
     prob = 0
   }else{
     nuikt = sum(nu[(nnucum[k]+1):(nnucum[k+1])]*A[i,t]**(0:(nnu[k]-1)))
-    lambdaikt = exp(sum(beta[(nbetacum[k]+1):(nbetacum[k+1])]*A[i,t]**(0:(nbeta[k]-1)))) + WitEM(TCOV, period, delta, nw, i, t, k, ndeltacum)
+    lambdaikt = exp(
+      sum(beta[(nbetacum[k]+1):(nbetacum[k+1])]*A[i,t]**(0:(nbeta[k]-1)))) + WitEM(TCOV, period, delta, nw, i, t, k, ndeltacum)
     prob = zk[i,k]/(1+exp(-nuikt-lambdaikt))
   }
   return(prob)
@@ -600,7 +601,7 @@ fSikt <- function(pi, beta, nu, k, i, t, ng, nbeta, nnu, n, A, Y, TCOV, delta, n
     prob = 0
   }else{
     nuikt = sum(nu[(nnucum[k]+1):(nnucum[k+1])]*A[i,t]**(0:(nnu[k]-1)))
-    lambdaikt = exp(sum(beta[(nbetacum[k]+1):(nbetacum[k+1])]*A[i,t]**(0:(nbeta[k]-1)))) + WitEM(TCOV, period, delta, nw, i, t, k, ndeltacum)
+    lambdaikt = exp(sum(beta[(nbetacum[k]+1):(nbetacum[k+1])]*A[i,t]**(0:(nbeta[k]-1))) + WitEM(TCOV, period, delta, nw, i, t, k, ndeltacum))
     prob = 1/(1+exp(-nuikt-lambdaikt))
   }
   return(prob)
@@ -1434,11 +1435,13 @@ IEMZIP <- function(paramEM, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, delta, nw, ref
   B = matrix(rep(0, (sum(nbeta))**2), ncol =  sum(nbeta)) # we take off the dimension of mPi
   tmp1 = matrix(rep(0, (sum(nw*ng))**2), ncol =  sum(nw*ng)) # we take off the dimension of mPi
   tmp2 = matrix(rep(0, (sum(nnu))**2), ncol =  sum(nnu)) # we take off the dimension of mPi
+  tmp3 = matrix(rep(0, sum(nbeta)*nw*ng), ncol =  nw*ng) # we take off the dimension of mPi
   for (i in 1:n){
     for (t in (1:period)){
       B = B + mbetaZIP(i,t, ng, nbeta, nbetacum, A, Y, taux, beta, TCOV, period, delta, ndeltacum, nw, nnucum, nnu, nu)
       tmp1 = tmp1 + mdeltaZIP(i,t, ng, nbeta, nbetacum, A, Y, taux, beta, TCOV, period, delta, ndeltacum, nw, nnucum, nnu, nu)
       tmp2 = tmp2 + mnuZIP(i, t, ng, nnu, nnucum, A, taux, nu)
+      tmp3 = tmp3 +mbetadeltaZIP(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, nnucum, nnu, nu)
     }
   }
   B = cbind(matrix(rep(0, (ng-1)*nx*(sum(nbeta))), ncol = (ng-1)*nx),
@@ -1463,7 +1466,7 @@ IEMZIP <- function(paramEM, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, delta, nw, ref
         tmp = 0
         if (k==l){
           for (i in 1:n){
-            tmp = tmp + taux[i,k]*(1-taux[i,k])/pi[k]**2+taux[i,ng]*(1-taux[i,ng])/pi[ng]**2+2*taux[i,k]*taux[i,ng]/(pi[k]*pi[ng])
+            tmp = tmp + taux[i,k]*(1-taux[i,k])/pi[k]**2+taux[i,ng]*(1-taux[i,ng])/pi[ng]**2-2*taux[i,k]*taux[i,ng]/(pi[k]*pi[ng])
           }
         }else{
           for (i in 1:n){
@@ -1511,10 +1514,11 @@ IEMZIP <- function(paramEM, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, delta, nw, ref
       for (l in 1:nbeta[ng]){
         tmp = 0
         for (i in 1:n){
-          tmp = tmp + BPiiklZIP(pi, beta, nu, k, l, i, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum)*taux[i,ng]*((1-taux[i,ng])/pi[ng]+taux[i,kp]/pi[kp])
+          tmp = tmp + BPiiklZIP(pi, beta, nu, ng, l, i, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum)*taux[i,ng]*((1-taux[i,ng])/pi[ng]+taux[i,kp]/pi[kp])
         }
+        rcovPiBetakL[kp,l] =  tmp
       }
-      rcovPiBetakL[kp,l] =  tmp
+     
     }
     covPiBetaL = cbind(covPiBetaL, rcovPiBetakL)
   }else{
@@ -1564,10 +1568,11 @@ IEMZIP <- function(paramEM, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, delta, nw, ref
       for (l in 1:nnu[ng]){
         tmp = 0
         for (i in 1:n){
-          tmp = tmp - NiklZIP(pi, beta, nu, k, i, l, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum)*taux[i,ng]*((1-taux[i,ng])/pi[ng]+taux[i,kp]/pi[kp])
+          tmp = tmp - NiklZIP(pi, beta, nu, ng, i, l, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum)*taux[i,ng]*((1-taux[i,ng])/pi[ng]+taux[i,kp]/pi[kp])
         }
+        rcovPiNukL[kp,l] =  tmp
       }
-      rcovPiNukL[kp,l] =  tmp
+
     }
     covPiNuL = cbind(covPiNuL, rcovPiNukL)
   }else{
@@ -1580,14 +1585,17 @@ IEMZIP <- function(paramEM, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, delta, nw, ref
             tmp = 0
             if (k==l){
               for (i in 1:n){
+                for (t in 1:period){
                 sikt = fSikt(pi, beta, nu, k, i, t, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum)
                 tmp = tmp + X[i,p]*A[i,t]**(q-1)*taux[i,k]*(1-taux[i,k])*(sikt-rhoikt(k, i, t, nnu, nnucum, A, nu))
+                }
               }
             }else{
               for (i in 1:n){
+                for (t in 1:period){
                 silt = fSikt(pi, beta, nu, l, i, t, ng, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum)
                 tmp = tmp + X[i,p]*A[i,t]**(q-1)*taux[i,k]*taux[i,l]*(rhoikt(l, i, t, nnu, nnucum, A, nu)-silt)
-              }
+              }}
             }
             covPiNutmp[p, q] = tmp
           }
