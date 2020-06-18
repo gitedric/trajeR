@@ -4,7 +4,7 @@
   <img src="logo/logotrajeR.png" height="120" />
 </p>
 
-A R package that fit **regression mixture model - group-based trajectory modeling (GBTM)**.
+ A R package that fit **regression mixture model - group-based trajectory modeling (GBTM)**. 
 
 Longitudinal studies are often employed on several disciplines like finance, econometrics, psychology, sociology, biology,  ...
 
