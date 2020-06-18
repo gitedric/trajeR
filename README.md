@@ -1,6 +1,6 @@
-<img align="center" src="logo/logotrajeR.png" height="120">
-
 # trajeR
+
+<img align="center" src="logo/logotrajeR.png" height="120">
 
 A R package that fit **regression mixture model - group-based trajectory modeling (GBTM)**.
 
