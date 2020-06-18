@@ -112,13 +112,12 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, ng, degre = NULL, degre.nu = 
       c(suppressWarnings(log(qnorm((2*(s-1)+1)/(2*ng),mean(Y),sd(Y))/(1-qnorm((2*(s-1)+1)/(2*ng),mean(Y),sd(Y))))), rep(0, degre[s]-1))
     })
     beta[is.na(beta)]=-5
-  }else if (Model =="ZIP") {
+  }else if (Model =="ZIP"){
     nu = lapply(1:(ng), function(s){
       c(-3, rep(0, degre.nu[s]))
     })
-    ytmp = sort(Y)
     beta= lapply(1:(ng), function(s){
-      c(qpois((2*(s-1)+1)/(2*ng),mean(ytmp)), rep(0, degre[s]-1))
+      c(log(qgamma((2*(s-1)+1)/(2*ng), mean(Y), mean(Y)**2/(sd(Y)**2-mean(Y)))), rep(0, degre[s]-1))
     })
   }else{
     beta = lapply(1:(ng), function(s){
@@ -131,7 +130,11 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, ng, degre = NULL, degre.nu = 
   pi = sapply(1:ng, function(s){piik(theta = theta, i = 1, k = s, ng = ng, X = X)})
   if (is.null(paraminit)){
     cat("Starting Values\n ")
-    cat(c(pi, unlist(beta), unlist(nu), rep(sd(Y), ng), unlist(delta)))
+    if (nw == 0){
+      cat(c(pi, unlist(beta), unlist(nu), rep(sd(Y), ng)))  
+    }else{
+      cat(c(pi, unlist(beta), unlist(nu), rep(sd(Y), ng), unlist(delta)))
+    }
     cat('\n\n')
     cat('Likelihood \n')
   }else{
