@@ -1,0 +1,1063 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage[bottom]{footmisc}
+\usepackage{Rd}
+\newenvironment{Arg}{%
+\begin{Rdsection}{}}{\end{Rdsection}}
+
+\title{trajeR package\\
+\medskip
+\includegraphics[scale=0.4]{/mnt/Travail/These/logo/logo5.png}}
+\author{Cédric NOEL - Jang SHILTZ\\
+cedric.noel@univ-lorraine.fr}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+Longitudinal studies are often employed on several disciplines like finance, econometrics, psychology, sociology, biology,  ...\\
+
+The aims of this package is to give tools to work with this situation.\\
+
+More precisely, we consider a variable $Y$  that evolves over time.
+
+\section{Getting started}
+
+First, we need to install \verb|trajeR| package.
+<<>>=
+library(trajeR)
+@
+
+The main function is named \verb|trajeR|. It fit the model and find parameters to a given degre of polynomial shape. It syntax is
+
+<<eval=FALSE>>=
+trajeR(Y, A, X = NULL, TCOV = NULL, ng, degre, degre.nu = 0,
+       Model, Method = "L",
+       ssigma = FALSE, ymax = max(Y) + 1, ymin = min(Y) - 1,
+       hessian = TRUE, itermax = 100, paraminit = NULL,
+       EMIRLS = TRUE, refgr = 1,
+       fct = NULL, diffct = NULL, nbvar = NULL, nls.lmiter)
+@
+
+\begin{Arguments}
+	\begin{ldescription}
+		\item[\code{Y}] a matrix containing the variables in the model.
+
+		\item[\code{A}] a matrix containing the time variable data.
+
+		\item[\code{TCOV}] an optionnal matrix containing the time covariate that influence the trajectory themselve.
+		By default its value is NULL.
+
+		\item[\code{ng}] integer. The number of group.
+
+		\item[\code{degre}] vector of integer. The degre of every ploynomial function.
+
+		\item[\code{degre.nu}] vecor of integer. The degre of all Poisson part for a ZIP model.
+
+		\item[\code{Model}] the model used. The value are LOGIT for a Logit Mixture model,
+		CNORM for a Censored Normal Mixture Model or ZIP for Zero Inflated Poisson Mixture model.
+
+		\item[\code{Method}] determine the method used for find the paramters of the model.
+		The value are L for the Maximum Likelihiood Estimation, EM for Expectation Maximization method
+		with quasi newton method inside, EMIWRLS for Expectation Maximization method with Iterative
+		Weighted ??
+
+		\item[\code{ssigma}] logical. By default its value is FALSE. For the CNORM model,
+		indicate if we want the same sigma for all nomrmal density function.
+
+		\item[\code{ymax}] real. For the CNORM model, indicate the maximum value of the data. It oncerne only the model
+		with censored data. By default its value is the maximum value of the data plus 1.
+
+		\item[\code{ymin}] real. For the CNORM model, indicate the minimum value of the data. It oncerne only the model
+		with censored data. By default its value is the maximum value of the data minus 1.
+
+		\item[\code{hessian}] logical. Indicate if we want calculate the hessian matrix. Default is FALSE.
+		If the method use is Likelihood, the hessian is calculated by inversing the Information's Fisher Matrix.
+		To avoid numerically singular matrix we find the pseudo inverse matrix by using the ginv function int he package MASS.
+		If the method is EM or EMIWRLS, the hessian is calculted by using Louis method.
+
+		\item[\code{itermax}] integer. Indicate the maximal number of iteration for optim function or for the EM algorithm.
+
+		\item[\code{paraminit}] vector. The vector of initial parameters. By default trajeR calculate the initial value
+		based of the range or the standrad deviation.
+
+		\item[\code{fct}] a function. The definition of the function  f in the definition in nonlinear model.
+
+    \item[\code{diffct}] a function. The differential of the function f in the nonlinear model.
+
+    \item[\code{nbvar}] integer. The number of variable in the nonlinear model.
+
+		\item[\code{X}] an optionnal matrix that modifie the probabilty of belong to group. By default its value is a mtrix
+		with one column  with value 1.
+	\end{ldescription}
+\end{Arguments}
+
+\begin{Details}\relax
+	Models for trajeR is, by default, a polynomial regression of the time value parameters for each groups. The number fo group is controlled by the integer \code{ng}.
+	We can spcecify the degre of the polynomial shape for each groups by the vector \code{degre}.
+\end{Details}
+%
+\begin{Value}
+	return an object of class "\code{Trajectory.LOGIT}".
+	The generic accessor functions \code{beta}, \code{delta}, \code{theta}, \code{sd}, \code{tab}, \code{Likelihood},
+	\code{ng}, \code{model} and \code{method} extract various useful features of the value returned by \code{trajeR}.
+
+	An object of class "\code{Trajectory.LOGIT}" is a list containing at least the following components:
+\end{Value}
+	\begin{Arg}
+	\begin{ldescription}
+
+		\item[\code{beta}] a vector of the parameters beta.
+		\item[\code{delta}] a vector of the parameter delta. Only if we use time covariate.
+		\item[\code{theta}] a vector with the paramter theta if there exist a coavriate X that modifie
+		the probability or the probability of group membership.
+		\item[\code{sd}] a vector of the standrad deviation of the parameters.
+		\item[\code{tab}] a matrix with all the parameters and standard deviation.
+		\item[\code{Likelihood}] a real with the Likelihhod obtnaied by the parameters.
+		\item[\code{ng}] a integer with the number of group.
+		\item[\code{model}] a string with the model used.
+		\item[\code{method}] a string with the method used.
+
+	\end{ldescription}
+\end{Arg}
+
+\section{LOGIT model}
+In this section we consider a latent variable $y^*_{it}$ such that
+\begin{equation}
+y^*_{it} = f(a_{it}; \beta_k, \delta_k)+\epsilon_{it} =\beta_k A_{it}+\delta_k W_t+\epsilon_{it}
+\end{equation}
+where $\epsilon_{it}\sim \mathcal{N}\left(0;\ \sigma_k\right)$,  $A_{it}=(1,a_{it},a_{it}^2,\cdots,a_{it}^{n_\beta-1})^t $, $W_t=(w_{i1},\cdots,w_{in_\delta})^t $, $\beta_k =(\beta_{k1},\cdots, \beta_{kn_\beta})$ and $\delta_k=(\delta_{k1},\cdots,\delta_{kn_\delta}) $.\\
+Under this affirmation, classically, it is assumed that the binary variable $y_{it}=1$ if $y^*_{it}>0$ and $y_{it}=0$ if $y^*_{it}\leq 0$.\\
+
+If $\epsilon_{it}$ is assumed to be normally distributed , described the probit function.
+Let $\rho_{ikt}=P(Y_{it}=1|W_i=w_i,C_i=k)$ the probability of $y_{it}=1$ given membership in group $k$.
+\begin{equation}
+\rho_{ikt}=\dfrac{e^{\beta_k A_{it}+\delta_k W_{it}}}{1+e^{\beta_k A_{it}+\delta_k W_{it}}}
+\end{equation}
+
+\subsection{Parameters}
+
+\textbf{Example}\\
+We use artificial data contained in the library. This are 500 longitudinal data of 0 and 1 values generate by the parameters above :
+\begin{itemize}
+	\item 3 groups ;
+	\item probability is $\pi_1=0.22$, $\pi_2=0.44$ and $\pi_3=0.34$ ;
+	\item period is 10 ;
+	\item we use 3 polynomial shape
+	\begin{enumerate}
+		\item degre 3 and $\beta_1=(-2.266,-0.109,0.14,-0.011)$ ;
+		\item degre 4 and $\beta_2=(1.291,0.811,-0.554,0.077,-0.003)$ ;
+		\item degre 0 and $\beta_{3}=(-1.99243)$.
+	\end{enumerate}
+\end{itemize}
+
+The data contained the time variable dependent $Y_i$ in \verb|data[,2:11]|, the time variable in \verb|data[,12:21]|, the time covariate in \verb|data[,24:33]| and a covariate that influence the belonging probabilty in \verb|data[,48:49]|.
+\begin{itemize}
+	\item \verb|data[,2:11]| is a matrix with 0 and 1 values.
+	\item \verb|data[,12:21]| is a matrix with time 1 to 10.
+	\item \verb|data[,24:33]| is a time covriate that influence the shape fo trajectory. It is a matrix with 0 and 1 value, like the presence or not of a characteristic on the individual.
+	\item \verb|data[,48:49]| is a matrix with 0 and 1 value.
+\end{itemize}
+
+<<echo=FALSE>>=
+load(file = "/mnt/Travail/These/R/Package/trajeR/data/LOGIT_data01")
+data=as.matrix(data)
+load(file = "/mnt/Travail/These/R/Package/trajeR/tests/LOGIT_data01_sol")
+@
+<<echo=FALSE>>=
+matplot(t(data[, 12:21]),t(data[, 2:11]), pch = 1, type='b', col="black", lty=1, xlab = "Times", ylab = "Values", main = "Plot of the individual's trajectories")
+@
+We use the each method to fit the model. For all method, we specifies the number of group of our model, ng=3, the degree of the polynomial of the shape of the trajectory. Here we choice a line parallel to abscissa axis, a cubic polynomial and a quadric polynomial. So degree is a vector $(0,3,4)$.\\
+We sepcifie \verb|hessian=TRUE| to ask the calculus of the hessian matrix.\\
+\verb|Itermax | is set to 300 to assure a good approximation of the parameters.\\
+
+For the Likelihood method we call trajeR with option Method ="L".
+
+<<eval=FALSE>>=
+# Likelihood
+solL = trajeR(Y = data[,2:11], A = data[,12:21],
+              ng = 3, degre = c(0,3,4),
+              Model = "LOGIT", Method = "L", hessian = TRUE,
+              itermax = 300, paraminit = paraminit)
+@
+<<size="normalsize">>=
+solL
+@
+
+For the EM method
+<<eval=FALSE>>=
+#EM
+solEM = trajeR(Y = data[,2:11], A = data[,12:21],
+               ng = 3, degre = c(0,3,4),
+               Model = "LOGIT", Method = "EM", hessian = TRUE,
+               itermax = 300, paraminit = paraminit)
+#EMIWRLS
+solEMIWRLS = trajeR(Y = data[,2:11], A = data[,12:21],
+                    ng = 3, degre=c(0,3,4),
+                    Model = "LOGIT", Method = "EMIWRLS", hessian = TRUE,
+                    itermax = 300, paraminit = paraminit)
+@
+
+
+<<>>=
+solEM
+solEMIWRLS
+@
+
+We can add risk covariate that influence the belonging probability. The effect of risk variable are compared to the first group that is reference group.
+<<eval=FALSE>>=
+solLRisk = trajeR(Y = d[,2:24], A = d[,25:47], Risk = d[,48:49],
+                  ng = 3, degre = c(0,3,4),
+                  Model = "LOGIT", Method = "L", hessian = TRUE,
+                  itermax = 300, paraminit = paraminit)
+@
+<<>>=
+solLRisk
+@
+
+\subsection{Plot}
+We plot only the trajectory on a graph. We have just to use the native plot function. It use the class of the object to draw the polynomial shape. The values in abscissa are the first row of the time variable.
+<<>>=
+plot(solLRisk)
+@
+We can add longitudinal data to this graph.
+If we want this on the plot we have to specify Y and A in the function \verb|plot()|.\\
+For more visibility, we have enlarge the 0 and 1 value on the graph and plot the data with a little and random shift, control by the index \verb|dec| in the function plot.\\
+
+By default colors are gray scale, but we can specify colors we want.
+
+<<>>=
+# colour's defintion
+trans = "70"
+col1 = "#034569"
+col1.1 = paste0("#64AAD0", trans)
+col2 = "#750062"
+col2.1 = paste0("#D962C7", trans)
+col3 = "#A68900"
+col3.1 = paste0("#FFE773", trans)
+cols1 = c(col1.1, col2.1, col3.1)
+cols2 = c(col1, col2, col3)
+vcol = c(cols1, cols2)
+
+plot(solLRisk, Y = data[,2:11], A = data[,12:21], dec = 5, col = vcol)
+@
+We can add the average of the data points on the plot for each time values. For each group and each time the mean of the data are calculated and add to the plot.\\
+
+We use option mean =TRUE.
+<<>>=
+# colour's defintion
+trans = "70"
+col1 = "#034569"
+col1.1 = paste0("#64AAD0", trans)
+col2 = "#750062"
+col2.1 = paste0("#D962C7", trans)
+col3 = "#A68900"
+col3.1 = paste0("#FFE773", trans)
+cols1 = c(col1.1, col2.1, col3.1)
+cols2 = c(col1, col2, col3)
+vcol = c(cols1, cols2)
+
+plot(solLRisk, Y = data[,2:11], A = data[,12:21], dec = 5,
+     col = vcol, mean = TRUE, alpha = 0.3)
+@
+
+Time covariate can influenced directly the shape trajectory. In the data, we have time covariate that is composed by 0 or 1 value. We consider their effects by use the option \verb|TCOV| in the command trajeR. We can use any of three method above.
+
+<<eval=FALSE>>=
+solLTCOV = trajeR(Y = data[,2:11], A =data[,12:21], TCOV = data[,24:33],
+                  ng = 3, degre = c(0,3,4),
+                  Model = "LOGIT", Method = "L", hessian = TRUE,
+                  itermax = 300, paraminit = paraminit)
+solEMTCOV = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,24:33],
+                   ng = 3, degre = c(0,3,4),
+                   Model = "LOGIT", Method = "EM", hessian = FALSE,
+                   itermax = 300, paraminit = paraminit)
+solEMIWRLSTCOV = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,24:33],
+                        ng = 3, degre = c(0,3,4),
+                        Model = "LOGIT", Method = "EMIWRLS", hessian = FALSE,
+                        itermax = 300, paraminit = paraminit)
+@
+<<>>=
+solLTCOV
+solEMTCOV
+solEMIWRLSTCOV
+@
+<<>>=
+plot(solLTCOV, col = vcol)
+@
+
+If we want show the impact of a particular value of the time covariate in the trajectory, we can add this to the plot by \verb|plotcov| option.\\
+The fill line is the trajectory with the time covariate matrix and th dashed one show the impact on this trajectory of a particular value.
+<<>>=
+plot(solLTCOV, col = vcol, plotcov = c(0,0,0,0,0,1,1,1,1,1))
+@
+
+
+\section{Censored Normal distribution}
+
+To illustrate this party we use aritifial data contained in this package \verb|CNORM_data01|.
+
+\section{Censored Normal model}
+We suppose that the variable $Y_{it}$ is a censored variable, i.e. its values are between two numbers $y_{min}$ and $y_{max}$.\\
+We consider a variable $Y^*_{it}$ that is normally distributed and such
+\begin{equation}
+y^*_{it} = f(a_{it}; \beta_k, \delta_k)+\epsilon_{it} =\beta_k A_{it}+\delta_k W_t+\epsilon_{it}
+\end{equation}
+where $\epsilon_{it}\sim \mathcal{N}\left(0;\ \sigma\right)$,  $A_{it}=(1,a_{it},a_{it}^2,\cdots,a_{it}^{n_\beta-1})^t $, $W_t=(w_{i1},\cdots,w_{in_\delta})^t $, $\beta_k =(\beta_{k1},\cdots, \beta_{kn_\beta})$ and $\delta_k=(\delta_{k1},\cdots,\delta_{kn_\delta}) $\\
+Furthermore, we can link $y^*_{it}$ to the observed and censored data $y_{it}$.
+\begin{align}
+& y_{it}= y_{min} \text{ if } y^*_{it}< y_{min}\\
+& y_{it}= y^*_{it} \text{ if } y_{min}\leq y^*_{it}\leq y_{max}\\
+&y_{it}= y_{max} \text{ if } y^*_{it}> y_{max}\\
+\end{align}
+
+By asking $\mu_{ikt}=\beta_k A_{it}+\delta_k W_t$,  we can write
+\begin{align}
+P(Y_{it}=y_{it}|W_i=w_i,C_i=k)=\left\lbrace
+\begin{array}{l}
+\Phi\left(\dfrac{y_{min}-\mu_{ikt}}{\sigma_k}\right) \text{ if } y^*_{it}< y_{min}\\
+\dfrac{1}{\sigma_k}\phi\left(\dfrac{y_{it}-\mu_{ikt}}{\sigma_k}\right)\text{ if } y_{min}\leq y^*_{it}\leq y_{max}\\
+1-\Phi\left(\dfrac{y_{max}-\mu_{ikt}}{\sigma_k}\right) \text{ if } y^*_{it}> y_{max}
+\end{array}\right.
+\end{align}
+
+\subsection{Parameters}
+
+\textbf{Example}\\
+We use artificial data contained in the library. This are 500 longitudinal data generate by the parameters above :
+\begin{itemize}
+	\item 3 groups ;
+	\item probability is $\pi_1=0.32$, $\pi_2=0.54$ and $\pi_3=0.14$ ;
+	\item period is 10 ;
+	\item we use 3 polynomial shape
+	\begin{enumerate}
+		\item degre 3 and $\beta_1=(2.797,8.809,-3.201,0.463,-0.021)$ ;
+		\item degre 4 and $\beta_2=7$ ;
+		\item degre 0 and $\beta_{3}=(19.545,-0.297,-0.407,0.026)$.
+	\end{enumerate}
+	\item $\sigma$ is the same for the 3 groups, $\sigma= 4$.
+\end{itemize}
+
+The data contained the time variable dependent $Y_i$ in \verb|data[,2:11]|, the time variable in \verb|data[,12:21]|, the time covariate in \verb|data[,22:41]| and a covariate that influence the belonging probabilty in \verb|data[,42:43]|.
+\begin{itemize}
+	\item \verb|data[,2:11]| is a matrix withe real.
+	\item \verb|data[,12:21]| is a matrix with time 1 to 10.
+	\item \verb|data[,22:31]| is a time covriate that influence the shape fo trajectory. It is a matrix with 0 and 1 value, like the presence or not of a characteristic on the individual.
+	\item \verb|data[,32:41]| is a time covriate that influence the shape fo trajectory. It is a matrix with real.
+	\item \verb|data[,42:43]| is a matrix with real.
+\end{itemize}
+
+<<echo=FALSE>>=
+options(kableExtra.latex.load_packages = FALSE)
+library(kableExtra)
+load("/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07")
+load("/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07Censored")
+data = as.matrix(data)
+dataC = as.matrix(dataC)
+load(file = "/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07_sol")
+load(file = "/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07Censored_sol")
+@
+
+<<echo=FALSE>>=
+matplot(t(data[, 12:21]),t(data[, 2:11]), pch = 1, type='b', col="black", lty=1,xlab = "Times", ylab = "Values", main = "Plot of the individual's trajectories")
+# matlines(t(data[, 12:21]),t(data[, 2:11]), col="gray", lty=1)
+# matplot(t(data[, 12:21]),t(data[, 2:11]), pch=1, type='p', col="black", lty=1, add = TRUE)
+@
+We use the each method to fit the model. For all method, we specifies the number of group of our model, ng=3, the degree of the polynomial of the shape of the trajectory. Here we choice a line parallel to abscissa axis, a cubic polynomial and a quadric polynomial. So degree is a vector $(0,3,4)$.\\
+We sepcifie \verb|hessian=TRUE| to ask the calculus of the hessian matrix.\\
+\verb|Itermax | is set to 300 to assure a good approximation of the parameters.\\
+
+For the Likelihood method we call trajeR with option Method ="L". We speicfy if we want the same sigma in each group with the parameters \verb|\ssigma|. If it is \verb|TRUE| the the algorithm surch the same sigma in all group.
+
+<<eval=FALSE>>=
+# Likelihood different sigma
+solL = trajeR(Y = data[,2:11], A = data[,12:21],
+              ng = 3, degre = c(0,3,4),
+              Model = "CNORM", Method = "EM",  hessian = FALSE, ssigma = FALSE)
+@
+<<size="normalsize">>=
+solL
+@
+If we want force use unique sigma for each groups we write \verb|ssigma = TRUE|.
+<<eval=FALSE>>=
+# Likelihood same sigma
+solLs = trajeR(Y = data[,2:11], A = data[,12:21],
+               ng = 3, degre = c(0,3,4),
+               Model = "CNORM", Method = "L", ssigma = TRUE, hessian = FALSE)
+@
+<<size="normalsize">>=
+solLs
+@
+For use EM method we write the same syntax but change the variable \verb|Method| to \verb|EM|.
+<<eval=FALSE>>=
+# EM
+solEM = trajeR(Y = data[,2:11], A = data[,12:21],
+               ng = 3, degre = c(0,3,4),
+               Model = "CNORM", Method = "EM", ssigma = FALSE, hessian = FALSE)
+solEMs = trajeR(Y = data[,2:11], A = data[,12:21],
+                ng = 3, degre = c(0,3,4),
+                Model = "CNORM", Method = "EM", ssigma = TRUE, hessian = FALSE)
+@
+<<echo=FALSE>>=
+t1 = solL$tab[,1]
+t1[14:16] = exp(t1[14:16])/sum(exp(t1[14:16]))
+t2 = solLs$tab[,1]
+t2[14:16] = exp(t2[14:16])/sum(exp(t2[14:16]))
+tab=round(cbind(t1, solEM$tab[,1], t2, solEMs$tab[,1]),5)
+colnames(tab) = c("SolL", "SolEM", "SolLs", "SolEMs")
+@
+
+<<echo=FALSE,results='asis'>>=
+kable(tab, "latex", booktabs = T, escape = FALSE, align="r") %>%
+  kable_styling() %>%
+  add_header_above(c( "Different sigma" = 2, "Same sigma" = 2)) %>%
+  pack_rows("Beta 1" , 1, 1) %>%
+  pack_rows("Beta 2" , 2, 5) %>%
+  pack_rows("Beta 3" , 6, 10) %>%
+  pack_rows("Sigma" , 11, 13) %>%
+  pack_rows("Pi" , 14, 16)
+@
+\label{probCens}
+\subsection{Plot}
+We plot only the trajectory on a graph. We have just to use the native plot function. It use the class of the object to draw the polynomial shape. The values in abscissa are the first row of the time variable.
+
+<<>>=
+plot(solL)
+@
+We can add longitudinal data to this graph. If we want this on the plot we have to specify \verb|Y| and \verb|A| in the function \verb|plot()|. For more visibility, we have enlarge the 0 and 1 value on the graph and plot the data with a little and random shift, control by the index dec in the function plot.\\
+By default colors are gray scale, but we can specify colors we want.
+
+<<>>=
+# colour's defintion
+trans = "70"
+col1 = "#034569"
+col1.1 = paste0("#64AAD0", trans)
+col2 = "#750062"
+col2.1 = paste0("#D962C7", trans)
+col3 = "#A68900"
+col3.1 = paste0("#FFE773", trans)
+cols1 = c(col1.1, col2.1, col3.1)
+cols2 = c(col1, col2, col3)
+vcol = c(cols1, cols2)
+
+plot(solEM, Y = data[,2:11], A = data[,12:21], dec = 5, col = vcol)
+@
+
+\subsection{Adding covariate}
+In the same way that in the section below we can add covariate in the calculus of the parameters with or without option same sigma. \\
+
+If we add risk variable we use option \verb|Risk =|.
+<<eval=FALSE>>=
+solLRisks = trajeR(Y = data[,2:11], A = data[,12:21], Risk = data[,42:43],
+                   ng = 3, degre = c(0,3,4),
+                   Model = "CNORM", Method = "L", ssigma = TRUE, hessian = FALSE)
+@
+<<>>=
+solLRisks
+@
+
+<<echo=FALSE>>=
+tab=cbind(solLRisk$tab[,1], solEMRisk$tab[,1], solLRisks$tab[,1], solEMRisks$tab[,1])
+for (i in 1:4){
+tab[14:22,i] = tab[14:22,i]-tab[14:16,i]
+}
+tab = tab[-c(14:16),]
+tab = round(tab, 5)
+colnames(tab) = c("SolLRisk", "SolEMRisk", "SolLRisks", "SolEMRisks")
+@
+<<echo=FALSE,results='asis'>>=
+kable(tab, "latex", booktabs = T, escape = FALSE, align="r") %>%
+  kable_styling() %>%
+  add_header_above(c( "Different sigma" = 2, "Same sigma" = 2)) %>%
+  pack_rows("Beta 1" , 1, 1) %>%
+  pack_rows("Beta 2" , 2, 5) %>%
+  pack_rows("Beta 3" , 6, 10) %>%
+  pack_rows("Sigma" , 11, 13) %>%
+  pack_rows("Theta - First group 0" , 14, 19)
+@
+
+If we add time dependent covariate we use option \verb|TCOV|.
+<<eval=FALSE>>=
+solLTCOV2 = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:41],
+                   ng = 3, degre = c(0,3,4),
+                   Model = "CNORM", Method = "L", ssigma = FALSE, hessian = FALSE)
+@
+<<>>=
+solLTCOV2
+@
+Here we can use all method and with or without same sigma.
+<<eval=FALSE>>=
+solLTCOV2s = trajeR(data[,2:11], data[,12:21], TCOV = data[,22:41], ng = 3, degre=c(0,3,4),
+                   Model="CNORM", Method = "L", ssigma = TRUE, hessian = FALSE)
+solEMTCOV2 = trajeR(data[,2:11], data[,12:21], TCOV = data[,22:41], ng = 3, degre=c(0,3,4),
+                  Model="CNORM", Method = "EM", ssigma = FALSE, hessian = FALSE)
+solEMTCOV2s = trajeR(data[,2:11], data[,12:21], TCOV = data[,22:41], ng = 3, degre=c(0,3,4),
+                  Model="CNORM", Method = "EM", ssigma = TRUE, hessian = FALSE)
+@
+We have
+<<echo=FALSE>>=
+t1 = solLTCOV2$tab[,1]
+t1[20:22] = exp(t1[20:22])/sum(exp(t1[20:22]))
+t2 = solLTCOV2s$tab[,1]
+t2[20:22] = exp(t2[20:22])/sum(exp(t2[20:22]))
+tab=round(cbind(t1, solEMTCOV2$tab[,1], t2, solEMTCOV2s$tab[,1]),5)
+colnames(tab) = c("SolLTCOV2", "SolEMCOV2", "SolLTCOV2s", "SolEMCOV2s")
+@
+<<echo=FALSE,results='asis'>>=
+kable(tab, "latex", booktabs = T, escape = FALSE, align="r") %>%
+  kable_styling() %>%
+  add_header_above(c( "Different sigma" = 2, "Same sigma" = 2)) %>%
+  pack_rows("Beta 1" , 1, 1) %>%
+  pack_rows("Beta 2" , 2, 5) %>%
+  pack_rows("Beta 3" , 6, 10) %>%
+  pack_rows("Sigma" , 11, 13) %>%
+  pack_rows("Delta 1" , 14, 15) %>%
+  pack_rows("Delta 2" , 16, 17) %>%
+  pack_rows("Delta 3" , 18, 19) %>%
+  pack_rows("Pi" , 20, 22)
+@
+
+\section{Censored Data}
+
+We have modified the previous data are such way that they become censored data. All values upper to 23 become 233 and  those smaller to 2 become 2.\\
+So we obtained data that follow a censored normal distribution. If we don't take into consideration this fact,
+<<eval=FALSE>>=
+solLC = trajeR(Y = dataC[,2:11], A = dataC[,12:21],
+               ng = 3, degre = c(0,3,4),
+               Model="CNORM", Method = "L", ssigma = FALSE, hessian = FALSE,
+               ymin=2, ymax=23)
+
+@
+<<>>=
+solLC
+plot(solLC, Y = dataC[,2:11], A = dataC[,12:21], col = vcol)
+@
+If we surch the solution without consider the fact that the data are not censored, we find parameters that are wrong. They considere that the max and min are really max and min while the real values are omitted. To illustrate this fact we compute the paramters without censored.
+<<echo=FALSE>>=
+tab=round(cbind(solLC$tab[,1], solLnC$tab[,1]), 5)
+tab[14:16,1] = exp(tab[14:16,1])/sum(exp(tab[14:16,1]))
+tab[14:16,2] = exp(tab[14:16,2])/sum(exp(tab[14:16,2]))
+colnames(tab) = c("Censored", "Not Censored")
+@
+<<echo=FALSE,results='asis'>>=
+kable(tab, "latex", booktabs = T, escape = FALSE, align="r") %>%
+  kable_styling() %>%
+  pack_rows("Beta 1" , 1, 1) %>%
+  pack_rows("Beta 2" , 2, 5) %>%
+  pack_rows("Beta 3" , 6, 10) %>%
+  pack_rows("Sigma" , 11, 13) %>%
+  pack_rows("Pi" , 14, 16)
+@
+We cans ee the difference between the two situation in the graphics above. The right one is calculted by considering censored data and it is close to the right solution and the trajectory consider the missing values by continuing up while the second considere the max and min like real value and the trajectory is smaller.
+<<generate_figures, fig.show = "hide", fig.width = 10, fig.height= 5>>=
+par(mfrow=c(1,2))
+plot(solLC, Y = dataC[,2:11], A = dataC[,12:21], col = vcol, main="Censored")
+plot(solLnC, Y = dataC[,2:11], A = dataC[,12:21], col = vcol, main="Not Censored" )
+@
+\hspace*{-3.5cm}\includegraphics[scale=0.8]{figure/generate_figures-1}
+For all the method we have
+<<eval=FALSE>>=
+solLCs = trajeR(Y = data[,2:11], A = data[,12:21],
+                ng = 3, degre = c(0,3,4),
+                Model="CNORM", Method = "L", ssigma = TRUE, hessian = FALSE,
+                ymin = 2,  ymax = 23)
+solEMC = trajeR(Y = data[,2:11], A = data[,12:21],
+                ng = 3, degre = c(0,3,4),
+                Model="CNORM", Method = "EM", ssigma = FALSE, hessian = FALSE,
+                ymin = 2,  ymax = 23)
+solEMnC = trajeR(Y = data[,2:11], A = data[,12:21],
+                 ng = 3, degre = c(0,3,4),
+                 Model="CNORM", Method = "EM", ssigma = FALSE, hessian = FALSE)
+@
+<<echo=FALSE>>=
+tab=cbind(solLC$tab[,1], solEMC$tab[,1], solLCs$tab[,1], solEMCs$tab[,1])
+tab[14:16,1] = exp(tab[14:16,1])/sum(exp(tab[14:16,1]))
+tab[14:16,3] = exp(tab[14:16,3])/sum(exp(tab[14:16,3]))
+tab = round(tab, 5)
+colnames(tab) = c("SolLC", "SolEMC", "SolLCs", "SolEMCs")
+@
+<<echo=FALSE,results='asis'>>=
+kable(tab, "latex", booktabs = T, escape = FALSE, align="r") %>%
+  kable_styling() %>%
+  add_header_above(c( "Different sigma" = 2, "Same sigma" = 2)) %>%
+  pack_rows("Beta 1" , 1, 1) %>%
+  pack_rows("Beta 2" , 2, 5) %>%
+  pack_rows("Beta 3" , 6, 10) %>%
+  pack_rows("Sigma" , 11, 13) %>%
+  pack_rows("Pi" , 14, 16)
+@
+
+We can add time covariate to the censored data.
+<<eval=FALSE>>=
+solLCTCOV = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:31],
+                   ng = 3, degre = c(0,3,4),
+                   Model = "CNORM", Method = "L", ssigma = FALSE, hessian = FALSE,
+                   ymin = 2,  ymax = 23)
+solLCTCOVs = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:31],
+                    ng = 3, degre = c(0,3,4),
+                    Model = "CNORM", Method = "L", ssigma = TRUE, hessian = FALSE,
+                    ymin = 2,  ymax = 23)
+solEMCTCOV = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:31],
+                    ng = 3, degre = c(0,3,4),
+                    Model = "CNORM", Method = "EM", ssigma = TRUE, hessian = FALSE,
+                    ymin = 2,  ymax = 23)
+solEMCTCOVs = trajeR(Y = data[,2:11], A = data[,12:21], TCOV = data[,22:31],
+                     ng = 3, degre = c(0,3,4),
+                     Model = "CNORM", Method = "EM", ssigma = FALSE, hessian = FALSE,
+                     ymin = 2,  ymax = 23)
+@
+<<echo=FALSE>>=
+t1 = solLCTCOV$tab[,1]
+t1[17:19] = exp(t1[17:19])/sum(exp(t1[17:19]))
+t2 = solLCTCOVs$tab[,1]
+t2[17:19] = exp(t2[17:19])/sum(exp(t2[17:19]))
+tab=round(cbind(t1, solEMCTCOV$tab[,1], t2, solEMCTCOVs$tab[,1]),5)
+colnames(tab) = c("SolLCTCOV", "SolEMCTCOV", "SolLCTCOVs", "SolEMCTCOVs")
+@
+<<echo=FALSE,results='asis'>>=
+kable(tab, "latex", booktabs = T, escape = FALSE, align="r") %>%
+  kable_styling() %>%
+  add_header_above(c( "Different sigma" = 2, "Same sigma" = 2)) %>%
+  pack_rows("Beta 1" , 1, 1) %>%
+  pack_rows("Beta 2" , 2, 5) %>%
+  pack_rows("Beta 3" , 6, 10) %>%
+  pack_rows("Sigma" , 11, 13) %>%
+  pack_rows("Delta 1" , 14,14) %>%
+  pack_rows("Delta 2" , 15,15) %>%
+  pack_rows("Delta 3" , 16,16) %>%
+  pack_rows("Pi" , 17,19)
+@
+
+\section{Zero Inflated Poisson}
+The ZIP employ two different process : a binary distribution that generate structural zero, i.e. the excess zeros, and and poisson distribution that generate the counts.\\
+
+Under this model, zero can occur for two reasons. One is the counts is equal to zero with a probability $P(Y_{it}=0)$ for $Y_{it}\sim \mathcal{P}(\lambda_{ikt})$ and the second become of the fact the binary produce zero value with a probability $\rho_{ikt}$.
+
+We have
+\begin{align}
+P\left(Y_{it}=y_{it}|W_i=wi, C_i=ci\right) =
+\left\lbrace
+\begin{array}{l}
+\rho_{ikt}+(1-\rho_{ikt})e^{-\lambda_{ikt}},\ y_{it}=0 \\
+(1-\rho_{ikt})\frac{\lambda_{ikt}^{y_{it}}e^{-\lambda_{ikt}}}{y_{it}!},\ y_{it}> 0
+\end{array}
+\right.
+\end{align}
+
+\subsection{Parameters}
+
+\textbf{Example}\\
+We use artificial data contained in the library. There are 500 longitudinal data generated by the parameters above :
+\begin{itemize}
+	\item 2 groups ;
+	\item probability is $\pi_1=0.3$ and $\pi_2=0.7$ ;
+	\item period is 5 ;
+	\item we use 2 polynomial shape to calculate the parameters $\lambda$ of the Poisson state
+	\begin{enumerate}
+		\item degre 2 and $\beta_1=(1.2, 0.5, -0.06)$ ;
+		\item degre 2 and $\beta_2=(0.89, 0.01, 0.01)$ ;
+	\end{enumerate}
+		\item we use 2 polynomial shape to calculate the parameters $\nu$ of the zero state
+	\begin{enumerate}
+		\item degre 1 and $\nu_1=(-0.2,-0.1)$ ;
+		\item degre 1 and $\nu_2=(-1,0)$ ;
+	\end{enumerate}
+\end{itemize}
+
+The data contained the time variable dependent $Y_i$ in \verb|dataZIP[,2:6]|, the time variable in \verb|dataZIP[,7:11]|, the time covariate in \verb|dataZIP[,13:17]| and a covariate that influence the belonging probabilty in \verb|dataZIP[,12]|.
+\begin{itemize}
+	\item \verb|dataZIP[,2:6]| is a matrix withe real.
+	\item \verb|dataZIP[,7:11]| is a matrix with time 1 to 10.
+	\item \verb|dataZIP[,13:17]| is a time covriate that influence the shape fo trajectory. It is a matrix with 0 and 1 value, like the presence or not of a characteristic on the individual.
+	\item \verb|dataZIP[,12]| is a matrix with real.
+\end{itemize}
+
+<<echo=FALSE>>=
+load(file = "/mnt/Travail/These/R/Package/trajeR/data/ZIP_data01")
+data = as.matrix(dataZIP)
+load(file = "/mnt/Travail/These/R/Package/trajeR/tests/ZIPdata01_sol")
+@
+
+<<echo=FALSE>>=
+matplot(t(data[, 7:11]),t(data[, 2:6]), pch = 1, type='b', col="black", lty=1, xlab = "Times", ylab = "Values", main = "Plot of the individual's trajectories")
+# plot(dataZIP[1,7:11],dataZIP[1,2:6], type = 'p', ylim = c(min(dataZIP[,2:6]), max(dataZIP[,2:6])), col = "black")
+# points(dataZIP[1,7:11],dataZIP[1,2:6], type = 'l', ylim = c(-0.1,6), col = "gray5")
+# for (i in 2:500){
+#   points(dataZIP[i,7:11],dataZIP[i,2:6], type ='p', col = "black")
+#   points(dataZIP[i,7:11],dataZIP[i,2:6], type ='l', col = "gray5")
+# }
+@
+We use each method to fit the model. For all method, we specify the number of group of our model, ng=2 and the degree of the polynomial shape of the trajectory for the two state.\\
+For the Poisson state we choice a 3 degree polynom and for the zero state a 2 degree polynom.\\
+So degree is for $\beta$ a vector $(3,3)$ and for $\nu$ a vector $(2,2)$.\\
+We sepcify \verb|hessian=TRUE| to ask the calculus of the hessian matrix.\\
+\verb|Itermax | is set to 300 to assure a good approximation of the parameters.\\
+
+For the Likelihood method we call \verb|trajeR| with option \verb|Method ="L"|.
+<<eval=FALSE>>=
+# Likelihood
+paraminit = c(1,1,
+              -3.066653,0,0,
+              -0.046659,0,0,
+              -3,0,
+              -3,0)
+solL = trajeR(Y = data[,2:6], A = data[,7:11], ng = 2, degre=c(2,2), degre.nu = c(1,1),
+              Model="ZIP", Method = "L", hessian = TRUE,
+              paraminit = paraminit)
+@
+<<size="normalsize">>=
+solL
+@
+For use EM method we write the same syntax but change the variable \verb|Method| to \verb|EM| or \verb|EMIRLS|. In the first case, we find the parameters with quasi newton method and in the second one with Iterative Reweighted Least Square.
+<<eval=FALSE>>=
+# EM
+paraminitEM = c(0.5,0.5,
+                -3.066653,0,0,
+                -0.046659,0,0,
+                -3,0,
+                -3,0)
+solEM = trajeR(Y = data[,2:6], A = data[,7:11],
+               ng = 2, degre=c(2,2), degre.nu = c(1,1),
+               Model="ZIP", Method = "EM", hessian = TRUE,
+               paraminit = paraminitEM)
+paraminitEMIRLS = c(0.5,0.5,
+                    -1.540445,0,0,
+                    0,0,0,
+                    -3,0,
+                    -3,0)
+solEMIRLS = trajeR(Y = data[,2:6], A = data[,7:11],
+                   ng = 2, degre=c(2,2), degre.nu = c(1,1),
+                   Model="ZIP", Method = "EMIRLS", hessian = TRUE,
+                   paraminit = paraminitEM)
+@
+<<echo=FALSE>>=
+t1 = solL$tab[,1:2]
+t1[11:12,1] = exp(t1[11:12,1])/sum(exp(t1[11:12,1]))
+t2=solEM$tab[,1:2]
+t2[12,2]=t2[11,2]
+t3= solEMIRLS$tab[,1:2]
+t3[12,2]=t3[11,2]
+tab=round(cbind(t1, t2, t3),5)
+colnames(tab) = c("parameters", "sd", "parameters", "sd","parameters", "sd")
+@
+
+<<echo=FALSE,results='asis'>>=
+kable(tab, "latex", booktabs = T, escape = FALSE, align="r") %>%
+  kable_styling() %>%
+  add_header_above(c( "SolL" = 2, "SolEM" = 2, "SolEMIRLS" = 2)) %>%
+  pack_rows("Beta 1" , 1, 3) %>%
+  pack_rows("Beta 2" , 4, 6) %>%
+  pack_rows("Nu 1" , 7, 8) %>%
+  pack_rows("Nu 2" , 9, 10) %>%
+  pack_rows("Pi" , 11, 12)
+@
+
+\subsection{Plot}
+We plot only the trajectory on a graph. We have just to use the native plot function. It use the class of the object to draw the polynomial shape. The values in abscissa are the first row of the time variable.
+
+<<>>=
+plot(solL)
+@
+We can add longitudinal data to this graph. If we want this on the plot we have to specify \verb|Y| and \verb|A| in the function \verb|plot()|. For more visibility, we have enlarge the 0 and 1 value on the graph and plot the data with a little and random shift, control by the index \verb|dec| in the function plot.\\
+By default colors are gray scale, but we can specify colors we want.
+
+<<>>=
+# colour's defintion
+trans = "70"
+col1 = "#034569"
+col1.1 = paste0("#64AAD0", trans)
+col2 = "#750062"
+col2.1 = paste0("#D962C7", trans)
+cols1 = c(col1.1, col2.1)
+cols2 = c(col1, col2)
+vcol = c(cols1, cols2)
+
+plot(solEM, Y = dataZIP[,2:6], A = dataZIP[,7:11], dec = 5, col = vcol)
+@
+
+\subsection{Adding covariate}
+In the same way that in the section below we can add covariate in the calculus of the parameters. \\
+
+If we add risk variable we use option \verb|Risk =|.
+<<eval=FALSE>>=
+solLRisk = trajeR(Y = data[,2:6], A = data[,7:11], Risk = data[,12],
+                  ng = 2, degre=c(2,2), degre.nu = c(1,1),
+                  Model="ZIP", Method = "L", hessian = TRUE,
+                  paraminit = paraminit)
+@
+<<>>=
+solLRisk
+@
+We can use all method too.
+<<eval=FALSE>>=
+solEMRisk = trajeR(Y = data[,2:6], A = data[,7:11], Risk = data[,12],
+                   ng = 2, degre=c(2,2), degre.nu = c(1,1),
+                   Model="ZIP", Method = "EM", hessian = TRUE,
+                   paraminit = paraminit)
+solEMIRLSRisk = trajeR(Y = data[,2:6], A = data[,7:11], Risk = data[,12],
+                       ng = 2, degre=c(2,2), degre.nu = c(1,1),
+                       Model="ZIP", Method = "EMIRLS", hessian = FALSE,
+                       paraminit = paraminit)
+@
+We have
+<<echo=FALSE>>=
+t1 = solLRisk$tab[, 1:2]
+t1=round(t1,5)
+t2 = solEMRisk$tab[,1:2]
+t2[,1]=round(t2[,1],5)
+t3 = round(solEMIRLSRisk$tab[,1:2],5)
+tab=cbind(t1, t2, t3)
+tab[11:14,1]=tab[11:12,1]-tab[11:14,1]
+tab[11:14,5]=tab[11:12,5]-tab[11:14,5]
+#tab=tab[-11,]
+colnames(tab) = c("parameters", "sd", "parameters", "sd","parameters", "sd")
+@
+
+<<echo=FALSE,results='asis'>>=
+kable(tab, "latex", booktabs = T, escape = FALSE, align="r") %>%
+  kable_styling() %>%
+  add_header_above(c("SolLRisk" = 2, "SolEMRisk" = 2, "SolEMIRLSRisk" = 2)) %>%
+  pack_rows("Beta 1" , 1, 3) %>%
+  pack_rows("Beta 2" , 4, 6) %>%
+  pack_rows("Nu 1" , 7, 8) %>%
+  pack_rows("Nu 2" , 9, 10) %>%
+  pack_rows("Theta" , 11, 14)
+@
+
+\subsection{Adding time depdendent covariate}
+If we add time dependent covariate we use option \verb|TCOV|.
+<<eval=FALSE>>=
+paraminit=c(1,1,
+            -0.738409,0,0,
+            0.489316,0,0,
+            -3, 0,
+            -3, 0,
+            0, 0)
+solLTCOV = trajeR(Y = data[,2:6], A = data[,7:11], TCOV = data[,13:17],
+                  ng = 2, degre=c(2,2), degre.nu = c(1,1),
+                  Model="ZIP", Method = "L", hessian = TRUE,
+                  paraminit = paraminit)
+@
+<<>>=
+solLTCOV
+@
+We can use all method too.
+<<eval=FALSE>>=
+solEMTCOV = trajeR(Y = data[,2:6], A = data[,7:11], TCOV = data[,13:17],
+                   ng = 2, degre=c(2,2), degre.nu = c(1,1),
+                   Model="ZIP", Method = "EM", hessian = TRUE,
+                   paraminit = paraminitEM)
+solEMIRLSTCOV = trajeR(Y = data[,2:6], A = data[,7:11], TCOV = data[,13:17],
+                       ng = 2, degre=c(2,2), degre.nu = c(1,1),
+                       Model="ZIP", Method = "EMIRLS", hessian = TRUE,
+                       paraminit = paraminitEM)
+@
+We have
+<<echo=FALSE>>=
+t1 = solLTCOV$tab[,1]
+t1[13:14] = exp(t1[13:14])/sum(exp(t1[13:14]))
+t2 = solEMTCOV$tab[,1]
+t3 = solEMIRLSTCOV$tab[,1]
+tab=round(cbind(t1, t2, t3),5)
+colnames(tab) = c("SolLTCOV", "SolEMTCOV", "SoEMIRLSTCOV")
+@
+<<echo=FALSE,results='asis'>>=
+kable(tab, "latex", booktabs = T, escape = FALSE, align="r") %>%
+  kable_styling() %>%
+  pack_rows("Beta 1" , 1, 3) %>%
+  pack_rows("Beta 2" , 4, 6) %>%
+  pack_rows("Nu 1" , 7, 8) %>%
+  pack_rows("Nu 2" , 9, 10) %>%
+  pack_rows("Pi" , 13, 14) %>%
+  pack_rows("TCOV" , 11, 12)
+@
+We can add the effect of other time covariate.
+
+<<echo=FALSE>>=
+trans = "70"
+col1 = "#034569"
+col1.1 = paste0("#64AAD0", trans)
+col2 = "#750062"
+col2.1 = paste0("#D962C7", trans)
+col3 = "#A68900"
+col3.1 = paste0("#FFE773", trans)
+cols1 = c(col1.1, col2.1, col3.1)
+cols2 = c(col1, col2, col3)
+cols1 = c(col1.1, col2.1)
+cols2 = c(col1, col2)
+vcol = c(cols1, cols2)
+plot(solLTCOV, Y=dataZIP[,2:6], A=dataZIP[,7:11], TCOV = dataZIP[,13:17], col=vcol,
+     plotcov = c(1,1,0,0,1,0,0,1,1,1), mean = TRUE, alpha = 0.75)
+@
+
+\section{Non Linear model}
+
+We suppose that the variable $Y_{it}$ is defined by
+\begin{equation}
+y_{it} = f(a_{it}; \beta_k)+\epsilon_{it}
+\end{equation}
+where $\epsilon_{it}\sim \mathcal{N}\left(0;\ \sigma_k\right)$.\\
+
+
+In this case, the function $f_k$ is not linear in the parameters $\beta_k$ and
+
+\begin{equation}
+	E(Y_{it}=y_{it}|W_i=w_i,C_i=k)=  f(a_{it}; \beta_k)
+\end{equation}
+
+We note $\phi$ the density function of a normal distribution with mean 0 and standard deviation 1 and $\Phi$ its  cumulative distribution function, if we fit a group $k$ we can write
+
+
+\begin{align}
+P(Y_{it}=y_{it}|W_i=w_i,C_i=k)=
+\dfrac{1}{\sigma_k}\phi\left(\dfrac{y_{it}- f(a_{it}; \beta_k)}{\sigma_k}\right)
+\end{align}
+
+\subsection{Parameters}
+
+\textbf{Example}\\
+We use artificial data contained in the library. This are 500 longitudinal data generate by the parameters above :
+\begin{itemize}
+	\item 4 groups ;
+	\item probability is $\pi_1=0.2$, $\pi_2=0.3$, $\pi_3=0.14$ and $\pi_4=0.36$ ;
+	\item period is 11 ;
+	\item $\sigma_1=0.45$, $\sigma_2=0.65$, $\sigma_3=0.35$ and $\sigma_4=0.4$.
+	\item the link\footnote{it is the Michaelis–Menten equation.}  function between individuals and paramaters is
+	\[f(t; \beta_k) =\frac{\beta_{k1}t}{\beta_{k2} + t}\]
+
+	\item the parameters\footnote{the informed reader will have recognized, in order, \textit{Glutamate dehydrogenase} in NAD\textsuperscript{+}, \textit{Pyruvate carboxylaste} in ATP, \textit{Threonine deaminase} in Threonine and \textit{Hexokinase} in Fructose.} are $\beta_1=(3.6,0.025)$, $\beta_2=(2.9,0.06)$, $\beta_3=(3.4,5)$ and $\beta_4=(3.4,1.5)$.
+\end{itemize}
+
+The data contains the time variable dependent $Y_i$ in \verb|data[,2:12]|, the time variable in \verb|data[,13:23]|.
+\begin{itemize}
+	\item \verb|data[,2:12]| is a matrix withe real.
+	\item \verb|data[,13:23]| is a matrix with time 0 to 10.
+\end{itemize}
+
+<<echo=FALSE>>=
+library(minpack.lm)
+data = read.csv("/mnt/Travail/These/R/Package/trajeR/data/NonLineardata04.csv")
+data = as.matrix(data)
+load(file = "/mnt/Travail/These/R/Package/trajeR/tests/NL_data04_sol")
+@
+
+<<echo=FALSE>>=
+#matplot(t(data[, 13:23]),t(data[, 2:12]), pch = 1, type='b', col="black", lty=1, xlab = "", ylab = "")
+plot(seq(0,10,1),data[1,2:12], type = 'p', ylim = c(-0.1,6), col = "black", xlab = "Times", ylab = "Values", main = "Plot of the individual's trajectories")
+points(seq(0,10,1),data[1,2:12], type = 'l', ylim = c(-0.1,6), col = "gray")
+for (i in 2:500){
+  points(seq(0,10,1), data[i,2:12], type ='p', col = "black")
+  points(seq(0,10,1), data[i,2:12], type ='l', col = "gray5")
+}
+@
+We use the non linear method to fit the model. We specify the number of group \verb|ng| to 4 and the number of parameters \verb|nbvar| to 2.
+We sepcify too \verb|hessian=TRUE| to ask the calculus of the hessian matrix.\\
+\verb|Itermax | is set to 300 to assure a good approximation of the parameters.\\
+
+We call \verb|trajeR| with option \verb|Method ="EM"| and \verb|Model="NL"|. By analysing the graph above, we fit initial parmaters as
+<<>>=
+paraminit=c(0.25,0.25,0.25,0.25,2,0.1,2.4,0.1,2.8,0.1,3,0.1,0.2,0.2,0.2,0.2)
+@
+Then we have to define the link function and its differential.
+<<>>=
+#defintion of the function
+fct <- function(t, betak, TCOV){
+  return(
+    (betak[1]*t)/(betak[2]+t)
+  )
+}
+#defintion of the differential
+diffct <- function(t, betak, TCOV){
+  return(c(
+    t/(betak[2]+t),
+    -(betak[1]*t)/(betak[2]+t)**2
+  ))
+}
+@
+We use the \verb|trajeR| function with the parameters above
+<<eval=FALSE>>=
+solEM = trajeR(Y = data[,2:12], A = data[,13:23],
+               ng = 4, nbvar = 2,
+               Method = "EM", Model = "NL", hessian = TRUE,
+               fct = fct, diffct = diffct, paraminit = paraminit)
+@
+<<eval=TRUE>>=
+solEM
+@
+If we compare this results with the theoritical values we have
+<<echo=FALSE,results='asis'>>=
+tab = round(cbind(c( 3.4, 5, 3.4, 1.5, 2.9, 0.06, 3.6, 0.025, 0.35, 0.4,  0.65, 0.45, 0.14, 0.36, 0.3, 0.2), solEM$tab[,1]),5)
+kable(tab, "latex", booktabs = T, escape = FALSE, align="r") %>%
+  kable_styling() %>%
+  add_header_above(c( "Theoritical" = 1, "Estimate" = 1)) %>%
+  pack_rows("Beta 1" , 1, 2) %>%
+  pack_rows("Beta 2" , 3, 4) %>%
+  pack_rows("Beta 3" , 5, 6) %>%
+  pack_rows("Beta 4" , 7, 8) %>%
+  pack_rows("Sigma" , 9, 12) %>%
+  pack_rows("Pi" , 13, 16)
+@
+
+We plot the graph of the results.
+<<>>=
+trans = "70"
+col1 = "#034569"
+col1.1 = paste0("#64AAD0", trans)
+col2 = "#750062"
+col2.1 = paste0("#D962C7", trans)
+col3 = "#A68900"
+col3.1 = paste0("#FFE773", trans)
+#col4 = "#1d5233"
+#col4.1 = "#47c67d"
+col4 = "#CD5C5C"
+col4.1 = "#FFA07A"
+cols1 = c(col1.1, col3.1, col4.1, col2.1)
+cols2 = c(col1, col3, col4, col2)
+vcol = c(cols1, cols2)
+plot(solEM, Y=data[,2:12], A=data[,13:23],col = vcol)
+@
+Here too we can add mean of each epoch to the plot.
+<<>>=
+plot(solEM, Y=data[,2:12], A=data[,13:23],col = vcol, mean = TRUE)
+@
+
+\section{Membership probability}
+
+Sometimes it is util to find the membership probability of an individual for each group. The function \verb|GroupProb| do it. For each individual in the data it calculate the probability of membership of each group. The result is a matrix of real.\\
+
+To illustrate this point we use the data and the results in the part page \pageref{probCens}.
+<<echo=FALSE>>=
+options(kableExtra.latex.load_packages = FALSE)
+library(kableExtra)
+load("/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07")
+load("/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07Censored")
+data = as.matrix(data)
+dataC = as.matrix(dataC)
+load(file = "/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07_sol")
+load(file = "/mnt/Travail/These/R/Package/trajeR/tests/CNORM_data07Censored_sol")
+@
+<<>>=
+prob = GroupProb(solLs, Y =  data[,2:11], A = data[,12:21])
+head(prob)
+@
+
+
+\end{document}

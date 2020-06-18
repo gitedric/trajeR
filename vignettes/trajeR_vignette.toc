@@ -1,0 +1,19 @@
+\contentsline {section}{\numberline {1}Introduction}{2}% 
+\contentsline {section}{\numberline {2}Getting started}{2}% 
+\contentsline {section}{\numberline {3}LOGIT model}{4}% 
+\contentsline {subsection}{\numberline {3.1}Parameters}{4}% 
+\contentsline {subsection}{\numberline {3.2}Plot}{8}% 
+\contentsline {section}{\numberline {4}Censored Normal distribution}{16}% 
+\contentsline {section}{\numberline {5}Censored Normal model}{16}% 
+\contentsline {subsection}{\numberline {5.1}Parameters}{17}% 
+\contentsline {subsection}{\numberline {5.2}Plot}{21}% 
+\contentsline {subsection}{\numberline {5.3}Adding covariate}{23}% 
+\contentsline {section}{\numberline {6}Censored Data}{27}% 
+\contentsline {section}{\numberline {7}Zero Inflated Poisson}{33}% 
+\contentsline {subsection}{\numberline {7.1}Parameters}{34}% 
+\contentsline {subsection}{\numberline {7.2}Plot}{37}% 
+\contentsline {subsection}{\numberline {7.3}Adding covariate}{39}% 
+\contentsline {subsection}{\numberline {7.4}Adding time depdendent covariate}{41}% 
+\contentsline {section}{\numberline {8}Non Linear model}{44}% 
+\contentsline {subsection}{\numberline {8.1}Parameters}{45}% 
+\contentsline {section}{\numberline {9}Membership probability}{50}% 
