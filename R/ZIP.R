@@ -591,7 +591,7 @@ fzkSikt <- function(pi, beta, nu, zk, k, i, t, ng, nbeta, nnu, n, A, Y, TCOV, de
   }else{
     nuikt = sum(nu[(nnucum[k]+1):(nnucum[k+1])]*A[i,t]**(0:(nnu[k]-1)))
     lambdaikt = exp(
-      sum(beta[(nbetacum[k]+1):(nbetacum[k+1])]*A[i,t]**(0:(nbeta[k]-1)))) + WitEM(TCOV, period, delta, nw, i, t, k, ndeltacum)
+      sum(beta[(nbetacum[k]+1):(nbetacum[k+1])]*A[i,t]**(0:(nbeta[k]-1))) + WitEM(TCOV, period, delta, nw, i, t, k, ndeltacum))
     prob = zk[i,k]/(1+exp(-nuikt-lambdaikt))
   }
   return(prob)
@@ -609,14 +609,14 @@ fSikt <- function(pi, beta, nu, k, i, t, ng, nbeta, nnu, n, A, Y, TCOV, delta, n
 #################################################################################
 # Q function for betak, nuk and deltak given a value k.  The goal is to sum all Qbetaknuk after
 #################################################################################
-QbetakZIP <- function(beta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum){
+QbetakZIP <- function(beta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, delta, nw){
   period = ncol(A)
   a = 0
   for (i in 1:n){
     zik = zk[i,k]
     for (t in 1:period){
       ziksit = zkSit[i,(k-1)*period+t]
-      betaAit = sum(beta*A[i,t]**(0:(nbeta-1))) + WitEM(TCOV, period, delta, nw, i, t, k, ndeltacum)
+      betaAit = sum(beta*A[i,t]**(0:(nbeta-1))) + WitEMtmp(TCOV, period, delta, nw, i, t, k)
       #a = a + (zik-ziksit)*(Y[i,t]*betaAit-exp(betaAit)-log(factorial(Y[i,t])))
       a = a + (zik-ziksit)*(Y[i,t]*betaAit-exp(betaAit))
     }
@@ -653,7 +653,7 @@ QdeltakZIP <- function(delta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, beta, nw)
 #################################################################################
 # Differential of betak, nuk and deltak Q function
 #################################################################################
-difQbetakkZIP <- function(beta, k, zk, zkSit, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum){
+difQbetakkZIP <- function(beta, k, zk, zkSit, nbeta, nnu, n, A, Y, TCOV, delta, nw){
   period = ncol(A)
   betas =c()
   for (l in 1:nbeta){
@@ -662,7 +662,7 @@ difQbetakkZIP <- function(beta, k, zk, zkSit, nbeta, nnu, n, A, Y, TCOV, delta, 
       zik = zk[i,k]
       for (t in 1:period){
         ziksit = zkSit[i,(k-1)*period+t]
-        betaAit = sum(beta*A[i,t]**(0:(nbeta-1))) + WitEM(TCOV, period, delta, nw, i, t, k, ndeltacum)
+        betaAit = sum(beta*A[i,t]**(0:(nbeta-1))) + WitEMtmp(TCOV, period, delta, nw, i, t, k)
         a = a + A[i,t]**(l-1)*(zik-ziksit)*(Y[i,t]-exp(betaAit))
       }
     }
@@ -769,6 +769,153 @@ likelihoodEMZIP <- function(n, ng, nbeta, beta, pi, A, Y, TCOV, delta, nw, nu, n
   }
   return(likeli)
 }
+
+WitEMtmp <- function(TCOV, period, delta, nw, i, t, k){
+  if (nw == 0){
+    return(0)
+  }else{
+    return(sum(delta*TCOV[i, seq(from = t, to = t+(nw-1)*period, by = period)]))
+  }
+}
+difQbetadeltakZIP <- function(betadelta, k, zk, Sikt, nbeta, nnu, n, A, Y, TCOV, nw){
+  period = ncol(A)
+  beta = betadelta[1:nbeta]
+  delta=betadelta[-c(1:nbeta)]
+  betadeltas =c()
+  for (l in 1:nbeta){
+    a=0
+    for (i in 1:n){
+      zik = zk[i,k]
+      for (t in 1:period){
+        sikt = Sikt[i,t]
+        betaAit = sum(beta*A[i,t]**(0:(nbeta-1))) + WitEMtmp(TCOV, period, delta, nw, i, t, k)
+             a = a + A[i,t]**(l-1)*zik*(1-sikt)*(Y[i,t]-exp(betaAit))
+      }
+    }
+    betadeltas = c(betadeltas, a)
+  }
+  for (l in 1:nw){
+    a=0
+    for (i in 1:n){
+      zik = zk[i,k]
+      for (t in 1:period){
+        sikt = Sikt[i,t]
+        betaAit = sum(beta*A[i,t]**(0:(nbeta-1))) + sum(delta*TCOV[i, seq(from = t, to = t+(nw-1)*period, by = period)])
+        a = a + TCOV[i, t + (l-1)*period]*zik*(1-sikt)*(Y[i,t]-exp(betaAit))
+      }
+    }
+    betadeltas = c(betadeltas, a)
+  }
+  return(betadeltas)
+}
+QbetadeltakZIP <- function(betadelta, k, zk, Sikt, nbeta, nnu, n, A, Y, TCOV, nw){
+  period = ncol(A)
+  beta = betadelta[1:nbeta]
+  delta=betadelta[-c(1:nbeta)]
+  a = 0
+  for (i in 1:n){
+    zik = zk[i,k]
+    for (t in 1:period){
+      sikt = Sikt[i,t]
+      betaAit = sum(beta*A[i,t]**(0:(nbeta-1))) + WitEMtmp(TCOV, period, delta, nw, i, t, k)
+      #a = a + (zik-ziksit)*(Y[i,t]*betaAit-exp(betaAit)-log(factorial(Y[i,t])))
+      a = a + zik*(1-sikt)*(Y[i,t]*betaAit-exp(betaAit))
+    }
+  }
+  return(a)
+}
+QnukZIPtmp <- function(nu, zk, Sikt, k, nbeta, nnu, n, A, Y){
+  period = ncol(A)
+  a = 0
+  for (i in 1:n){
+    zik = zk[i,k]
+    for (t in 1:period){
+      sikt = Sikt[i,t]
+      nuAit = sum(nu*A[i,t]**(0:(nnu-1)))
+      a = a + zik*(sikt*nuAit - log(1+exp(nuAit)))
+    }
+  }
+  return(a)
+}
+difQnukkZIPtmp <- function(nu, k, zk, Sikt, nbeta, nnu, n, A, Y){
+  period = ncol(A)
+  nus =c()
+  for (l in 1:nnu){
+    a=0
+    for (i in 1:n){
+      zik = zk[i,k]
+      for (t in 1:period){
+        sikt = Sikt[i,t]
+        nuAit = sum(nu*A[i,t]**(0:(nnu-1)))
+        a = a + A[i,t]**(l-1)*zik*(sikt-exp(nuAit)/(1+exp(nuAit)))
+      }
+    }
+    nus = c(nus, a)
+  }
+  return(nus)
+}
+QbetakZIPtmp <- function(beta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, delta, nw){
+  period = ncol(A)
+  a = 0
+  for (i in 1:n){
+    zik = zk[i,k]
+    for (t in 1:period){
+      sikt = Sikt[i,t]
+      betaAit = sum(beta*A[i,t]**(0:(nbeta-1))) + WitEMtmp(TCOV, period, delta, nw, i, t, k)
+      #a = a + (zik-ziksit)*(Y[i,t]*betaAit-exp(betaAit)-log(factorial(Y[i,t])))
+      a = a + zik*(1-sikt)*(Y[i,t]*betaAit-exp(betaAit))
+    }
+  }
+  return(a)
+}
+difQbetakkZIPtmp <- function(beta, k, zk, Sikt, nbeta, nnu, n, A, Y, TCOV, delta, nw){
+  period = ncol(A)
+  betas =c()
+  for (l in 1:nbeta){
+    a=0
+    for (i in 1:n){
+      zik = zk[i,k]
+      for (t in 1:period){
+        sikt = Sikt[i,t]
+        betaAit = sum(beta*A[i,t]**(0:(nbeta-1))) + WitEMtmp(TCOV, period, delta, nw, i, t, k)
+        a = a + A[i,t]**(l-1)*zik*(1-sikt)*(Y[i,t]-exp(betaAit))
+      }
+    }
+    betas = c(betas, a)
+  }
+  return(betas)
+}
+QdeltakZIPtmp <- function(delta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, beta, nw){
+  period = ncol(A)
+  a = 0
+  for (i in 1:n){
+    zik = zk[i,k]
+    for (t in 1:period){
+      sikt = Sikt[i,t]
+      betaAit = sum(beta*A[i,t]**(0:(nbeta-1))) + WitEMtmp(TCOV, period, delta, nw, i, t, k)
+      #a = a + (zik-ziksit)*(Y[i,t]*betaAit-exp(betaAit)-log(factorial(Y[i,t])))
+      a = a + zik*(1-sikt)*(Y[i,t]*betaAit-exp(betaAit))
+    }
+  }
+  return(a)
+}
+difQdeltakkZIPtmp <- function(delta, k, zk, Sikt, nbeta, nnu, n, A, Y, TCOV, beta, nw){
+  period = ncol(A)
+  deltas =c()
+  for (l in 1:nw){
+    a=0
+    for (i in 1:n){
+      zik = zk[i,k]
+      for (t in 1:period){
+        sikt = Sikt[i,t]
+        betaAit = sum(beta*A[i,t]**(0:(nbeta-1))) +WitEMtmp(TCOV, period, delta, nw, i, t, k)
+        a = a + TCOV[i, t + (l-1)*period]*zik*(1-sikt)*(Y[i,t]-exp(betaAit))
+      }
+    }
+    deltas = c(deltas, a)
+  }
+  return(deltas)
+}
 #################################################################################
 # EM algorithm
 #################################################################################
@@ -822,7 +969,7 @@ EMZIP <- function(param, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, delta, nw, iterma
       newbeta = c(newbeta, optim(beta[(nbetacum[k]+1):(nbetacum[k+1])], QbetakZIP, difQbetakkZIP, method = "BFGS",
                                  zk = zk, zkSit = zkSit, k = k,
                                  nbeta = nbeta[k], nnu = nnu[k], n = n, A = A, Y = Y,
-                                 TCOV = TCOV, delta = delta, nw = nw, ndeltacum = ndeltacum,
+                                 TCOV = TCOV, delta = delta[(ndeltacum[k]+1):(ndeltacum[k+1])], nw = nw, 
                                  control = list(fnscale=-1))$par)
       newnu = c(newnu, optim(nu[(nnucum[k]+1):(nnucum[k+1])], QnukZIP, difQnukkZIP, method = "BFGS",
                              zk = zk, zkSit = zkSit, k = k,

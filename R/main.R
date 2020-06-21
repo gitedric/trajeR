@@ -107,11 +107,13 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, ng, degre = NULL, degre.nu = 
     beta= lapply(1:(ng), function(s){
       c(qnorm((2*(s-1)+1)/(2*ng),mean(Y),sd(Y)), rep(0, degre[s]-1))
     })
+    paraff = c(unlist(beta), rep(sd(Y), ng))
   }else if (Model == "LOGIT"){
     beta = lapply(1:(ng), function(s){
       c(suppressWarnings(log(qnorm((2*(s-1)+1)/(2*ng),mean(Y),sd(Y))/(1-qnorm((2*(s-1)+1)/(2*ng),mean(Y),sd(Y))))), rep(0, degre[s]-1))
     })
     beta[is.na(beta)]=-5
+    paraff = c(unlist(beta))
   }else if (Model =="ZIP"){
     nu = lapply(1:(ng), function(s){
       c(-3, rep(0, degre.nu[s]))
@@ -119,10 +121,12 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, ng, degre = NULL, degre.nu = 
     beta= lapply(1:(ng), function(s){
       c(log(qgamma((2*(s-1)+1)/(2*ng), mean(Y), mean(Y)**2/(sd(Y)**2-mean(Y)))), rep(0, degre[s]-1))
     })
+    paraff = c(unlist(beta), unlist(nu))
   }else{
     beta = lapply(1:(ng), function(s){
       c(qnorm((2*(s-1)+1)/(2*ng),mean(Y),sd(Y)), rep(0, degre[s]-1))
     })
+    paraff = c(unlist(beta), rep(sd(Y), ng))
   }
   nbeta = degre
   theta = rep(1, ng*ntheta)
@@ -131,9 +135,9 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, ng, degre = NULL, degre.nu = 
   if (is.null(paraminit)){
     cat("Starting Values\n ")
     if (nw == 0){
-      cat(c(pi, unlist(beta), unlist(nu), rep(sd(Y), ng)))  
+      cat(pi, paraff)
     }else{
-      cat(c(pi, unlist(beta), unlist(nu), rep(sd(Y), ng), unlist(delta)))
+      cat(c(pi, paraff, unlist(delta)))
     }
     cat('\n\n')
     cat('Likelihood \n')

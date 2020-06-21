@@ -991,17 +991,17 @@ namespace trajeR {
         return Rcpp::as<double >(rcpp_result_gen);
     }
 
-    inline double QdeltakZIP_cpp(NumericVector delta, NumericMatrix zk, NumericMatrix zkSit, int k, int nbeta, int nnu, int n, NumericMatrix A, NumericMatrix Y, Nullable<NumericMatrix> TCOV, NumericVector beta, int nw, Nullable<IntegerVector> ndeltacum) {
-        typedef SEXP(*Ptr_QdeltakZIP_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+    inline double QdeltakZIP_cpp(NumericVector delta, NumericMatrix zk, NumericMatrix Sikt, int k, int nbeta, int nnu, int n, NumericMatrix A, NumericMatrix Y, Nullable<NumericMatrix> TCOV, NumericVector beta, int nw) {
+        typedef SEXP(*Ptr_QdeltakZIP_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_QdeltakZIP_cpp p_QdeltakZIP_cpp = NULL;
         if (p_QdeltakZIP_cpp == NULL) {
-            validateSignature("double(*QdeltakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,Nullable<NumericMatrix>,NumericVector,int,Nullable<IntegerVector>)");
+            validateSignature("double(*QdeltakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,Nullable<NumericMatrix>,NumericVector,int)");
             p_QdeltakZIP_cpp = (Ptr_QdeltakZIP_cpp)R_GetCCallable("trajeR", "_trajeR_QdeltakZIP_cpp");
         }
         RObject rcpp_result_gen;
         {
             RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_QdeltakZIP_cpp(Shield<SEXP>(Rcpp::wrap(delta)), Shield<SEXP>(Rcpp::wrap(zk)), Shield<SEXP>(Rcpp::wrap(zkSit)), Shield<SEXP>(Rcpp::wrap(k)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(nnu)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(beta)), Shield<SEXP>(Rcpp::wrap(nw)), Shield<SEXP>(Rcpp::wrap(ndeltacum)));
+            rcpp_result_gen = p_QdeltakZIP_cpp(Shield<SEXP>(Rcpp::wrap(delta)), Shield<SEXP>(Rcpp::wrap(zk)), Shield<SEXP>(Rcpp::wrap(Sikt)), Shield<SEXP>(Rcpp::wrap(k)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(nnu)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(beta)), Shield<SEXP>(Rcpp::wrap(nw)));
         }
         if (rcpp_result_gen.inherits("interrupted-error"))
             throw Rcpp::internal::InterruptedException();
@@ -1075,17 +1075,17 @@ namespace trajeR {
         return Rcpp::as<NumericVector >(rcpp_result_gen);
     }
 
-    inline NumericVector difQdeltakZIP_cpp(NumericVector delta, NumericMatrix zk, NumericMatrix zkSit, int k, int nbeta, int nnu, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix TCOV, NumericVector beta, int nw, Nullable<IntegerVector> ndeltacum) {
-        typedef SEXP(*Ptr_difQdeltakZIP_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+    inline NumericVector difQdeltakZIP_cpp(NumericVector delta, NumericMatrix zk, NumericMatrix Sikt, int k, int nbeta, int nnu, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix TCOV, NumericVector beta, int nw) {
+        typedef SEXP(*Ptr_difQdeltakZIP_cpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_difQdeltakZIP_cpp p_difQdeltakZIP_cpp = NULL;
         if (p_difQdeltakZIP_cpp == NULL) {
-            validateSignature("NumericVector(*difQdeltakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,NumericMatrix,NumericVector,int,Nullable<IntegerVector>)");
+            validateSignature("NumericVector(*difQdeltakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,NumericMatrix,NumericVector,int)");
             p_difQdeltakZIP_cpp = (Ptr_difQdeltakZIP_cpp)R_GetCCallable("trajeR", "_trajeR_difQdeltakZIP_cpp");
         }
         RObject rcpp_result_gen;
         {
             RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_difQdeltakZIP_cpp(Shield<SEXP>(Rcpp::wrap(delta)), Shield<SEXP>(Rcpp::wrap(zk)), Shield<SEXP>(Rcpp::wrap(zkSit)), Shield<SEXP>(Rcpp::wrap(k)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(nnu)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(beta)), Shield<SEXP>(Rcpp::wrap(nw)), Shield<SEXP>(Rcpp::wrap(ndeltacum)));
+            rcpp_result_gen = p_difQdeltakZIP_cpp(Shield<SEXP>(Rcpp::wrap(delta)), Shield<SEXP>(Rcpp::wrap(zk)), Shield<SEXP>(Rcpp::wrap(Sikt)), Shield<SEXP>(Rcpp::wrap(k)), Shield<SEXP>(Rcpp::wrap(nbeta)), Shield<SEXP>(Rcpp::wrap(nnu)), Shield<SEXP>(Rcpp::wrap(n)), Shield<SEXP>(Rcpp::wrap(A)), Shield<SEXP>(Rcpp::wrap(Y)), Shield<SEXP>(Rcpp::wrap(TCOV)), Shield<SEXP>(Rcpp::wrap(beta)), Shield<SEXP>(Rcpp::wrap(nw)));
         }
         if (rcpp_result_gen.inherits("interrupted-error"))
             throw Rcpp::internal::InterruptedException();

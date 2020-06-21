@@ -207,8 +207,8 @@ QnukZIP_cpp <- function(nu, zk, Sikt, k, nbeta, nnu, n, A, Y) {
     .Call(`_trajeR_QnukZIP_cpp`, nu, zk, Sikt, k, nbeta, nnu, n, A, Y)
 }
 
-QdeltakZIP_cpp <- function(delta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, beta, nw, ndeltacum) {
-    .Call(`_trajeR_QdeltakZIP_cpp`, delta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, beta, nw, ndeltacum)
+QdeltakZIP_cpp <- function(delta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, beta, nw) {
+    .Call(`_trajeR_QdeltakZIP_cpp`, delta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, beta, nw)
 }
 
 QbetadeltakZIP_cpp <- function(betadelta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, nw) {
@@ -223,8 +223,8 @@ difQnukZIP_cpp <- function(nu, zk, Sikt, k, nbeta, nnu, n, A, Y) {
     .Call(`_trajeR_difQnukZIP_cpp`, nu, zk, Sikt, k, nbeta, nnu, n, A, Y)
 }
 
-difQdeltakZIP_cpp <- function(delta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, beta, nw, ndeltacum) {
-    .Call(`_trajeR_difQdeltakZIP_cpp`, delta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, beta, nw, ndeltacum)
+difQdeltakZIP_cpp <- function(delta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, beta, nw) {
+    .Call(`_trajeR_difQdeltakZIP_cpp`, delta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, beta, nw)
 }
 
 difQbetadeltakZIP_cpp <- function(betadelta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, nw) {

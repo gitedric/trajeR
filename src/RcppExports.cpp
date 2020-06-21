@@ -2120,13 +2120,13 @@ RcppExport SEXP _trajeR_QnukZIP_cpp(SEXP nuSEXP, SEXP zkSEXP, SEXP SiktSEXP, SEX
     return rcpp_result_gen;
 }
 // QdeltakZIP_cpp
-double QdeltakZIP_cpp(NumericVector delta, NumericMatrix zk, NumericMatrix zkSit, int k, int nbeta, int nnu, int n, NumericMatrix A, NumericMatrix Y, Nullable<NumericMatrix> TCOV, NumericVector beta, int nw, Nullable<IntegerVector> ndeltacum);
-static SEXP _trajeR_QdeltakZIP_cpp_try(SEXP deltaSEXP, SEXP zkSEXP, SEXP zkSitSEXP, SEXP kSEXP, SEXP nbetaSEXP, SEXP nnuSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP TCOVSEXP, SEXP betaSEXP, SEXP nwSEXP, SEXP ndeltacumSEXP) {
+double QdeltakZIP_cpp(NumericVector delta, NumericMatrix zk, NumericMatrix Sikt, int k, int nbeta, int nnu, int n, NumericMatrix A, NumericMatrix Y, Nullable<NumericMatrix> TCOV, NumericVector beta, int nw);
+static SEXP _trajeR_QdeltakZIP_cpp_try(SEXP deltaSEXP, SEXP zkSEXP, SEXP SiktSEXP, SEXP kSEXP, SEXP nbetaSEXP, SEXP nnuSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP TCOVSEXP, SEXP betaSEXP, SEXP nwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< NumericVector >::type delta(deltaSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type zk(zkSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type zkSit(zkSitSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Sikt(SiktSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
     Rcpp::traits::input_parameter< int >::type nbeta(nbetaSEXP);
     Rcpp::traits::input_parameter< int >::type nnu(nnuSEXP);
@@ -2136,16 +2136,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Nullable<NumericMatrix> >::type TCOV(TCOVSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
-    Rcpp::traits::input_parameter< Nullable<IntegerVector> >::type ndeltacum(ndeltacumSEXP);
-    rcpp_result_gen = Rcpp::wrap(QdeltakZIP_cpp(delta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, beta, nw, ndeltacum));
+    rcpp_result_gen = Rcpp::wrap(QdeltakZIP_cpp(delta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, beta, nw));
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _trajeR_QdeltakZIP_cpp(SEXP deltaSEXP, SEXP zkSEXP, SEXP zkSitSEXP, SEXP kSEXP, SEXP nbetaSEXP, SEXP nnuSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP TCOVSEXP, SEXP betaSEXP, SEXP nwSEXP, SEXP ndeltacumSEXP) {
+RcppExport SEXP _trajeR_QdeltakZIP_cpp(SEXP deltaSEXP, SEXP zkSEXP, SEXP SiktSEXP, SEXP kSEXP, SEXP nbetaSEXP, SEXP nnuSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP TCOVSEXP, SEXP betaSEXP, SEXP nwSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_trajeR_QdeltakZIP_cpp_try(deltaSEXP, zkSEXP, zkSitSEXP, kSEXP, nbetaSEXP, nnuSEXP, nSEXP, ASEXP, YSEXP, TCOVSEXP, betaSEXP, nwSEXP, ndeltacumSEXP));
+        rcpp_result_gen = PROTECT(_trajeR_QdeltakZIP_cpp_try(deltaSEXP, zkSEXP, SiktSEXP, kSEXP, nbetaSEXP, nnuSEXP, nSEXP, ASEXP, YSEXP, TCOVSEXP, betaSEXP, nwSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -2298,13 +2297,13 @@ RcppExport SEXP _trajeR_difQnukZIP_cpp(SEXP nuSEXP, SEXP zkSEXP, SEXP SiktSEXP, 
     return rcpp_result_gen;
 }
 // difQdeltakZIP_cpp
-NumericVector difQdeltakZIP_cpp(NumericVector delta, NumericMatrix zk, NumericMatrix zkSit, int k, int nbeta, int nnu, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix TCOV, NumericVector beta, int nw, Nullable<IntegerVector> ndeltacum);
-static SEXP _trajeR_difQdeltakZIP_cpp_try(SEXP deltaSEXP, SEXP zkSEXP, SEXP zkSitSEXP, SEXP kSEXP, SEXP nbetaSEXP, SEXP nnuSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP TCOVSEXP, SEXP betaSEXP, SEXP nwSEXP, SEXP ndeltacumSEXP) {
+NumericVector difQdeltakZIP_cpp(NumericVector delta, NumericMatrix zk, NumericMatrix Sikt, int k, int nbeta, int nnu, int n, NumericMatrix A, NumericMatrix Y, NumericMatrix TCOV, NumericVector beta, int nw);
+static SEXP _trajeR_difQdeltakZIP_cpp_try(SEXP deltaSEXP, SEXP zkSEXP, SEXP SiktSEXP, SEXP kSEXP, SEXP nbetaSEXP, SEXP nnuSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP TCOVSEXP, SEXP betaSEXP, SEXP nwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< NumericVector >::type delta(deltaSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type zk(zkSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type zkSit(zkSitSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Sikt(SiktSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
     Rcpp::traits::input_parameter< int >::type nbeta(nbetaSEXP);
     Rcpp::traits::input_parameter< int >::type nnu(nnuSEXP);
@@ -2314,16 +2313,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type TCOV(TCOVSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< int >::type nw(nwSEXP);
-    Rcpp::traits::input_parameter< Nullable<IntegerVector> >::type ndeltacum(ndeltacumSEXP);
-    rcpp_result_gen = Rcpp::wrap(difQdeltakZIP_cpp(delta, zk, zkSit, k, nbeta, nnu, n, A, Y, TCOV, beta, nw, ndeltacum));
+    rcpp_result_gen = Rcpp::wrap(difQdeltakZIP_cpp(delta, zk, Sikt, k, nbeta, nnu, n, A, Y, TCOV, beta, nw));
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _trajeR_difQdeltakZIP_cpp(SEXP deltaSEXP, SEXP zkSEXP, SEXP zkSitSEXP, SEXP kSEXP, SEXP nbetaSEXP, SEXP nnuSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP TCOVSEXP, SEXP betaSEXP, SEXP nwSEXP, SEXP ndeltacumSEXP) {
+RcppExport SEXP _trajeR_difQdeltakZIP_cpp(SEXP deltaSEXP, SEXP zkSEXP, SEXP SiktSEXP, SEXP kSEXP, SEXP nbetaSEXP, SEXP nnuSEXP, SEXP nSEXP, SEXP ASEXP, SEXP YSEXP, SEXP TCOVSEXP, SEXP betaSEXP, SEXP nwSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_trajeR_difQdeltakZIP_cpp_try(deltaSEXP, zkSEXP, zkSitSEXP, kSEXP, nbetaSEXP, nnuSEXP, nSEXP, ASEXP, YSEXP, TCOVSEXP, betaSEXP, nwSEXP, ndeltacumSEXP));
+        rcpp_result_gen = PROTECT(_trajeR_difQdeltakZIP_cpp_try(deltaSEXP, zkSEXP, SiktSEXP, kSEXP, nbetaSEXP, nnuSEXP, nSEXP, ASEXP, YSEXP, TCOVSEXP, betaSEXP, nwSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -2593,11 +2591,11 @@ static int _trajeR_RcppExport_validate(const char* sig) {
         signatures.insert("double(*fSikt_cpp)(NumericVector,NumericVector,NumericVector,int,int,int,IntegerVector,IntegerVector,int,NumericMatrix,NumericMatrix,Nullable<NumericMatrix>,Nullable<NumericVector>,int,Nullable<IntegerVector>,int,IntegerVector,IntegerVector)");
         signatures.insert("double(*QbetakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,Nullable<NumericMatrix>,Nullable<NumericVector>,int,Nullable<IntegerVector>)");
         signatures.insert("double(*QnukZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix)");
-        signatures.insert("double(*QdeltakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,Nullable<NumericMatrix>,NumericVector,int,Nullable<IntegerVector>)");
+        signatures.insert("double(*QdeltakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,Nullable<NumericMatrix>,NumericVector,int)");
         signatures.insert("double(*QbetadeltakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,NumericMatrix,int)");
         signatures.insert("NumericVector(*difQbetakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,Nullable<NumericMatrix>,Nullable<NumericVector>,int,Nullable<IntegerVector>)");
         signatures.insert("NumericVector(*difQnukZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix)");
-        signatures.insert("NumericVector(*difQdeltakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,NumericMatrix,NumericVector,int,Nullable<IntegerVector>)");
+        signatures.insert("NumericVector(*difQdeltakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,NumericMatrix,NumericVector,int)");
         signatures.insert("NumericVector(*difQbetadeltakZIP_cpp)(NumericVector,NumericMatrix,NumericMatrix,int,int,int,int,NumericMatrix,NumericMatrix,NumericMatrix,int)");
         signatures.insert("NumericVector(*EMZIP_cpp)(NumericVector,int,int,int,IntegerVector,IntegerVector,NumericMatrix,NumericMatrix,NumericMatrix,Nullable<NumericMatrix>,int,int,bool,int)");
         signatures.insert("NumericVector(*EMZIPIRLS_cpp)(NumericVector,int,int,int,IntegerVector,IntegerVector,NumericMatrix,NumericMatrix,NumericMatrix,Nullable<NumericMatrix>,int,int,bool,int)");
@@ -2714,11 +2712,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_trajeR_fSikt_cpp", (DL_FUNC) &_trajeR_fSikt_cpp, 18},
     {"_trajeR_QbetakZIP_cpp", (DL_FUNC) &_trajeR_QbetakZIP_cpp, 13},
     {"_trajeR_QnukZIP_cpp", (DL_FUNC) &_trajeR_QnukZIP_cpp, 9},
-    {"_trajeR_QdeltakZIP_cpp", (DL_FUNC) &_trajeR_QdeltakZIP_cpp, 13},
+    {"_trajeR_QdeltakZIP_cpp", (DL_FUNC) &_trajeR_QdeltakZIP_cpp, 12},
     {"_trajeR_QbetadeltakZIP_cpp", (DL_FUNC) &_trajeR_QbetadeltakZIP_cpp, 11},
     {"_trajeR_difQbetakZIP_cpp", (DL_FUNC) &_trajeR_difQbetakZIP_cpp, 13},
     {"_trajeR_difQnukZIP_cpp", (DL_FUNC) &_trajeR_difQnukZIP_cpp, 9},
-    {"_trajeR_difQdeltakZIP_cpp", (DL_FUNC) &_trajeR_difQdeltakZIP_cpp, 13},
+    {"_trajeR_difQdeltakZIP_cpp", (DL_FUNC) &_trajeR_difQdeltakZIP_cpp, 12},
     {"_trajeR_difQbetadeltakZIP_cpp", (DL_FUNC) &_trajeR_difQbetadeltakZIP_cpp, 11},
     {"_trajeR_EMZIP_cpp", (DL_FUNC) &_trajeR_EMZIP_cpp, 14},
     {"_trajeR_EMZIPIRLS_cpp", (DL_FUNC) &_trajeR_EMZIPIRLS_cpp, 14},

@@ -843,6 +843,12 @@ double QbetakZIP_cpp(NumericVector beta,
                      int nw,
                      Nullable<IntegerVector> ndeltacum){
   int period = A.ncol();
+  NumericVector vtmp(delta.get());
+  NumericVector ntmp(ndeltacum.get());
+  NumericVector deltak;
+  if (nw != 0){
+    NumericVector deltak = vtmp[Range(ntmp[k], ntmp[k+1]-1)];
+  }
   double a = 0;
   for (int i = 0; i < n; ++i){
     double zik = zk(i, k);
@@ -852,7 +858,7 @@ double QbetakZIP_cpp(NumericVector beta,
       for (int po = 0; po < nbeta; ++po){
         vtmp2.push_back(pow(A(i,t), po));
       }
-      double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, delta, nw, i, t, k); 
+      double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, t, k); 
       a += zik*(1 - sikt)*(Y(i,t)*betaAit - exp(betaAit));
     }
   }
@@ -896,7 +902,8 @@ double QdeltakZIP_cpp(NumericVector delta,
                       NumericMatrix Y,
                       Nullable<NumericMatrix> TCOV,
                       NumericVector beta,
-                      int nw){
+                      int nw,
+                      Nullable<IntegerVector> ndeltacum){
   int period = A.ncol();
   double a = 0;
   for (int i = 0; i < n; ++i){
@@ -907,7 +914,7 @@ double QdeltakZIP_cpp(NumericVector delta,
       for (int po = 0; po < nbeta; ++po){
         vtmp2.push_back(pow(A(i,t), po));
       }
-      double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, delta, nw, i, t, k); 
+      double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, t, k); 
       a += zik*(1 - sikt)*(Y(i,t)*betaAit - exp(betaAit));
     }
   }
@@ -963,6 +970,12 @@ NumericVector difQbetakZIP_cpp(NumericVector beta,
                                int nw,
                                Nullable<IntegerVector> ndeltacum){
   int period = A.ncol();
+  NumericVector vtmp(delta.get());
+  NumericVector ntmp(ndeltacum.get());
+  NumericVector deltak;
+  if (nw != 0){
+    NumericVector deltak = vtmp[Range(ntmp[k], ntmp[k+1]-1)];
+  }
   NumericVector betas;
   for (int l = 0; l < nbeta; ++l){
     double a = 0;
@@ -974,7 +987,7 @@ NumericVector difQbetakZIP_cpp(NumericVector beta,
         for (int po = 0; po < nbeta; ++po){
           vtmp2.push_back(pow(A(i,t), po));
         }
-        double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, delta, nw, i, t, k); 
+        double betaAit = sum(beta*vtmp2) + WitEM_cpp(TCOV, period, deltak, nw, i, t, k); 
         a += pow(A(i,t), l)*zik*(1-sikt)*(Y(i,t)-exp(betaAit));
       }
     }  
@@ -1024,7 +1037,8 @@ NumericVector difQdeltakZIP_cpp(NumericVector delta,
                                 NumericMatrix Y,
                                 NumericMatrix TCOV,
                                 NumericVector beta,
-                                int nw){
+                                int nw,
+                                Nullable<IntegerVector> ndeltacum){
   int period = A.ncol();
   NumericVector deltas;
   for (int l = 0; l < nw; ++l){
@@ -1032,7 +1046,7 @@ NumericVector difQdeltakZIP_cpp(NumericVector delta,
     for (int i = 0; i < n; ++i){
       double zik = zk(i, k);
       for (int t = 0; t < period; ++t){
-        double sikt = Sikt(i, t);
+        double sikt = Sikt(i, k*period+t);
         NumericVector vtmp2;
         for (int po = 0; po < nbeta; ++po){
           vtmp2.push_back(pow(A(i,t), po));
@@ -1238,7 +1252,7 @@ NumericVector EMZIP_cpp(NumericVector param,
       deltatmp.fill(nw);
       std::partial_sum(deltatmp.begin(), deltatmp.end(), ndeltacum.begin());
       ndeltacum.push_front(0);
-
+      
       for (int k = 0; k < ng; ++k){
         NumericVector betak = beta[Range(nbetacum[k], nbetacum[k+1]-1)];
         NumericVector nuk = nu[Range(nnucum[k], nnucum[k+1]-1)];
@@ -1250,7 +1264,7 @@ NumericVector EMZIP_cpp(NumericVector param,
             Sikt(i, t) = fSikt_cpp(pi, beta, nu, k, i, t, nbeta, nnu, n, A, Y, TCOV, delta, nw, ndeltacum, period, nbetacum, nnucum);
           }
         } 
-
+        
         List tmpnu = optim(Rcpp::_["par"] = nuk,
                            Rcpp::_["fn"] = Rcpp::InternalFunction(&QnukZIP_cpp),
                            Rcpp::_["gr"] = Rcpp::InternalFunction(&difQnukZIP_cpp),
@@ -1268,7 +1282,7 @@ NumericVector EMZIP_cpp(NumericVector param,
         );
         List tmp = optim(Rcpp::_["par"] = betak,
                          Rcpp::_["fn"] = Rcpp::InternalFunction(&QbetakZIP_cpp),
-                         Rcpp::_["gr"] = Rcpp::InternalFunction(&difQbetakZIP_cpp),
+                         Rcpp::_["gr"] = Rcpp::InternalFunction(& difQbetakZIP_cpp),
                          Rcpp::_["method"] = "BFGS",
                          Rcpp::_["zk"] = zk,
                          Rcpp::_["Sikt"] = Sikt,
@@ -1279,7 +1293,7 @@ NumericVector EMZIP_cpp(NumericVector param,
                          Rcpp::_["A"] =  A,
                          Rcpp::_["Y"] =  Y,
                          Rcpp::_["TCOV"] = TCOV,
-                         Rcpp::_["delta"] = deltak,
+                         Rcpp::_["delta"] = delta,
                          Rcpp::_["nw"] = nw,
                          Rcpp::_["ndeltacum"] = ndeltacum,
                          Rcpp::_["hessian"] =  0,
@@ -1287,7 +1301,7 @@ NumericVector EMZIP_cpp(NumericVector param,
         );
         List tmpdel = optim(Rcpp::_["par"] = deltak,
                          Rcpp::_["fn"] = Rcpp::InternalFunction(&QdeltakZIP_cpp),
-                         Rcpp::_["gr"] = Rcpp::InternalFunction(&difQdeltakZIP_cpp),
+                         Rcpp::_["gr"] = Rcpp::InternalFunction(& difQdeltakZIP_cpp),
                          Rcpp::_["method"] = "BFGS",
                          Rcpp::_["zk"] = zk,
                          Rcpp::_["Sikt"] = Sikt,
@@ -1300,6 +1314,7 @@ NumericVector EMZIP_cpp(NumericVector param,
                          Rcpp::_["TCOV"] = TCOV,
                          Rcpp::_["beta"] = betak,
                          Rcpp::_["nw"] = nw,
+                         Rcpp::_["ndeltacum"] = ndeltacum,
                          Rcpp::_["hessian"] =  0,
                          Rcpp::_["control"] = List::create(Named("fnscale")=-1)
         );
@@ -1341,7 +1356,9 @@ NumericVector EMZIP_cpp(NumericVector param,
   }
   return(NumericVector(vparam.begin(), vparam.end()));
 }
-
+/***R
+EMZIP_cpp(paraminit, ng, nx, n, nbeta, nnu,  A, Y, X, TCOV, nw, itermax=2, EMIRLS, refgr)
+*/
 // ----------------------------------------------------------------------------
 //  EM IRLS
 // ----------------------------------------------------------------------------
