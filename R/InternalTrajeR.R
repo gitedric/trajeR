@@ -1,15 +1,30 @@
 #################################################################################
 # find parameters for a CNORM model
 #################################################################################
-#' Title
+#' Internal function to fit CNORM Model
 #'
-#' @inheritParams trajeR.LOGIT
-#' @param sigma a vector of reals. The values of sigma.
-#' @param ssigma logical. A boolean thaht indicates if we had to use same sigma for all groups. By default is FALSE.
-#' @param ymin a real. For censored data, it is the minimum value of the data.
-#' @param ymax a real. For censored data, it is the maxium value of the data.
-#' @export
-#'
+#' @inheritParams trajeR
+#' @return  return a object of class Trajectory.CNORM
+#' \itemize{
+#'   \item beta -  vector of the parameter beta.
+#'   \item sigma - vector of the parameters sigma.
+#'   \item delta - vector of the parameter delta. Only if we use time covariate.
+#'   \item theta - vector with the parameter theta if there exist a coavriate X that modify
+#'   the probability or the probability of group membership.
+#'   \item sd - vector of the standard deviation of the parameters.
+#'   \item tab - a matrix with all the parameters and standard deviation.
+#'   \item Model - a string with the model used.
+#'   \item groups -  a integer with the number of group.
+#'   \item Names - strings with the name of the parameters.
+#'   \item Method  -  a string with the method used.
+#'   \item Size - a integer with the number of individuals.
+#'   \item Likelihood -  a real with the Likelihood obtained by the parameters.
+#'   \item Time - a vector with the first row of time values.
+#'   \item degre - a vector with the degree of the polynomial shape.
+#'   \item min - a real with the minimum value for censored data.
+#'   \item max - a real with the maximum value for censored data.
+#' }
+
 trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, sigma, delta, pi, Method, ssigma,
                          ymax, ymin, hessian, itermax, paraminit, EMIRLS, refgr){
   nsigma = ng
@@ -147,51 +162,28 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
 #################################################################################
 # find parameters for a LOGIT model
 #################################################################################
-#' trajeR.LOGIT
+#' Internal function to fit LOGIT Model
 #'
-#' @param Y a matrix containing the variables in the model.
-#' @param A a matrix containing the time variable data.
-#' @param X data that modifie the probabilty of belong to group. By default its value is a mtrix
-#' with one column  with value 1.
-#' @param TCOV a matrix containing the time covariate that influence the trajectory themselve.
-#' By default its value is NULL.
-#' @param ng integer. The number of group.
-#' @param nx integer. The number ov variable X.
-#' @param n integer. The number of individuals. It is the number of row of Y too.
-#' @param nbeta vector of integer. The number of parameters beta for each group.
-#' @param nw integer. The number of time dependant variable. 0 if TCOV is NULL.
-#' @param ntheta vector of integer. The number of covariate X plus 1.
-#' @param period integer. the number of time period.
-#' @param degre vector of integer. The degre of the ploynomial shape.
-#' @param theta vector of real. The values of theta parameters.
-#' @param beta vector of real. The values of beta parameters.
-#' @param delta vector of real. The values of delta parameters.
-#' @param pi vector of real. The values of pi parameters.
-#' @param Method string. The method used, Likelihhod, Expectation Maximization or
-#' Expectation Maximization IRWLS.
-#' @param hessian logicial. If TRUE the hessian matrix is calculated. By default its value is FALSE.
-#' @param itermax integer. Indicate the maximal number of iteration for optim function or for the EM algorithm.
-#' @param paraminit  vector. The vector of initial parameters. By default trajeR calculate the initial value
-#' based of the range or the standrad deviation.
-#' @param EMIRLS logicial. If TRUE  and if we use predictors for the membership probability we fit the partametrs
-#' by using IRLS method int he EM algorithm. By default its value is FALSE.
-#' @param refgr integer. Indicate the group reference for the calculus of the membership probability.
-#'
-#' @return  return a list object.
+#' @inheritParams trajeR
+#' @return  return a object of class Trajectory.LOGIT
 #' \itemize{
-#'   \item beta -  vector of the paramters beta.
+#'   \item beta -  vector of the parameter beta.
 #'   \item delta - vector of the parameter delta. Only if we use time covariate.
-#'   \item theta - vector with the paramter theta if there exist a coavriate X that modifie
+#'   \item theta - vector with the parameter theta if there exist a coavriate X that modify
 #'   the probability or the probability of group membership.
-#'   \item sd - vector of the standrad deviation of the parameters.
+#'   \item sd - vector of the standard deviation of the parameters.
 #'   \item tab - a matrix with all the parameters and standard deviation.
-#'   \item Likelihoo -  a real with the Likelihhod obtnaied by the parameters.
-#'   \item ng - a integer with the number of group.
-#'   \item model - a string with the model used.
-#'   \item method -  a string with the method used.
+#'   \item Model - a string with the model used.
+#'   \item groups -  a integer with the number of group.
+#'   \item Names - strings with the name of the parameters.
+#'   \item Method  -  a string with the method used.
+#'   \item Size - a integer with the number of individuals.
+#'   \item Likelihood -  a real with the Likelihood obtained by the parameters.
+#'   \item Time - a vector with the first row of time values.
+#'   \item degre - a vector with the degree of the polynomial shape.
 #' }
-#' @export
-#'
+
+
 trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, delta, pi, Method,
                          hessian, itermax, paraminit, EMIRLS, refgr){
   if (Method == "L"){
@@ -232,7 +224,7 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     if (hessian == TRUE){
       SE = IEMLOGIT_cpp(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr)
       if (nx == 1){
-        SE = c(SE[-c(1:(ng-1))], SE[1:(ng-1)], NA)
+        SE = c(SE[-c(1:(ng-1))], SE[1:(ng-1)], sqrt(sum(SE[1:(ng-1)]**2)))
       }else{
         SE = c(SE[-c(1:((ng-1)*nx))], rep(0, nx), SE[1:((ng-1)*nx)])
       }
@@ -327,7 +319,28 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
 #################################################################################
 # find parameters for a ZIP model
 #################################################################################
-#' @export
+#' Internal function to fit ZIP Model
+#' @inheritParams trajeR
+#' @return  return a object of class Trajectory.ZIP
+#' \itemize{
+#'   \item beta -  vector of the parameter beta.
+#'   \item delta - vector of the parameter delta. Only if we use time covariate.
+#'   \item theta - vector with the parameter theta if there exist a coavriate X that modify
+#'   the probability or the probability of group membership.
+#'   \item nu - vector of the parameters nu.
+#'   \item sd - vector of the standard deviation of the parameters.
+#'   \item tab - a matrix with all the parameters and standard deviation.
+#'   \item Model - a string with the model used.
+#'   \item groups -  a integer with the number of group.
+#'   \item Names - strings with the name of the parameters.
+#'   \item Method  -  a string with the method used.
+#'   \item Size - a integer with the number of individuals.
+#'   \item Likelihood -  a real with the Likelihood obtained by the parameters.
+#'   \item Time - a vector with the first row of time values.
+#'   \item degre - a vector with the degree of the polynomial shape for the Poisson part.
+#'   \item degre.nu - a vector with the degree of the polynomial shape for the exceeded zero state.
+#' }
+
 trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, degre.nu, theta, beta, nu, delta, pi, Method,
                        hessian, itermax, paraminit, EMIRLS, refgr){
   degre.nu = degre.nu + 1
@@ -474,7 +487,28 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
 #################################################################################
 # find parameters for Non Linear Model
 #################################################################################
-#' @export
+#' Internal function to fit Non Linear Model
+#' @inheritParams trajeR
+#' @return  return a object of class Trajectory.NL
+#' \itemize{
+#'   \item beta -  vector of the parameter beta.
+#'   \item sigma - vector of the parameters sigma.
+#'   \item delta - vector of the parameter delta. Only if we use time covariate.
+#'   \item theta - vector with the parameter theta if there exist a coavriate X that modify
+#'   the probability or the probability of group membership.
+#'   \item sd - vector of the standard deviation of the parameters.
+#'   \item tab - a matrix with all the parameters and standard deviation.
+#'   \item Model - a string with the model used.
+#'   \item groups -  a integer with the number of group.
+#'   \item Names - strings with the name of the parameters.
+#'   \item Method  -  a string with the method used.
+#'   \item Size - a integer with the number of individuals.
+#'   \item Likelihood -  a real with the Likelihood obtained by the parameters.
+#'   \item Time - a vector with the first row of time values.
+#'   \item degre - a vector with the degree of the polynomial shape.
+#'   \item fct - the defintion of the function used int this model.
+#' }
+
 trajeR.NL <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, sigma, pi, Method, ssigma,
                          hessian, itermax, paraminit, EMIRLS, refgr, fct, diffct, diffctind, nls.lmiter){
   nsigma = ng

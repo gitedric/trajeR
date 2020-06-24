@@ -6,6 +6,9 @@
 \usage{
 \method{print}{Trajectory.ZIP}(Obj, ...)
 }
+\value{
+The print of Obj.
+}
 \description{
-Print mehtod for an object of class "\code{Trajectory.ZIP}".
+Print method for an object of class "\code{Trajectory.ZIP}".
 }

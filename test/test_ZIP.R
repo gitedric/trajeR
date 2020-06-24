@@ -91,7 +91,7 @@ paraminitR = c(1,1,1,1,
 solLRisk = trajeR(Y = data[,2:6], A = data[,7:11], Risk = data[,12],
                   ng = 2, degre=c(2,2), degre.nu = c(1,1),
                   Model="ZIP", Method = "L", hessian = TRUE,
-                  paraminit = paraminit)
+                  paraminit = paraminitR)
 
 paraminit=c(1,1,
             -0.738409,0,0,
@@ -107,7 +107,7 @@ paraminit = c(1,1,
               0,0)
 solLTCOV = trajeR(Y = data[,2:6], A = data[,7:11], TCOV = data[,13:17],
                   ng = 2, degre=c(2,2), degre.nu = c(1,1),
-                  Model="ZIP", Method = "L", hessian = FALSE,
+                  Model="ZIP", Method = "L", hessian = TRUE,
                   paraminit = paraminit)
 
 paraminitR = c(1,1,1,1,
@@ -121,24 +121,38 @@ solLRiskTCOV = trajeR(Y = data[,2:6], A = data[,7:11], Risk = data[,12], TCOV = 
                   Model="ZIP", Method = "L", hessian = FALSE,
                   paraminit = paraminitR)
 
+paraminitEM=c(1,1,1,1,
+            -0.738409,0,0,
+            0.489316,0,0,
+            -3, 0,
+            -3, 0,
+            0, 0)
+solEMRiskTCOV = trajeR(Y = data[,2:6], A = data[,7:11], Risk = data[,12], TCOV = data[,13:17],
+                      ng = 2, degre=c(2,2), degre.nu = c(1,1),
+                      Model="ZIP", Method = "EM", hessian = TRUE,
+                      paraminit = paraminitEM)
 
 
-TCOV = data[,13:17]
-nw=1
-itermax=100
-a1=optim(par = paraminit, fn = likelihoodZIP_cpp, gr = difLZIP_cpp,
-      method = "BFGS",
-      hessian = FALSE,
-      control = list(fnscale=-1, trace=1, REPORT=1, maxit =itermax),
-      ng = ng, nx = nx, n = n, nnu = nnu, A = A, Y = Y, X = X, nbeta = nbeta,
-      nw = nw, TCOV = TCOV)
-a2=optim(par = paraminit, fn = LikelihoodZIP, gr = difLZIP,
-      method = "BFGS",
-      hessian = FALSE,
-      control = list(fnscale=-1, trace=1, REPORT=1, maxit =itermax),
-      ng = ng, nx = nx, n = n, nnu = nnu, A = A, Y = Y, X = X, nbeta = nbeta,
-      nw = nw, TCOV = TCOV)
 
+library(numDeriv)
+solve(-hessian(likelihoodZIP_cpp,solLRiskTCOV$tab[,1], ng=ng, nx=nx, nbeta=nbeta, nnu=nnu, n=n, A=A, Y=Y, X=X, TCOV=TCOV, nw=nw ),
+      method.args=list(eps=1e-10))
+h1=hessian(likelihoodZIP_cpp,solLRiskTCOV$tab[,1], ng=ng, nx=nx, nbeta=nbeta, nnu=nnu, n=n, A=A, Y=Y, X=X, TCOV=TCOV, nw=nw )
+h2=optimHess(solLRiskTCOV$tab[,1], likelihoodZIP_cpp, ng=ng, nx=nx, nbeta=nbeta, nnu=nnu, n=n, A=A, Y=Y, X=X, TCOV=TCOV, nw=nw,
+          control = list(ndeps=rep(10**(-6),16)))
+
+diag(ginv(h1))
+diag(ginv(h2))
+
+h1=hessian(likelihoodZIP_cpp,c(solL$theta, solL$beta, solL$nu), ng=ng, nx=nx, nbeta=nbeta, nnu=nnu, n=n, A=A, Y=Y, X=X, TCOV=NULL, nw=0 )
+h2=optimHess(c(solL$theta, solL$beta, solL$nu), likelihoodZIP_cpp, ng=ng, nx=nx, nbeta=nbeta, nnu=nnu, n=n, A=A, Y=Y, X=X, TCOV=NULL, nw=0,
+             #control = list(ndeps=rep(10**(-3),12)))
+)
+diag(solve(-h1))
+diag(solve(-h2))
+
+sqrt(diag(ginv(-h2)))
+sqrt(diag(ginv(-h1)))
 
 paraminitEM = c(0.5,0.5,
                 -0.738409,0,0,
@@ -160,6 +174,9 @@ solEMIRLSTCOV = trajeR(Y = data[,2:6], A = data[,7:11], TCOV = data[,13:17],
                    ng = 2, degre=c(2,2), degre.nu = c(1,1), 
                    Model="ZIP", Method = "EMIRLS", hessian = TRUE,
                    paraminit = paraminitEM)
+
+
+
 
 
 ndeltacum=c(0,1,2)

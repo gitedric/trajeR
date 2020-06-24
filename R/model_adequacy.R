@@ -8,15 +8,16 @@
 #' @param Y A matrix containing the variables in the model.
 #' @param A A matrix containing the time variable data.
 #' @param X An optionnal matrix that modifie the probabilty of belong to group.
-#'   By default its value is a mtrix with one column  with value 1.
+#'   By default its value is a matrix with one column  with value 1.
 #'
 #' @return A vector of real. The average posterior probability.
 #' @export
 #'
 #' @examples
 #' load("data/dataNORM01.RData")
-#' sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
-#' Method = "L", ssigma = FALSE, hessian = FALSE)
+#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
+#'               Model="CNORM", Method = "L", ssigma = FALSE, 
+#'               hessian = TRUE)
 #' AvePP(sol, Y = data[, 1;5], A = data[, 6:10])
 AvePP <- function(sol, Y, A, X = NULL){
   Xt = cbind(matrix(rep(1, sol$Size), ncol = 1), X)
@@ -49,12 +50,18 @@ AvePP <- function(sol, Y, A, X = NULL){
 #'
 #' @examples
 #' load("data/dataNORM01.RData")
-#' sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
-#' Method = "L", ssigma = FALSE, hessian = FALSE)
+#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
+#'               Model="CNORM", Method = "L", ssigma = FALSE, 
+#'               hessian = TRUE)
 #' OCC(sol, Y = data[, 1;5], A = data[, 6:10])
-OCC <- function(sol, Y, A, X = NULL){
-  tmp = AvePP(sol, Y, A, X)
-  return(tmp/(1-tmp)/(sol$theta/(1-sol$theta)))
+OCC <- function(sol, Y, A){
+  tmp = AvePP(sol, Y, A, X = NULL)
+  if (sol$Method == "L"){
+    prob = exp(sol$theta)/sum(exp(sol$theta))
+  }else{
+    prob = sol$theta
+  }
+  return(tmp/(1-tmp)/(prob/(1-prob)))
 }
 
 #' Assignment proportion
@@ -68,11 +75,12 @@ OCC <- function(sol, Y, A, X = NULL){
 #'
 #' @examples
 #' load("data/dataNORM01.RData")
-#' sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
-#' Method = "L", ssigma = FALSE, hessian = FALSE)
+#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
+#'               Model="CNORM", Method = "L", ssigma = FALSE, 
+#'               hessian = TRUE)
 #' propAssign(sol, Y = data[, 1;5], A = data[, 6:10])
-propAssign <- function(sol, Y, A, X = NULL){
-  Xt = cbind(matrix(rep(1, sol$Size), ncol = 1), X)
+propAssign <- function(sol, Y, A){
+  Xt = cbind(matrix(rep(1, sol$Size), ncol = 1))
   prob = GroupProb(sol, Y, A, X = Xt)
   gr = sapply(1:nrow(prob), function(s){which.max(prob[s,])})
   return(table(gr)/sol$Size)
@@ -93,11 +101,12 @@ propAssign <- function(sol, Y, A, X = NULL){
 #'
 #' @examples
 #' load("data/dataNORM01.RData")
-#' sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
-#' Method = "L", ssigma = FALSE, hessian = FALSE)
+#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
+#'               Model="CNORM", Method = "L", ssigma = FALSE, 
+#'               hessian = TRUE)
 #' ConfIntT(sol, Y = data[, 1;5], A = data[, 6:10])
-ConfIntT <- function(sol, Y, A, X = NULL, nb = 10000, alpha = 0.98){
-  Xt = cbind(matrix(rep(1, sol$Size), ncol = 1), X)
+ConfIntT <- function(sol, Y, A, nb = 10000, alpha = 0.98){
+  Xt = cbind(matrix(rep(1, sol$Size), ncol = 1))
   theta = sol$tab[(length(c(sol$beta,sol$delta))+sol$groups):(length(c(sol$beta,sol$delta, sol$theta))+sol$groups-1),1]
   sdthet = sol$tab[(length(c(sol$beta,sol$delta))+sol$groups):(length(c(sol$beta,sol$delta, sol$theta))+sol$groups-1),2]
   boottheta = sapply(1:sol$groups, function(s){rnorm(nb, theta[s], sdthet[s])})
@@ -119,15 +128,16 @@ ConfIntT <- function(sol, Y, A, X = NULL, nb = 10000, alpha = 0.98){
 #'
 #' @examples
 #' load("data/dataNORM01.RData")
-#' sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
-#' Method = "L", ssigma = FALSE, hessian = FALSE)
+#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
+#'               Model="CNORM", Method = "L", ssigma = FALSE, 
+#'               hessian = TRUE)
 #' adequacy (sol, Y = data[, 1;5], A = data[, 6:10])
-adequacy <- function(sol, Y, A, X = NULL, nb = 10000, alpha = 0.98){
+adequacy <- function(sol, Y, A, nb = 10000, alpha = 0.98){
   tab = rbind(exp(sol$theta)/sum(exp(sol$theta)),
-              ConfIntT(sol, Y, A, X = NULL, nb = 10000, alpha = 0.98),
-              propAssign(sol, Y, A, X = NULL),
-              AvePP(solSC,  Y = data[,1:5], A = data[,6:10]),
-              OCC(solSC, Y=data[,1:5], A=data[,6:10])
+              ConfIntT(sol, Y, A, nb = 10000, alpha = 0.98),
+              propAssign(sol, Y, A),
+              AvePP(sol,  Y, A),
+              OCC(sol, Y, A)
               )
   rownames(tab) = c("Prob. est.", "CI inf.", "CI sup.", "Prop.", "AvePP", "OCC")
   return(tab)

@@ -20,7 +20,7 @@ trajeR(
   hessian = TRUE,
   itermax = 100,
   paraminit = NULL,
-  EMIRLS = TRUE,
+  ProbIRLS = TRUE,
   refgr = 1,
   fct = NULL,
   diffct = NULL,
@@ -32,6 +32,9 @@ trajeR(
 \item{Y}{a matrix containing the variables in the model.}
 
 \item{A}{a matrix containing the time variable data.}
+
+\item{Risk}{an optionnal matrix that modifie the probabilty of belong to group. By default its value is a mtrix
+with one column  with value 1.}
 
 \item{TCOV}{an optionnal matrix containing the time covariate that influence the trajectory themselve.
 By default its value is NULL.}
@@ -48,7 +51,7 @@ CNORM for a Censored Normal Mixture Model or ZIP for Zero Inflated Poisson Mixtu
 \item{Method}{determine the method used for find the paramters of the model.
 The value are L for the Maximum Likelihiood Estimation, EM for Expectation Maximization method
 with quasi newton method inside, EMIWRLS for Expectation Maximization method with Iterative
-Weighted ??}
+Weighted Least Square.}
 
 \item{ssigma}{logical. By default its value is FALSE. For the CNORM model,
 indicate if we want the same sigma for all nomrmal density function.}
@@ -69,14 +72,18 @@ If the method is EM or EMIWRLS, the hessian is calculted by using Louis method.}
 \item{paraminit}{vector. The vector of initial parameters. By default trajeR calculate the initial value
 based of the range or the standrad deviation.}
 
+\item{ProbIRLS}{logical. Indicate the method to sue in the search of predictor's probability. If TRUE (by default) we use 
+IRLS method and if FALSE we use optimization method.}
+
+\item{refgr}{integer. The number of reference group. By default is 1.}
+
 \item{fct}{a function. The definition of the function  f in the definition in nonlinear model.}
 
 \item{diffct}{a function. The differential of the function f in the nonlinear model.}
 
 \item{nbvar}{integer. The number of variable in the nonlinear model.}
 
-\item{X}{an optionnal matrix that modifie the probabilty of belong to group. By default its value is a mtrix
-with one column  with value 1.}
+\item{nls.lmiter}{integer. In the case of non linear model, the maximum number of iterations allowed.}
 }
 \value{
 return an object of class "\code{Trajectory.LOGIT}".
@@ -106,9 +113,8 @@ Models for trajeR is, by default, a polynomial regression of the time value para
 We can spcecify the degre of the polynomial shape for each groups by the vector \code{degre}.
 }
 \examples{
-load(file = "/data/LOGIT_data01")
-data=as.matrix(data)
-solL = trajeR(data[,2:11], data[,12:21], ng = 3, degre=c(0,3,4),
-              Model="LOGIT", Method = "L", hessian = TRUE,
-              itermax = 300, paraminit = paraminit)
+load("data/dataNORM01.RData")
+solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
+              Model="CNORM", Method = "L", ssigma = FALSE, 
+              hessian = TRUE)
 }

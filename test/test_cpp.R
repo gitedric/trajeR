@@ -121,7 +121,7 @@ tmp=optim(par = paraminitL, fn = Likelihoodalpha_cpp, gr=difLalpha_cpp,
 #################################################
 sol1 = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
                  Model="CNORM", Method = "L", ssigma = FALSE, 
-                 hessian = FALSE)
+                 hessian = TRUE)
 sol2 = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
                   Model="CNORM", Method = "L", ssigma = FALSE, 
                   hessian = TRUE)

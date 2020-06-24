@@ -1,14 +1,13 @@
 Package: trajeR
 Type: Package
-Title: What the Package Does Using Title Case
-Version: 1.0
+Title: Find the probability and the trajectory of longitudianl mixture model
+Version: 0.9
 Date: 2020-05-28
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: More details about what the package does. See
-       <http://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file>
-       for details on how to write this part.
+Author: Cédric NOEL - Jang Schiltz
+Maintainer: Cédric NOEL <cedric.noel@univ-lorraine.fr>
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.4.6)
+Imports: Rcpp (>= 1.0.4.6), MASS, minpack.lm, numDeriv
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.1.0
+Encoding: UTF-8
+

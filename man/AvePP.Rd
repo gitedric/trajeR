@@ -14,7 +14,7 @@ AvePP(sol, Y, A, X = NULL)
 \item{A}{A matrix containing the time variable data.}
 
 \item{X}{An optionnal matrix that modifie the probabilty of belong to group.
-By default its value is a mtrix with one column  with value 1.}
+By default its value is a matrix with one column  with value 1.}
 }
 \value{
 A vector of real. The average posterior probability.
@@ -26,7 +26,8 @@ those individuals that were assigned to.
 }
 \examples{
 load("data/dataNORM01.RData")
-sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
-Method = "L", ssigma = FALSE, hessian = FALSE)
+solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
+              Model="CNORM", Method = "L", ssigma = FALSE, 
+              hessian = TRUE)
 AvePP(sol, Y = data[, 1;5], A = data[, 6:10])
 }

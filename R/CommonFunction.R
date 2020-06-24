@@ -1,19 +1,6 @@
 #################################################################################
 # Piik
 #################################################################################
-#' piik
-#'
-#' @param theta a vector of real with the value of theta parameters.
-#' @param i a integer. The indice of the data which is used to calculate the probability of group belonging.
-#' @param k a integer. The numerous of group.
-#' @param ng a integer. The number of groups.
-#' @param X a matrix. The covariate that influence the group belonging probability.
-#'
-#' @return a vector of real. The probability for an individual to belonging at each group.
-#' @export
-#'
-#' @examples
-#' piik(theta, i, k, ng, X)
 piik <- function(theta, i, k, ng, X){
   ntheta = ncol(X)
   tmp = exp(sapply(1:ng,function(s){theta[((s-1)*ntheta+1):(s*ntheta)]%*%X[i,]}))
@@ -22,34 +9,6 @@ piik <- function(theta, i, k, ng, X){
 #################################################################################
 # likelihood
 #################################################################################
-#' Likelihood of an trajectory object
-#'
-#' Calculate the likelihood of an object with a particular trajectory class.
-#'
-#' @param param a vector with the parameters of the model.
-#' @param model a string with the name of the model.
-#' @param ng a integer. The number of groups.
-#' @param nx a integer. The number of covariate that influenced the belonging probability.
-#' @param n a integer. The number of variable in the data.
-#' @param nbeta a vector of intger. This vector contained the degre of each polynomial shape of trajectory.
-#' @param nw a integer. The number of covariate that influenced the shape of trajectory.
-#' @param A a matrix of real. The time variable.
-#' @param Y a matrix of real. The data.
-#' @param X a matrix of real. The values that influenced the belonging probability.
-#' By default thsi matrxi is a matrix with 1.
-#' @param TCOV a matrix of real. The values that influenced the shape of trajectory.
-#' By default this matrrix is NULL.
-#' @param ymin real. For the CNORM model, indicate the minimum value of the data. It oncerne only the model
-#' with censored data. By default its value is NULL.
-#' @param ymax real. For the CNORM model, indicate the maximum value of the data. It oncerne only the model
-#' with censored data. By default its value is NULL.
-#' @param nnu a vector of real. The degre of the Poisson part.
-#'
-#' @return a real. The Likelihood of the mixture model.
-#' @export
-#'
-#' @examples
-#' Likelihood(param, model, ng, nx, n, nbeta, nw, A, Y, X, TCOV)
 Likelihood <- function(param, model, method, ng, nx, n, nbeta, nw, A, Y, X, TCOV, ymin = NULL, ymax = NULL, nnu = NULL, fct = NULL){
   if (model == "CNORM"){
     if (method == "L"){
@@ -62,7 +21,15 @@ Likelihood <- function(param, model, method, ng, nx, n, nbeta, nw, A, Y, X, TCOV
                            delta=param[-c(1:(ng+sum(nbeta)+ng))], nw)
     }
   } else if (model == "LOGIT"){
-    a = LikelihoodLogit(param, ng, nx, n, nbeta, A, Y, X, TCOV, nw)
+    if (method == "L"){
+      a = likelihoodLOGIT_cpp(param, ng, nx, n, nbeta, A, Y, X, TCOV, nw)
+    }else{
+      a = likelihoodEMLOGIT_cpp(n, ng, nbeta, 
+                              beta=param[(ng+1):(ng+sum(nbeta))],
+                              pi=param[1:(ng)],
+                              A, Y, TCOV, 
+                              delta=param[-c(1:(ng+sum(nbeta)))], nw)
+    }
   } else if (model == "ZIP"){
    if (method == "L"){
      a = likelihoodZIP_cpp(param, ng,nx, nbeta, nnu, n, A, Y, X, TCOV, nw)
@@ -113,7 +80,11 @@ WitEM <- function(TCOV, period, delta, nw, i, t, k, ndeltacum){
 #' @export
 #'
 #' @examples
-#' GroupProb(solL, Y=data[,2:11], A=data[,11:21])
+#' load("data/dataNORM01.RData")
+#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
+#'               Model="CNORM", Method = "L", ssigma = FALSE, 
+#'               hessian = TRUE)
+#' GroupProb(solL, Y=data[,1:5], A=data[,6:10])
 GroupProb <- function(Obj, Y, A, TCOV = NULL, X = NULL){
   n = Obj$Size
   ng = Obj$groups
@@ -159,13 +130,13 @@ GroupProb <- function(Obj, Y, A, TCOV = NULL, X = NULL){
     if (Obj$Method == "L"){
       for (i in 1:n){
         tmp = sapply(1:ng, function(s){
-          piik(theta, i, s, ng, X)*gkCNORM(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV, delta, nw)})
+          piik(theta, i, s, ng, X)*gkCNORM_cpp(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV, delta, nw)})
         res = rbind(res, tmp/sum(tmp))
       }
     }else{
       for (i in 1:n){
         tmp = sapply(1:ng, function(s){
-          theta[s]*gkCNORM(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV, delta, nw)})
+          theta[s]*gkCNORM_cpp(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV, delta, nw)})
       res = rbind(res, tmp/sum(tmp))
       }
     }

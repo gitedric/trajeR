@@ -1,8 +1,8 @@
-\contentsline {section}{\numberline {1}Introduction}{2}% 
-\contentsline {section}{\numberline {2}Getting started}{2}% 
-\contentsline {section}{\numberline {3}LOGIT model}{4}% 
-\contentsline {subsection}{\numberline {3.1}Parameters}{4}% 
-\contentsline {subsection}{\numberline {3.2}Plot}{8}% 
+\contentsline {section}{\numberline {1}Introduction}{3}% 
+\contentsline {section}{\numberline {2}Getting started}{3}% 
+\contentsline {section}{\numberline {3}LOGIT model}{5}% 
+\contentsline {subsection}{\numberline {3.1}Parameters}{5}% 
+\contentsline {subsection}{\numberline {3.2}Plot}{9}% 
 \contentsline {section}{\numberline {4}Censored Normal distribution}{16}% 
 \contentsline {section}{\numberline {5}Censored Normal model}{16}% 
 \contentsline {subsection}{\numberline {5.1}Parameters}{17}% 
@@ -14,6 +14,9 @@
 \contentsline {subsection}{\numberline {7.2}Plot}{37}% 
 \contentsline {subsection}{\numberline {7.3}Adding covariate}{39}% 
 \contentsline {subsection}{\numberline {7.4}Adding time depdendent covariate}{41}% 
-\contentsline {section}{\numberline {8}Non Linear model}{44}% 
-\contentsline {subsection}{\numberline {8.1}Parameters}{45}% 
-\contentsline {section}{\numberline {9}Membership probability}{50}% 
+\contentsline {section}{\numberline {8}Non Linear model}{43}% 
+\contentsline {subsection}{\numberline {8.1}Parameters}{43}% 
+\contentsline {section}{\numberline {9}Membership probability}{48}% 
+\contentsline {section}{\numberline {10}Profiles of group}{49}% 
+\contentsline {section}{\numberline {11}Information criteria}{49}% 
+\contentsline {section}{\numberline {12}Model adequacy}{49}% 

@@ -24,5 +24,9 @@ a real matrix. For each individual i in the data, this matrix contained the memb
 GroupProb calculate the membership probability of each value of the data.
 }
 \examples{
-GroupProb(solL, Y=data[,2:11], A=data[,11:21])
+load("data/dataNORM01.RData")
+solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
+              Model="CNORM", Method = "L", ssigma = FALSE, 
+              hessian = TRUE)
+GroupProb(solL, Y=data[,1:5], A=data[,6:10])
 }

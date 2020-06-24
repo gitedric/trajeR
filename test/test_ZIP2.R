@@ -1,5 +1,5 @@
 library(trajeR)
-
+library(MASS)
 namefile  = "/mnt/Travail/These/R/data/test/ZIP_data_2grTCOV3_"
 
 cpt = 1
@@ -18,7 +18,7 @@ paraminit = c(1,1,
 sol1=trajeR(Y = data[,ind], A = data[,ind + 10],
            ng = 2, degre=c(2,2), 
            Model="ZIP", degre.nu = c(1, 1),
-           Method = "L", hessian = FALSE, itermax = 100
+           Method = "L", hessian = TRUE, itermax = 100
 )
 sol2=trajeR(Y = data[,ind], A = data[,ind + 10],
            ng = 2, degre=c(2,2), 

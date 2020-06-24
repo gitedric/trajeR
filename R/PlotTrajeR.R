@@ -51,10 +51,10 @@ plotTrajCensoredNormalLikelihood <- function(beta, sigma, theta, delta, plotcov,
     }
     if (method == "L"){
       tmp = sapply(1:ng, function(s){
-        piik(theta, i, s, ng, X)*gkCNORM(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV, delta, nw)})
+        piik(theta, i, s, ng, X)*gkCNORM_cpp(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV=NULL, delta=NULL, nw=0)})
     }else{
       tmp = sapply(1:ng, function(s){
-        theta[s]*gkCNORM(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV, delta, nw)})
+        theta[s]*gkCNORM_cpp(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV=NULL, delta=NULL, nw=0)})
     }
     ncol = which.max(tmp/sum(tmp))
     plot(A[1,],Y[1,],type="b", ylim = c(min(Y),max(Y)), pch=16, col = cols1[ncol], ...)
@@ -62,13 +62,11 @@ plotTrajCensoredNormalLikelihood <- function(beta, sigma, theta, delta, plotcov,
     for (i in 2:n){
       if (method == "L"){
         tmp = sapply(1:ng, function(s){
-          piik(theta, i, s, ng, X)*gkCNORM(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV, delta, nw)})
+          piik(theta, i, s, ng, X)*gkCNORM_cpp(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV=NULL, delta=NULL, nw=0)})
       }else{
         tmp = sapply(1:ng, function(s){
-          theta[s]*gkCNORM(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV, delta, nw)})
+          theta[s]*gkCNORM_cpp(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV=NULL, delta=NULL, nw=0)})
       }
-      # tmp = sapply(1:ng, function(s){
-      #   piik(theta, i, s, ng, X)*gkCNORM(beta, sigma, i, s, nbeta, A, Y, ymin, ymax, TCOV, delta, nw)})
       ncol = which.max(tmp/sum(tmp))
       lines(A[i,],Y[i,],type="b", pch=16, col = cols1[ncol])
       Ygr[i,period+1] = ncol
@@ -81,7 +79,6 @@ plotTrajCensoredNormalLikelihood <- function(beta, sigma, theta, delta, plotcov,
       tmp[tmp<ymin] = ymin
       tmp[tmp>ymax] = ymax
       vec = cbind(vec, tmp)
-      #lines(pas, vec, type="l", pch=16,col = cols2[k], lwd = 4)
     }
     matlines(pas, vec, type="l", pch=16, col = cols2, lwd = 4, lty = 1)
     for (k in 1:ng){
@@ -152,7 +149,7 @@ plotTrajLOGIT <- function(beta, theta, delta, Y, A, X, ng, n, Time, dec, col, de
       X = cbind(rep(1, n))
     }
     tmp = sapply(1:ng, function(s){
-      piik(theta, 1, s, ng, X)*gkLogit(beta, i, s, nbeta, A, Y, TCOV, delta, nw)})
+      piik(theta, 1, s, ng, X)*gkLOGIT_cpp(beta, i-1, s-1, nbeta, A, Y, TCOV=NULL, delta=NULL, nw=0)})
     ncol = which.max(tmp/sum(tmp))
     a = dec * runif(n*period, 0, 1)*2*3.14159
     r = dec * runif(n*period, 0, 0.01)
@@ -173,7 +170,7 @@ plotTrajLOGIT <- function(beta, theta, delta, Y, A, X, ng, n, Time, dec, col, de
     Ygr[1,period+1] = ncol
     for (i in 2:n){
       tmp = sapply(1:ng, function(s){
-        piik(theta, i, s, ng, X)*gkLogit(beta, i, s, nbeta, A, Y, TCOV, delta, nw)})
+        piik(theta, i, s, ng, X)*gkLOGIT_cpp(beta, i-1, s-1, nbeta, A, Y, TCOV=NULL, delta=NULL, nw=0)})
       ncol = which.max(tmp/sum(tmp))
       lines(A[i,]+decx[((i-1)*period+1):(i*period)],Y[i,]+decy[i],type="b", pch=16, col = adjustcolor(cols1[ncol], alpha.f = alpha))
       points(A[i,]+decx[((i-1)*period+1):(i*period)],Y[i,]+decy[i], pch=16, col = cols1[ncol])
@@ -272,10 +269,10 @@ plotTrajZIP <- function(beta, nu, theta, delta, Y, A, X, TCOV, ng, n, Time, dec,
     }
     if (method == "L"){
       tmp = sapply(1:ng, function(s){
-        piik(theta, i, s, ng, X)*gkZIP(beta, nu, 1, s, nbeta, nnu, A, Y, TCOV, delta, nw)})
+        piik(theta, i, s, ng, X)*gkZIP_cpp(beta, nu, 0, s-1, nbeta, nnu, A, Y, TCOV, delta, nw)})
     }else{
       tmp = sapply(1:ng, function(s){
-        theta[s]*gkZIP(beta, nu, 1, s, nbeta, nnu, A, Y, TCOV, delta, nw)})
+        theta[s]*gkZIP_cpp(beta, nu, 0, s-1, nbeta, nnu, A, Y, TCOV, delta, nw)})
     }
     ncol = which.max(tmp/sum(tmp))
     a = dec * runif(n*period, 0, 1)*2*3.14159
@@ -294,10 +291,10 @@ plotTrajZIP <- function(beta, nu, theta, delta, Y, A, X, TCOV, ng, n, Time, dec,
     for (i in 2:n){
       if (method == "L"){
         tmp = sapply(1:ng, function(s){
-          piik(theta, i, s, ng, X)*gkZIP(beta, nu, i, s, nbeta, nnu, A, Y, TCOV, delta, nw)})
+          piik(theta, i, s, ng, X)*gkZIP_cpp(beta, nu, i-1, s-1, nbeta, nnu, A, Y, TCOV, delta, nw)})
       }else{
         tmp = sapply(1:ng, function(s){
-          theta[s]*gkZIP(beta, nu, i, s, nbeta, nnu, A, Y, TCOV, delta, nw)})
+          theta[s]*gkZIP_cpp(beta, nu, i-1, s-1, nbeta, nnu, A, Y, TCOV, delta, nw)})
       }
       ncol = which.max(tmp/sum(tmp))
       lines(A[i,]+decx[((i-1)*period+1):(i*period)],Y[i,]+decy[i],type="b", pch=16, col = adjustcolor(cols1[ncol], alpha.f = alpha))
@@ -438,7 +435,7 @@ plotTrajNL <- function(beta, sigma, theta, plotcov, Y, A, X, mean, alpha,
 ####################################################################################
 #' plot CNORM trajectory
 #'
-#'#' @param Obj an object of class "\code{Trajectory.LOGIT}".
+#' @param Obj an object of class "\code{Trajectory.LOGIT}".
 #' @param plotcov an optionnal vector or matrix with the same length as the time period. Default value is NULL.
 #' @param dec an optionnal real. It precise the shift to draw the data points.
 #' @param col an optionnal vector. The vecotr of colors. It must contain a color for each trajectory and each points of groups.
@@ -467,20 +464,19 @@ plot.Trajectory.CNORM <- function(Obj,  plotcov = NULL, col = "black", Y = NULL,
 #' plot LOGIT trajectory
 #'
 #' @param Obj an object of class "\code{Trajectory.LOGIT}".
-#' @param plotcov an optionnal vector or matrix with the same length as the time period. Default value is NULL.
-#' @param dec an optionnal real. It precise the shift to draw the data points.
-#' @param col an optionnal vector. The vecotr of colors. It must contain a color for each trajectory and each points of groups.
-#' Its length is the double of the number of group. Default valme is a grayscale.
+#' @param plotcov an optional vector or matrix with the same length as the time period. Default value is NULL.
+#' @param dec an optional real. It precise the shift to draw the data points.
+#' @param col an optional vector. The vector of colors. It must contain a color for each trajectory and each points of groups.
+#' Its length is the double of the number of group. Default value is a grayscale.
 #' @inheritParams trajeR
 #' @param mean an optional logicial. Indicate if the mean of ech group and time value must be draw.
-#' @param alpha on optionnal real. Indiciate the alpha channel of the points color.
+#' @param alpha on optional real. Indicate the alpha channel of the points color.
 #' @param ...
 #'
 #' @return a graphic.
 #' @export
 #'
-#' @examples
-#' plot(solL)
+
 plot.Trajectory.LOGIT <- function(Obj, plotcov = NULL, dec = 1, col = "black", Y = NULL, A = NULL, X = NULL, mean = FALSE, alpha = 1, ...){
   plotTrajLOGIT(beta = Obj$beta, theta = Obj$theta, delta = Obj$delta, plotcov = plotcov,
                 Y = Y, A = A, X = X, mean = mean, alpha = alpha,
@@ -491,6 +487,17 @@ plot.Trajectory.LOGIT <- function(Obj, plotcov = NULL, dec = 1, col = "black", Y
 ####################################################################################
 #' plot ZIP trajectory
 #'
+#' @param Obj an object of class "\code{Trajectory.LOGIT}".
+#' @param plotcov an optional vector or matrix with the same length as the time period. Default value is NULL.
+#' @param dec an optional real. It precise the shift to draw the data points.
+#' @param col an optional vector. The vector of colors. It must contain a color for each trajectory and each points of groups.
+#' Its length is the double of the number of group. Default value is a grayscale.
+#' @inheritParams trajeR
+#' @param mean an optional logicial. Indicate if the mean of ech group and time value must be draw.
+#' @param alpha on optional real. Indicate the alpha channel of the points color.
+#' @param ...
+#'
+#' @return a graphic.
 #' @export
 #'
 plot.Trajectory.ZIP <- function(Obj, plotcov = NULL, dec = 1, col = "black", Y = NULL, A = NULL, X = NULL, TCOV = NULL, mean = FALSE, alpha = 1, ...){
@@ -504,6 +511,17 @@ plot.Trajectory.ZIP <- function(Obj, plotcov = NULL, dec = 1, col = "black", Y =
 ####################################################################################
 #' plot Non Linear trajectory
 #'
+#' @param Obj an object of class "\code{Trajectory.LOGIT}".
+#' @param plotcov an optional vector or matrix with the same length as the time period. Default value is NULL.
+#' @param dec an optional real. It precise the shift to draw the data points.
+#' @param col an optional vector. The vector of colors. It must contain a color for each trajectory and each points of groups.
+#' Its length is the double of the number of group. Default value is a grayscale.
+#' @inheritParams trajeR
+#' @param mean an optional logicial. Indicate if the mean of ech group and time value must be draw.
+#' @param alpha on optional real. Indicate the alpha channel of the points color.
+#' @param ...
+#'
+#' @return a graphic.
 #' @export
 #'
 plot.Trajectory.NL <- function(Obj,  plotcov = NULL, col = "black", Y = NULL, A = NULL, X = NULL, mean = FALSE, alpha = 1, main = 'Values and predicted trajectories for all groups', ...){

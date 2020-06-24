@@ -27,7 +27,8 @@ group membership.
 }
 \examples{
 load("data/dataNORM01.RData")
-sol = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), Model="CNORM",
-Method = "L", ssigma = FALSE, hessian = FALSE)
+solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
+              Model="CNORM", Method = "L", ssigma = FALSE, 
+              hessian = TRUE)
 GroupProfles(sol, Y = data[,1:5], A = data[, 6:10])
 }

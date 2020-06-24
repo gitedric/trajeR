@@ -17,6 +17,8 @@
 )
 }
 \arguments{
+\item{Obj}{an object of class "\code{Trajectory.LOGIT}".}
+
 \item{plotcov}{an optionnal vector or matrix with the same length as the time period. Default value is NULL.}
 
 \item{col}{an optionnal vector. The vecotr of colors. It must contain a color for each trajectory and each points of groups.
@@ -25,9 +27,6 @@ Its length is the double of the number of group. Default valme is a grayscale.}
 \item{Y}{a matrix containing the variables in the model.}
 
 \item{A}{a matrix containing the time variable data.}
-
-\item{X}{an optionnal matrix that modifie the probabilty of belong to group. By default its value is a mtrix
-with one column  with value 1.}
 
 \item{mean}{an optional logicial. Indicate if the mean of ech group and time value must be draw.}
 
@@ -41,7 +40,7 @@ with one column  with value 1.}
 a graphic.
 }
 \description{
-#' @param Obj an object of class "\code{Trajectory.LOGIT}".
+plot CNORM trajectory
 }
 \examples{
 plot(solL)

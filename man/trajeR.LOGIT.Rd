@@ -2,7 +2,7 @@
 % Please edit documentation in R/InternalTrajeR.R
 \name{trajeR.LOGIT}
 \alias{trajeR.LOGIT}
-\title{trajeR.LOGIT}
+\title{Internal function to fit LOGIT Model}
 \usage{
 trajeR.LOGIT(
   Y,
@@ -34,66 +34,49 @@ trajeR.LOGIT(
 
 \item{A}{a matrix containing the time variable data.}
 
-\item{X}{data that modifie the probabilty of belong to group. By default its value is a mtrix
-with one column  with value 1.}
-
-\item{TCOV}{a matrix containing the time covariate that influence the trajectory themselve.
+\item{TCOV}{an optionnal matrix containing the time covariate that influence the trajectory themselve.
 By default its value is NULL.}
 
 \item{ng}{integer. The number of group.}
 
-\item{nx}{integer. The number ov variable X.}
+\item{degre}{vector of integer. The degre of every ploynomial function.}
 
-\item{n}{integer. The number of individuals. It is the number of row of Y too.}
+\item{Method}{determine the method used for find the paramters of the model.
+The value are L for the Maximum Likelihiood Estimation, EM for Expectation Maximization method
+with quasi newton method inside, EMIWRLS for Expectation Maximization method with Iterative
+Weighted Least Square.}
 
-\item{nbeta}{vector of integer. The number of parameters beta for each group.}
-
-\item{nw}{integer. The number of time dependant variable. 0 if TCOV is NULL.}
-
-\item{ntheta}{vector of integer. The number of covariate X plus 1.}
-
-\item{period}{integer. the number of time period.}
-
-\item{degre}{vector of integer. The degre of the ploynomial shape.}
-
-\item{theta}{vector of real. The values of theta parameters.}
-
-\item{beta}{vector of real. The values of beta parameters.}
-
-\item{delta}{vector of real. The values of delta parameters.}
-
-\item{pi}{vector of real. The values of pi parameters.}
-
-\item{Method}{string. The method used, Likelihhod, Expectation Maximization or
-Expectation Maximization IRWLS.}
-
-\item{hessian}{logicial. If TRUE the hessian matrix is calculated. By default its value is FALSE.}
+\item{hessian}{logical. Indicate if we want calculate the hessian matrix. Default is FALSE.
+If the method use is Likelihood, the hessian is calculated by inversing the Information's Fisher Matrix.
+To avoid numerically singular matrix we find the pseudo inverse matrix by using the ginv function int he package MASS.
+If the method is EM or EMIWRLS, the hessian is calculted by using Louis method.}
 
 \item{itermax}{integer. Indicate the maximal number of iteration for optim function or for the EM algorithm.}
 
 \item{paraminit}{vector. The vector of initial parameters. By default trajeR calculate the initial value
 based of the range or the standrad deviation.}
 
-\item{EMIRLS}{logicial. If TRUE  and if we use predictors for the membership probability we fit the partametrs
-by using IRLS method int he EM algorithm. By default its value is FALSE.}
-
-\item{refgr}{integer. Indicate the group reference for the calculus of the membership probability.}
+\item{refgr}{integer. The number of reference group. By default is 1.}
 }
 \value{
-return a list object.
+return a object of class Trajectory.LOGIT
 \itemize{
-  \item beta -  vector of the paramters beta.
+  \item beta -  vector of the parameter beta.
   \item delta - vector of the parameter delta. Only if we use time covariate.
-  \item theta - vector with the paramter theta if there exist a coavriate X that modifie
+  \item theta - vector with the parameter theta if there exist a coavriate X that modify
   the probability or the probability of group membership.
-  \item sd - vector of the standrad deviation of the parameters.
+  \item sd - vector of the standard deviation of the parameters.
   \item tab - a matrix with all the parameters and standard deviation.
-  \item Likelihoo -  a real with the Likelihhod obtnaied by the parameters.
-  \item ng - a integer with the number of group.
-  \item model - a string with the model used.
-  \item method -  a string with the method used.
+  \item Model - a string with the model used.
+  \item groups -  a integer with the number of group.
+  \item Names - strings with the name of the parameters.
+  \item Method  -  a string with the method used.
+  \item Size - a integer with the number of individuals.
+  \item Likelihood -  a real with the Likelihood obtained by the parameters.
+  \item Time - a vector with the first row of time values.
+  \item degre - a vector with the degree of the polynomial shape.
 }
 }
 \description{
-trajeR.LOGIT
+Internal function to fit LOGIT Model
 }

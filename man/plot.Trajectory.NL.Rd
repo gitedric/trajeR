@@ -17,6 +17,29 @@
   ...
 )
 }
+\arguments{
+\item{Obj}{an object of class "\code{Trajectory.LOGIT}".}
+
+\item{plotcov}{an optional vector or matrix with the same length as the time period. Default value is NULL.}
+
+\item{col}{an optional vector. The vector of colors. It must contain a color for each trajectory and each points of groups.
+Its length is the double of the number of group. Default value is a grayscale.}
+
+\item{Y}{a matrix containing the variables in the model.}
+
+\item{A}{a matrix containing the time variable data.}
+
+\item{mean}{an optional logicial. Indicate if the mean of ech group and time value must be draw.}
+
+\item{alpha}{on optional real. Indicate the alpha channel of the points color.}
+
+\item{...}{}
+
+\item{dec}{an optional real. It precise the shift to draw the data points.}
+}
+\value{
+a graphic.
+}
 \description{
 plot Non Linear trajectory
 }

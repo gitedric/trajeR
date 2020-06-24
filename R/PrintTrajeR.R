@@ -193,8 +193,11 @@ print.Trajectory.CNORM <- function(Obj, ...){
 ####################################################################################
 #' Print ZIP
 #'
-#' Print mehtod for an object of class "\code{Trajectory.ZIP}".
+#' Print method for an object of class "\code{Trajectory.ZIP}".
+#' 
 #' @export
+#' 
+#' @return  The print of Obj.
 print.Trajectory.ZIP <- function(Obj, ...){
   # definiton of different sizes
   n= Obj$Size
@@ -422,7 +425,7 @@ print.Trajectory.LOGIT <- function(Obj, ...){
   } else if (Obj$Method == "EM"){
     cat("Method : Expectation-maximization \n \n")
   }else{
-    cat("Method : Expectation-maximization with IWRLS\n \n")
+    cat("Method : Expectation-maximization with IRLS\n \n")
   }
   esp = 1
   sep1 <- SepLine1(widths, pad = esp)

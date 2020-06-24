@@ -10,7 +10,7 @@
 #'
 #' @param Y a matrix containing the variables in the model.
 #' @param A a matrix containing the time variable data.
-#' @param X an optionnal matrix that modifie the probabilty of belong to group. By default its value is a mtrix
+#' @param Risk an optionnal matrix that modifie the probabilty of belong to group. By default its value is a mtrix
 #' with one column  with value 1.
 #' @param TCOV an optionnal matrix containing the time covariate that influence the trajectory themselve.
 #' By default its value is NULL.
@@ -22,7 +22,7 @@
 #' @param Method determine the method used for find the paramters of the model.
 #' The value are L for the Maximum Likelihiood Estimation, EM for Expectation Maximization method
 #' with quasi newton method inside, EMIWRLS for Expectation Maximization method with Iterative
-#' Weighted ??
+#' Weighted Least Square.
 #' @param ssigma logical. By default its value is FALSE. For the CNORM model,
 #' indicate if we want the same sigma for all nomrmal density function.
 #' @param ymax real. For the CNORM model, indicate the maximum value of the data. It oncerne only the model
@@ -36,10 +36,13 @@
 #' @param itermax integer. Indicate the maximal number of iteration for optim function or for the EM algorithm.
 #' @param paraminit vector. The vector of initial parameters. By default trajeR calculate the initial value
 #' based of the range or the standrad deviation.
+#' @param ProbIRLS logical. Indicate the method to sue in the search of predictor's probability. If TRUE (by default) we use 
+#' IRLS method and if FALSE we use optimization method.
+#' @param refgr integer. The number of reference group. By default is 1.
 #' @param fct a function. The definition of the function  f in the definition in nonlinear model.
 #' @param diffct a function. The differential of the function f in the nonlinear model.
 #' @param nbvar integer. The number of variable in the nonlinear model.
-#'
+#' @param  nls.lmiter integer. In the case of non linear model, the maximum number of iterations allowed.
 #' @return return an object of class "\code{Trajectory.LOGIT}".
 #' The generic accessor functions \code{beta}, \code{delta}, \code{theta}, \code{sd}, \code{tab}, \code{Likelihood},
 #' \code{ng}, \code{model} and \code{method} extract various useful features of the value returned by \code{trajeR}.
@@ -62,17 +65,17 @@
 #' @export
 #'
 #' @examples
-#' load(file = "/data/LOGIT_data01")
-#' data=as.matrix(data)
-#' solL = trajeR(data[,2:11], data[,12:21], ng = 3, degre=c(0,3,4),
-#'               Model="LOGIT", Method = "L", hessian = TRUE,
-#'               itermax = 300, paraminit = paraminit)
+#' load("data/dataNORM01.RData")
+#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
+#'               Model="CNORM", Method = "L", ssigma = FALSE, 
+#'               hessian = TRUE)
 
 trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, ng, degre = NULL, degre.nu = 0,
                    Model, Method = "L", ssigma = FALSE,
                    ymax = max(Y)+1, ymin = min(Y)-1, hessian = TRUE,
-                   itermax = 100, paraminit = NULL, EMIRLS = TRUE, refgr = 1,
+                   itermax = 100, paraminit = NULL, ProbIRLS = TRUE, refgr = 1,
                    fct = NULL, diffct = NULL, nbvar = NULL, nls.lmiter = 50){
+  EMIRLS = ProbIRLS
   X = Risk
   if (is.null(degre)){
     degre = rep(nbvar, ng)
