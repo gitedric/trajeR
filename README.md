@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo/logotrajeR.png" height="150" />
+  <img src="inst/logo/logotrajeR.png" height="150" />
 </p>
 
 **UNDER DEVELOPMENT**
