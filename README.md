@@ -2,7 +2,6 @@
   <img src="inst/logo/logotrajeR.png" height="150" />
 </p>
 
-
 **UNDER DEVELOPMENT**
 
  A R package that fit **regression mixture model - group-based trajectory modeling (GBTM)**. 
