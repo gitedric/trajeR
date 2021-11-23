@@ -2,7 +2,6 @@
   <img src="inst/logo/logotrajeR.png" height="150" />
 </p>
 
-
 **UNDER DEVELOPMENT**
 
  A R package that fit **regression mixture model - group-based trajectory modeling (GBTM)**. 
@@ -18,9 +17,12 @@ TrajeR support several distributions
 
 - Censored (or regular) Normal distribution ;
 - Zero Inflated Poisson distribution ;
-- Bernouilli distribution.
+- Poisson ditribution ;
+- Bernouilli distribution ;
+- Beta distribution (only withe Likelihood) ;
+- Non linear regression.
 
-The trajectories of each clusters are modelize by poylnomials. We have the possibility to use Non Linear models too.
+The trajectories of each clusters are modeling by polynomials. We have the possibility to use Non Linear models too.
 
 ## Installation
 
