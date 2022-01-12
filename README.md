@@ -55,7 +55,7 @@ trajeR(Y, A, X = NULL, TCOV = NULL, ng, degre, degre.nu = 0,
        fct = NULL, diffct = NULL, nbvar = NULL, nls.lmiter)
 ```
 
-For more details about the usage of this package you can read the vignette documentation  [here](/vignettes/trajeR_vignette_main.pdf).
+For more details about the usage of this package you can read the vignette documentation  (coming soon).
 
 # Contact
 

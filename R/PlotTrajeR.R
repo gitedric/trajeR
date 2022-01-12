@@ -664,20 +664,22 @@ plotTrajBETA <- function(beta, phi, theta, delta, Y, A, X, TCOV, ng, n, Time, de
   }
 }
 ###################################################################################
-# Genric function to plot the trajectory
+# Generic function to plot the trajectory
 ####################################################################################
 #' plot trajectory
 #'
-#' @param Obj an object of class "\code{Trajectory.CNORM}".
+#' @param Obj an object of class "\code{Trajectory}".
 #' @param ... optional parameters
 #'
 #' @return a graphic.
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' plotrajeR(solL)
-#' }
+#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' plotrajeR(sol)
+
 plotrajeR <- function(Obj, ...){
   UseMethod("plotrajeR", Obj)
 }

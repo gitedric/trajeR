@@ -1,7 +1,0 @@
-%\VignetteIndexEntry{trajeR_vignette}
-\documentclass{article}
-\usepackage{pdfpages}
-\usepackage[T1]{fontenc}
-\begin{document}
-\includepdf[pages=-, fitpaper=true]{trajeR_vignette_main.pdf}
-\end{document}

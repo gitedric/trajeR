@@ -41,10 +41,10 @@ SepLine2 <- function(n, pad = 1) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' load(file='data/CNORM_data01')
-#' solL
-#' }
+#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' sol
 print.Trajectory.CNORM <- function(x, ...){
   # definiton of different sizes
   Obj = x
@@ -204,6 +204,13 @@ print.Trajectory.CNORM <- function(x, ...){
 #' @export
 #' 
 #' @return  The print of Obj.
+#' 
+#' @examples
+#' data = read.csv(system.file("extdata", "ZIP2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], 
+#'              degre = c(1,2), degre.nu = c(1,1), Model = "ZIP", Method = "L")
+#' sol
 print.Trajectory.ZIP <- function(x, ...){
   # definiton of different sizes
   Obj = x
@@ -351,10 +358,10 @@ print.Trajectory.ZIP <- function(x, ...){
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' load(file='data/LOGIT_data01')
-#' solL
-#' }
+#' data = read.csv(system.file("extdata", "LOGIT2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(1,2), Model = "LOGIT", Method = "L")
+#' sol
 print.Trajectory.LOGIT <- function(x, ...){
   # definiton of different sizes
   Obj = x
@@ -497,7 +504,13 @@ print.Trajectory.LOGIT <- function(x, ...){
 #'
 #' @return  The print of Obj.
 #' @export
-#'
+#' 
+#' @examples
+#' data = read.csv(system.file("extdata", "POIS2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], 
+#'              degre = c(2,2), Model = "POIS", Method = "L", hessian = FALSE)
+#' sol
 print.Trajectory.POIS <- function(x, ...){
   # definiton of different sizes
   Obj = x
@@ -638,6 +651,7 @@ print.Trajectory.POIS <- function(x, ...){
 #' @param x Trajectory's object. . An object of class "\code{Trajectory.NL}".
 #' @param ... optional parameters
 #'
+#' @return  The print of Obj.
 #' @export
 #'
 print.Trajectory.NL <- function(x, ...){
@@ -801,6 +815,13 @@ print.Trajectory.NL <- function(x, ...){
 #' @export
 #' 
 #' @return  The print of Obj.
+#' @examples
+#' data = read.csv(system.file("extdata", "BETA2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' data[,2:6] = data[,2:6]*(nrow(data[,2:6])-1+0.5)/nrow(data[,2:6])
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], 
+#'              degre = c(2,2), degre.phi = c(1,1), Model = "BETA", Method = "L")
+#' sol
 print.Trajectory.BETA <- function(x, ...){
   # definiton of different sizes
   Obj = x

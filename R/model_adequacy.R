@@ -14,13 +14,10 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' load("data/dataNORM01.RData")
-#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
-#'               Model="CNORM", Method = "L", ssigma = FALSE, 
-#'               hessian = TRUE)
-#' AvePP(sol, Y = data[, 1:5], A = data[, 6:10])
-#' }
+#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' AvePP(sol, Y = data[, 2:6], A = data[, 7:11])
 AvePP <- function(sol, Y, A, X = NULL){
   #Xt = cbind(matrix(rep(1, sol$Size), ncol = 1), X)
   Xt = X
@@ -55,13 +52,10 @@ AvePP <- function(sol, Y, A, X = NULL){
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' load("data/dataNORM01.RData")
-#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
-#'               Model="CNORM", Method = "L", ssigma = FALSE, 
-#'               hessian = TRUE)
-#' OCC(sol, Y = data[, 1;5], A = data[, 6:10])
-#' }
+#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' OCC(sol, Y = data[, 2:6], A = data[, 7:11])
 OCC <- function(sol, Y, A){
   tmp = AvePP(sol, Y, A, X = NULL)
   if (sol$Method == "L"){
@@ -82,13 +76,10 @@ OCC <- function(sol, Y, A){
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' load("data/dataNORM01.RData")
-#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
-#'               Model="CNORM", Method = "L", ssigma = FALSE, 
-#'               hessian = TRUE)
-#' propAssign(sol, Y = data[, 1;5], A = data[, 6:10])
-#' }
+#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' propAssign(sol, Y = data[, 2:6], A = data[, 7:11])
 propAssign <- function(sol, Y, A){
   #Xt = matrix(rep(1, sol$Size), ncol = 1)
   # prob = GroupProb(sol, Y, A, X = Xt)
@@ -113,13 +104,10 @@ propAssign <- function(sol, Y, A){
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' load("data/dataNORM01.RData")
-#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
-#'               Model="CNORM", Method = "L", ssigma = FALSE, 
-#'               hessian = TRUE)
-#' ConfIntT(sol, Y = data[, 1;5], A = data[, 6:10])
-#' }
+#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' ConfIntT(sol, Y = data[, 2:6], A = data[, 7:11])
 ConfIntT <- function(sol, Y, A, nb = 10000, alpha = 0.98){
   Xt = cbind(matrix(rep(1, sol$Size), ncol = 1))
   # theta = sol$tab[(length(c(sol$beta,sol$delta, sol$phi, sol$nu))+sol$groups):(length(c(sol$beta,sol$delta, sol$phi, sol$nu, sol$theta))+sol$groups-1),1]
@@ -144,13 +132,10 @@ ConfIntT <- function(sol, Y, A, nb = 10000, alpha = 0.98){
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' load("data/dataNORM01.RData")
-#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
-#'               Model="CNORM", Method = "L", ssigma = FALSE, 
-#'               hessian = TRUE)
-#' adequacy(sol, Y = data[, 1;5], A = data[, 6:10])
-#' }
+#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' adequacy(sol, Y = data[, 2:6], A = data[, 7:11])
 adequacy <- function(sol, Y, A, nb = 10000, alpha = 0.98){
   tab = rbind(exp(sol$theta)/sum(exp(sol$theta)),
               ConfIntT(sol, Y, A, nb = 10000, alpha = 0.98),

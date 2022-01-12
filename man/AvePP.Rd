@@ -25,11 +25,8 @@ Calculate the Average Posterior Probability. Average Posterior Probability
 those individuals that were assigned to.
 }
 \examples{
-\dontrun{
-load("data/dataNORM01.RData")
-solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
-              Model="CNORM", Method = "L", ssigma = FALSE, 
-              hessian = TRUE)
-AvePP(sol, Y = data[, 1:5], A = data[, 6:10])
-}
+data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+data = as.matrix(data)
+sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+AvePP(sol, Y = data[, 2:6], A = data[, 7:11])
 }

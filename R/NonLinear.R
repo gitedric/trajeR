@@ -15,6 +15,7 @@
 #' @param TCOV Matrix of real.
 #' @param fct Function.
 #' @param diffctind Integer.
+#' @return real. Cumpute the value of the function fct for individual i, time t and group k.
 #' @export
 fait <- function(betak, i, t, A, TCOV, fct, diffctind){
   return(fct(A[i,t], betak, TCOV))
@@ -23,6 +24,7 @@ fait <- function(betak, i, t, A, TCOV, fct, diffctind){
 #' 
 #' @inheritParams fait
 #' @param diffct Function.
+#' @return real. Cumpute the value of the diferential function fct for individual i, time t and group k.
 #' @export
 diffaitbeta <- function(betak, i, t, A, TCOV, fct, diffct, diffctind){
   if (diffctind == 0 ){

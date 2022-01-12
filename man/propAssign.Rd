@@ -21,11 +21,8 @@ Calculate the proportion of individuals in a given group. That is the ratio of
 the number of individuals in one group and all the individuals.
 }
 \examples{
-\dontrun{
-load("data/dataNORM01.RData")
-solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
-              Model="CNORM", Method = "L", ssigma = FALSE, 
-              hessian = TRUE)
-propAssign(sol, Y = data[, 1;5], A = data[, 6:10])
-}
+data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+data = as.matrix(data)
+sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+propAssign(sol, Y = data[, 2:6], A = data[, 7:11])
 }

@@ -144,9 +144,6 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, degre = NULL, degre.nu = 0, d
     beta = lapply(1:(ng), function(s){
       c(log(stats::qgamma((2*(s-1)+1)/(2*ng), mean(Y, na.rm = T)**2, mean(Y, na.rm = T)**2/(stats::sd(Y, na.rm = T)**2-mean(Y, na.rm = T)))), rep(0, degre[s]-1))
     })
-    # beta = lapply(1:(ng), function(s){
-    #   c(log(stats::qnorm((2*(s-1)+1)/(2*ng),mean(Y, na.rm = T),stats::sd(Y, na.rm = T))), rep(0, degre[s]-1))
-    # })
     paraff = c(unlist(beta))
   }else{
     beta = lapply(1:(ng), function(s){
@@ -158,22 +155,6 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, degre = NULL, degre.nu = 0, d
   theta = rep(0, ng*ntheta)
   X = as.matrix(X)
   pi = sapply(1:ng, function(s){piik(theta = theta, i = 1, k = s, ng = ng, X = X)})
-  # if (is.null(paraminit)){
-  #   cat("Starting Values\n ")
-  #   if (nw == 0){
-  #     cat(pi, paraff)
-  #   }else{
-  #     cat(c(pi, paraff, unlist(delta)))
-  #   }
-  #   cat('\n\n')
-  #   cat('Likelihood \n')
-  # }else{
-  #   cat('Starting Values\n')
-  #   cat(paraminit)
-  #   cat('\n\n')
-  #   cat("Likelihood\n")
-  # }
-  #if (is.null(paraminit)){paraminit = c(pi, paraff, unlist(delta))}
   cat('Starting Values\n')
   if (is.null(paraminit)){
     cat(c(pi, paraff, unlist(delta)))  
@@ -213,14 +194,6 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, degre = NULL, degre.nu = 0, d
       }
       diffctind = 0
     }
-    # pos <- 1
-    # envir = as.environment(pos)
-    # assign("fct", fct, envir = envir)
-    # assign("diffct", diffct, envir = envir)
-    # assign("fct", fct, envir=globalenv())
-    # assign("diffct", diffct, envir=globalenv())
-    # my_env$fct = fct
-    # my_env$diffct = diffct
     res = trajeR.NL(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, sigma, pi, Method, ssigma,
                     hessian, itermax, paraminit, EMIRLS, refgr, fct, diffct, diffctind, nls.lmiter)
   }

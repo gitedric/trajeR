@@ -2,7 +2,7 @@ Package: trajeR
 Type: Package
 Title: Group Based Modeling Trajectory
 Description: Find the probability and the trajectory of longitudinal mixture model.
-Version: 0.9.0
+Version: 0.9.0.1
 Date: 2021-11-21
 Author: Cédric NOEL - Jang Schiltz
 Maintainer: Cédric NOEL <cedric.noel@univ-lorraine.fr>
@@ -13,3 +13,5 @@ RoxygenNote: 7.1.2
 Encoding: UTF-8
 URL: https://github.com/gitedric/trajeR
 BugReports: https://github.com/gitedric/trajeR/issues
+Depends: 
+    R (>= 2.10)

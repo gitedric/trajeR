@@ -21,6 +21,9 @@ fait(betak, i, t, A, TCOV, fct, diffctind)
 
 \item{diffctind}{Integer.}
 }
+\value{
+real. Cumpute the value of the function fct for individual i, time t and group k.
+}
 \description{
 Function fait
 }

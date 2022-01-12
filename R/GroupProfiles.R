@@ -15,18 +15,17 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' load("data/dataNORM01.RData")
-#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
-#'               Model="CNORM", Method = "L", ssigma = FALSE, 
-#'               hessian = TRUE)
-#' GroupProfles(sol, Y = data[,1:5], A = data[, 6:10])
-#' }
+#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data = as.matrix(data)
+#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], Risk = data[,12], 
+#'              degre = c(2,2), Model = "CNORM", Method = "L")
+#' GroupProfiles(sol, Y = data[, 2:6], A = data[, 7:11], X = data[,12])
 GroupProfiles <- function(sol, Y, A, X){
- # Xt = cbind(matrix(rep(1, sol$Size), ncol = 1), X)
-  Xt = X
-  prob = GroupProb(sol, Y = Y, A = A, X = Xt)
+  prob = GroupProb(sol, Y = Y, A = A, X = X)
   gr = sapply(1:nrow(prob), function(s){which.max(prob[s,])})
+  if (!is.matrix((X))){
+    X = matrix(X)
+  }
   tab = c()
   for (j in 1:ncol(X)){
     tabl = c()

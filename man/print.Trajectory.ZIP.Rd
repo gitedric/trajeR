@@ -17,3 +17,10 @@ The print of Obj.
 \description{
 Print method for an object of class "\code{Trajectory.ZIP}".
 }
+\examples{
+data = read.csv(system.file("extdata", "ZIP2gr.csv", package = "trajeR"))
+data = as.matrix(data)
+sol = trajeR(Y = data[, 2:6], A = data[, 7:11], 
+             degre = c(1,2), degre.nu = c(1,1), Model = "ZIP", Method = "L")
+sol
+}

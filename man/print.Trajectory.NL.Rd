@@ -11,6 +11,9 @@
 
 \item{...}{optional parameters}
 }
+\value{
+The print of Obj.
+}
 \description{
 Print method for an object of class "\code{Trajectory.NL}".
 }

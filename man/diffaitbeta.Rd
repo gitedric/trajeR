@@ -23,6 +23,9 @@ diffaitbeta(betak, i, t, A, TCOV, fct, diffct, diffctind)
 
 \item{diffctind}{Integer.}
 }
+\value{
+real. Cumpute the value of the diferential function fct for individual i, time t and group k.
+}
 \description{
 Differential
 }
