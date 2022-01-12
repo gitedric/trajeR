@@ -21,21 +21,21 @@ set_storelik <- function(value) {
 # Piik
 #################################################################################
 piik <- function(theta, i, k, ng, X){
-  ntheta = ncol(X)
-  tmp = exp(sapply(1:ng,function(s){theta[((s-1)*ntheta+1):(s*ntheta)]%*%X[i,]}))
+  ntheta <- ncol(X)
+  tmp <- exp(sapply(1:ng,function(s){theta[((s-1)*ntheta+1):(s*ntheta)]%*%X[i,]}))
   return(tmp[k]/sum(tmp))
 }
 #################################################################################
 # Delta mthod for theta
 #################################################################################
 deltaTheta <- function(theta, Ht, X, ng){
-Dg= matrix(rep(0, ng**2), ncol = ng)
+Dg <- matrix(rep(0, ng**2), ncol <- ng)
 for (k in 1:ng){
   for (l in 1:ng){
     if (k == l){
-      Dg[k, l] =  piik(theta, 1, k+1, ng+1, X) * (1-piik(theta, 1, k+1, ng+1, X))
+      Dg[k, l] <-  piik(theta, 1, k+1, ng+1, X) * (1-piik(theta, 1, k+1, ng+1, X))
     }else{
-      Dg[k, l] =  -piik(theta, 1, k+1, ng+1, X) * piik(theta, 1, l+1, ng+1, X)
+      Dg[k, l] <-  -piik(theta, 1, k+1, ng+1, X) * piik(theta, 1, l+1, ng+1, X)
     }
   }
 }
@@ -43,12 +43,12 @@ sqrt(diag(Dg %*% Ht %*% t(Dg)))
 }
 
 deltaThetaBase <- function(theta, Ht, X, ng){
-Dg = c()
-prob = sapply(1:(ng+1), function(s){piik(theta, 1, s, ng+1, X)})[-1]
+Dg <- c()
+prob <- sapply(1:(ng+1), function(s){piik(theta, 1, s, ng+1, X)})[-1]
 for (k in 1:ng){
-  Dg = c(Dg, -prob[k]*(1-prob[k]) + sum(prob[k]*prob[-k]))
+  Dg <- c(Dg, -prob[k]*(1-prob[k]) + sum(prob[k]*prob[-k]))
 }
-Dg = matrix(Dg, nrow = 1)
+Dg <- matrix(Dg, nrow = 1)
 sqrt(diag(Dg %*% Ht %*% t(Dg)))
 }
 #################################################################################

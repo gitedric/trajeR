@@ -1,9 +1,14 @@
 Package: trajeR
 Type: Package
 Title: Group Based Modeling Trajectory
-Description: Find the probability and the trajectory of longitudinal mixture model.
-Version: 0.9.0.1
-Date: 2021-11-21
+Description: Find the probability and the trajectory of longitudinal mixture model. Methods used in the package refer to Nagin (2005),
+      <doi:10.4159/9780674041318>,
+      Nagin, D. (2005). Group-Based Modeling of Development. Cambridge, MA: Harvard University Press.
+      and Noel (2022),
+      <https://orbilu.uni.lu/>,
+      thesis.
+Version: 0.9.0.3
+Date: 2021-12-25
 Author: Cédric NOEL - Jang Schiltz
 Maintainer: Cédric NOEL <cedric.noel@univ-lorraine.fr>
 License: GPL (>= 2)
