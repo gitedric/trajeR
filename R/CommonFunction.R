@@ -130,7 +130,7 @@ WitEM <- function(TCOV, period, delta, nw, i, t, k, ndeltacum){
   }
 }
 #################################################################################
-# Calculate the probaility of memebrship for each data
+# Calculate the probability of membership for each data
 #################################################################################
 #' Membership's probabilities
 #' 

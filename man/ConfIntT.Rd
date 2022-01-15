@@ -7,23 +7,23 @@
 ConfIntT(sol, Y, A, nb = 10000, alpha = 0.98)
 }
 \arguments{
-\item{sol}{Trajectory's object. An object of type trajectory.}
+\item{sol}{Trajectory's object. An object of type Trajectory.}
 
 \item{Y}{Matrix. A matrix containing the variables in the model.}
 
 \item{A}{Matrix. A matrix containing the time variable data.}
 
-\item{nb}{An integer. The numbers of repetition in the bootstrap method.}
+\item{nb}{An integer. The number of repetitions in the bootstrap method.}
 
 \item{alpha}{A number. The degree of confidence of the interval.}
 }
 \value{
-A vector of real. The two bounds of the confidence interval given a
+A vector of reals. The two bounds of the confidence interval given a
   degree of confidence.
 }
 \description{
-Calculate the confidence interval of the probabilities with a bootstrap
-method. We have to specify the number of the repetition of bootstrap and the
+Calculate the confidence interval of the probabilities with bootstrap
+method. We have to specify the number of the repetitions of bootstrap and the
 degree of confidence.
 }
 \examples{

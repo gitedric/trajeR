@@ -7,21 +7,21 @@
 AvePP(sol, Y, A, X = NULL)
 }
 \arguments{
-\item{sol}{Trajectory's object. An object of type trajectory.}
+\item{sol}{Trajectory's object. An object of type Trajectory.}
 
 \item{Y}{Matrix. A matrix containing the variables in the model.}
 
 \item{A}{Matrix. A matrix containing the time variable data.}
 
-\item{X}{Matrix. An optional matrix that modify the probability of belong to group.
-By default its value is a matrix with one column  with value 1.}
+\item{X}{Matrix. An optional matrix that modifies the probability of belong to group.
+By default its value is a one column matrix with value 1.}
 }
 \value{
-A vector of real. The average posterior probability.
+A vector of reals. The average posterior probability.
 }
 \description{
 Calculate the Average Posterior Probability. Average Posterior Probability
-(AvePP) the average posterior probability of membership for each group for
+(AvePP) is the average posterior probability of membership for each group for
 those individuals that were assigned to.
 }
 \examples{

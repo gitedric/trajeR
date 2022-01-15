@@ -65,4 +65,5 @@ cedric.noel@univ-lorraine.fr
 
 <!-- badges: start -->
   [![R-CMD-check](https://github.com/gitedric/trajeR/workflows/R-CMD-check/badge.svg)](https://github.com/gitedric/trajeR/actions)
+[![R-CMD-check](https://github.com/gitedric/trajeR/workflows/R-CMD-check/badge.svg)](https://github.com/gitedric/trajeR/actions)
 <!-- badges: end -->

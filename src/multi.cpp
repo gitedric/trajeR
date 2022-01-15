@@ -1695,7 +1695,7 @@ List EMLOGITparam(arma::vec beta,
   vec newbeta;
   mat A = lA[j];
   for (int k = 0; k < ng; ++k){
-    double staux = 0;
+    //double staux = 0;
     vec newbetaIRLS;
     vec betaIRLS = beta.subvec(nbetacum[k], nbetacum[k+1]-1);
     vec precIRLS(betaIRLS.n_elem);
@@ -1713,7 +1713,7 @@ List EMLOGITparam(arma::vec beta,
         vec vtmp1 = taux.col(i + lA.size());
         uvec indtmp = find(taux.col(j) == k);
         double sigtaux = sum(vtmp1(indtmp));
-        staux += sigtaux;
+       // staux += sigtaux;
         vec vtmp(period);
         for (int t = 0; t < period; ++t){
           vec vtmp2(nbeta[k]);

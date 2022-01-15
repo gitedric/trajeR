@@ -7,23 +7,23 @@
 adequacy(sol, Y, A, nb = 10000, alpha = 0.98)
 }
 \arguments{
-\item{sol}{Trajectory's object. An object of type trajectory.}
+\item{sol}{Trajectory's object. An object of type Trajectory.}
 
 \item{Y}{Matrix. A matrix containing the variables in the model.}
 
 \item{A}{Matrix. A matrix containing the time variable data.}
 
-\item{nb}{Integer. The numbers of repetition in the bootstrap method.}
+\item{nb}{Integer. The numbers of repetitions in the bootstrap method.}
 
 \item{alpha}{Real. The degree of confidence of the interval.}
 }
 \value{
-A table of real. A table with 5 rows: the estimate probabilities, the
+A table of reals. A table with 5 rows: the estimate probabilities, the
  two bounds of the confidence interval, the proportion of assignment, the
  Average Posterior Probability and the Odds of Correct Classification.
 }
 \description{
-Calculate the summary of the five method : assignment proportion,  average posterior probability, confidence interval, odds of Correct Classification.
+Calculate the summary of the five methods : assignment proportion, average posterior probability, confidence interval, odds of Correct Classification.
 }
 \examples{
 data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))

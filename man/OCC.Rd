@@ -7,14 +7,14 @@
 OCC(sol, Y, A)
 }
 \arguments{
-\item{sol}{Trajectory's object. An object of type trajectory.}
+\item{sol}{Trajectory's object. An object of type Trajectory.}
 
 \item{Y}{Matrix. A matrix containing the variables in the model.}
 
 \item{A}{Matrix. A matrix containing the time variable data.}
 }
 \value{
-A vector of real. The Odds of Correct Classification.
+A vector of reals. The Odds of Correct Classification.
 }
 \description{
 Calculate Odds of Correct Classification. The Odds of Correct Classification for 

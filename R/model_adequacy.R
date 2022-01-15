@@ -1,16 +1,16 @@
 #' Average Posterior Probability
 #'
 #' Calculate the Average Posterior Probability. Average Posterior Probability
-#' (AvePP) the average posterior probability of membership for each group for
+#' (AvePP) is the average posterior probability of membership for each group for
 #' those individuals that were assigned to.
 #'
-#' @param sol Trajectory's object. An object of type trajectory.
+#' @param sol Trajectory's object. An object of type Trajectory.
 #' @param Y Matrix. A matrix containing the variables in the model.
 #' @param A Matrix. A matrix containing the time variable data.
-#' @param X Matrix. An optional matrix that modify the probability of belong to group.
-#'   By default its value is a matrix with one column  with value 1.
+#' @param X Matrix. An optional matrix that modifies the probability of belong to group.
+#'   By default its value is a one column matrix with value 1.
 #'
-#' @return A vector of real. The average posterior probability.
+#' @return A vector of reals. The average posterior probability.
 #' @export
 #'
 #' @examples
@@ -48,7 +48,7 @@ AvePP <- function(sol, Y, A, X = NULL){
 #'  
 #' @inheritParams AvePP
 #'
-#' @return A vector of real. The Odds of Correct Classification.
+#' @return A vector of reals. The Odds of Correct Classification.
 #' @export
 #'
 #' @examples
@@ -92,14 +92,14 @@ propAssign <- function(sol, Y, A){
 
 #' Confidence interval
 #'
-#' Calculate the confidence interval of the probabilities with a bootstrap
-#' method. We have to specify the number of the repetition of bootstrap and the
+#' Calculate the confidence interval of the probabilities with bootstrap
+#' method. We have to specify the number of the repetitions of bootstrap and the
 #' degree of confidence.
 #'
 #' @inheritParams AvePP
-#' @param nb An integer. The numbers of repetition in the bootstrap method.
+#' @param nb An integer. The number of repetitions in the bootstrap method.
 #' @param alpha A number. The degree of confidence of the interval.
-#' @return A vector of real. The two bounds of the confidence interval given a
+#' @return A vector of reals. The two bounds of the confidence interval given a
 #'   degree of confidence.
 #' @export
 #'
@@ -121,12 +121,12 @@ ConfIntT <- function(sol, Y, A, nb = 10000, alpha = 0.98){
 
 #' Adequacy of the model
 #'
-#' Calculate the summary of the five method : assignment proportion,  average posterior probability, confidence interval, odds of Correct Classification.
+#' Calculate the summary of the five methods : assignment proportion, average posterior probability, confidence interval, odds of Correct Classification.
 #'
 #' @inheritParams AvePP
-#' @param nb Integer. The numbers of repetition in the bootstrap method.
+#' @param nb Integer. The numbers of repetitions in the bootstrap method.
 #' @param alpha  Real. The degree of confidence of the interval.
-#' @return A table of real. A table with 5 rows: the estimate probabilities, the
+#' @return A table of reals. A table with 5 rows: the estimate probabilities, the
 #'  two bounds of the confidence interval, the proportion of assignment, the
 #'  Average Posterior Probability and the Odds of Correct Classification.
 #' @export

@@ -7,7 +7,7 @@ Description: Find the probability and the trajectory of longitudinal mixture mod
       and Noel (2022),
       <https://orbilu.uni.lu/>,
       thesis.
-Version: 0.9.0.3
+Version: 0.9.0.4
 Date: 2021-12-25
 Author: Cédric NOEL - Jang Schiltz
 Maintainer: Cédric NOEL <cedric.noel@univ-lorraine.fr>

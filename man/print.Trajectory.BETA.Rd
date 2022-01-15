@@ -21,7 +21,7 @@ Print method for an object of class "\code{Trajectory.BETA}".
 data = read.csv(system.file("extdata", "BETA2gr.csv", package = "trajeR"))
 data = as.matrix(data)
 data[,2:6] = data[,2:6]*(nrow(data[,2:6])-1+0.5)/nrow(data[,2:6])
-sol = trajeR(Y = data[, 2:6], A = data[, 7:11], 
+sol = trajeR(Y = data[, 2:6], A = data[, 7:11], itermax = 50,
              degre = c(2,2), degre.phi = c(1,1), Model = "BETA", Method = "L")
 sol
 }
