@@ -182,20 +182,15 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, degre = NULL, degre.nu = 0, d
                       hessian, itermax, paraminit, EMIRLS, refgr)
   }
   else{
-    diffctind = 1
     if (is.null(diffct)){
-      ffh <- function(beta, t, TCOV){
-        return(fct(t, beta, TCOV))
-      }
       diffct <- function(t, betak, TCOV){
-        return(numDeriv::jacobian(func = ffh,
+        return(numDeriv::jacobian(func = fct,
                                   x = betak, t = t , TCOV = TCOV)
         )
       }
-      diffctind = 0
     }
     res = trajeR.NL(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, sigma, pi, Method, ssigma,
-                    hessian, itermax, paraminit, EMIRLS, refgr, fct, diffct, diffctind, nls.lmiter)
+                    hessian, itermax, paraminit, EMIRLS, refgr, fct, diffct, nls.lmiter)
   }
   return(res)
 }

@@ -14,27 +14,19 @@
 #' @param A Matrix of real.
 #' @param TCOV Matrix of real.
 #' @param fct Function.
-#' @param diffctind Integer.
+#' @param diffct Function.
 #' @return real. Cumpute the value of the function fct for individual i, time t and group k.
 #' @export
-fait <- function(betak, i, t, A, TCOV, fct, diffctind){
+fait <- function(betak, i, t, A, TCOV, fct, diffct){
   return(fct(A[i,t], betak, TCOV))
 }
 #' Differential
 #' 
 #' @inheritParams fait
-#' @param diffct Function.
 #' @return real. Cumpute the value of the diferential function fct for individual i, time t and group k.
 #' @export
-diffaitbeta <- function(betak, i, t, A, TCOV, fct, diffct, diffctind){
-  if (diffctind == 0 ){
-    ffh <- function(beta, t, TCOV){
-      return(fct(t, beta, TCOV))
-    }
-    return(numDeriv::jacobian(func = ffh, x = betak, t = A[i,t], TCOV = TCOV))
-  }else{
+diffaitbeta <- function(betak, i, t, A, TCOV, fct, diffct){
     return(diffct(A[i,t], betak, TCOV))
-  }
 }
 #################################################################################
 # Function g
@@ -91,7 +83,7 @@ difLthetakalphaNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct){
 #################################################################################
 # dif likelihood beta with reparametrization alpha
 #################################################################################
-difLbetakalphaNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct, diffctind){
+difLbetakalphaNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct){
   period = ncol(A)
   theta = param[1:(ng*nx)]
   betatmp = param[((ng*nx)+1):(ng*nx+sum(nbeta))]
@@ -115,7 +107,7 @@ difLbetakalphaNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct, dif
       m = (Y[i, ]-muikt)*exp(-alpha[k])
       tind = 1
       for (t in ind){
-        der = diffaitbeta(beta[[k]], i, t, A, TCOV, fct, diffct, diffctind)
+        der = diffaitbeta(beta[[k]], i, t, A, TCOV, fct, diffct)
         difbkl = difbkl + der[l]*exp(-2*alpha[k])*m[t]*stats::dnorm(m[t])*prod(exp(-alpha[k])*stats::dnorm(m[-tind]))
         tind = tind +1
       }
@@ -207,13 +199,13 @@ difLsigmaalphauniqueNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fc
 #################################################################################
 # dif likelihood sigma with exponential reparametrization
 #################################################################################
-difLalphaNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct, diffctind){
+difLalphaNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct ){
   out =c()
   for (k in 1:ng){
     out = c(out, difLthetakalphaNL(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct))
   }
   for (k in 1:ng){
-    out = c(out, difLbetakalphaNL(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct, diffctind))
+    out = c(out, difLbetakalphaNL(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct ))
   }
   for (k in 1:ng){
     out = c(out, difLsigmakalphaNL(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct))
@@ -223,13 +215,13 @@ difLalphaNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct, dif
 #################################################################################
 # dif likelihood sigma with exponential reparametrization and unique sigma
 #################################################################################
-difLalphauniqueNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct, diffctind){
+difLalphauniqueNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct ){
   out =c()
   for (k in 1:ng){
     out = c(out, difLthetakalphaNL(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct))
   }
   for (k in 1:ng){
-    out = c(out, difLbetakalphaNL(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffctind))
+    out = c(out, difLbetakalphaNL(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct ))
   }
   out = c(out, difLsigmaalphauniqueNL(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct))
   return(out)
@@ -237,7 +229,7 @@ difLalphauniqueNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffc
 #################################################################################
 # likelihood sigma with exponential reparametrization
 #################################################################################
-LikelihoodalphaNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct, diffctind){
+LikelihoodalphaNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct ){
   theta = param[1:(ng*nx)]
   betatmp = param[((ng*nx)+1):(ng*nx+sum(nbeta))]
   alpha = param[-c(1:(ng*nx+sum(nbeta)))]
@@ -312,7 +304,7 @@ ftauxNL <- function(pi, beta, sigma, ng, nbeta, n, nw, nx, A, Y, X, TCOV, fct){
   }
   return(tmp3)
 }
-fctbeta <- function(betak, Y, A, TCOV, zk, period, n, nbetak, diffctind, fct){
+fctbeta <- function(betak, Y, A, TCOV, zk, period, n, nbetak, fct, diffct){
   tmp1 = c()
   tmp2 = c()
   tmp3 = c()
@@ -328,14 +320,14 @@ fctbeta <- function(betak, Y, A, TCOV, zk, period, n, nbetak, diffctind, fct){
   Ynls = matrix(tmp1, ncol = 1)
   return(sqrt(Z)%*%(Ynls-Fa))
 }
-fctbeta.jac <- function(betak, Y, A, TCOV, zk, period, n, nbetak, diffctind, fct, diffct){
+fctbeta.jac <- function(betak, Y, A, TCOV, zk, period, n, nbetak, fct, diffct){
   tmp1 = c()
   tmp2 = c()
   tmp3 = c()
   for (i in 1:n){
     for (t in 1:period){
       tmp1 = c(tmp1, Y[i,t])
-      tmp3 = rbind(tmp3, diffaitbeta(betak, i, t, A, TCOV, fct, diffct, diffctind))
+      tmp3 = rbind(tmp3, diffaitbeta(betak, i, t, A, TCOV, fct, diffct))
     }
     tmp2 = c(tmp2, rep(zk[i], period))
   }
@@ -367,7 +359,7 @@ likelihoodEMNL <- function(n, ng, nbeta, beta, sigma, pi, A, Y, TCOV, nw, fct){
 #################################################################################
 # EM different sigma
 #################################################################################
-EMNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax, EMIRLS, fct, diffct, diffctind, nls.lmiter){
+EMNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax, EMIRLS, fct, diffct , nls.lmiter){
   period = ncol(A)
   if (nx ==1){
     pi = param[1:(ng-1)]
@@ -397,7 +389,7 @@ EMNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax, EMIRLS, fc
     # M-step
     for (k in 1:ng){
       betatmp = minpack.lm::nls.lm(par = beta[(nbetacum[k]+1):(nbetacum[k+1])], fn = fctbeta, jac = fctbeta.jac,
-                       Y = Y, A = A, TCOV = TCOV, zk = zk[ ,k], diffctind = diffctind,
+                       Y = Y, A = A, TCOV = TCOV, zk = zk[ ,k], 
                        period = period, n =n, nbetak = nbeta[k], fct = fct, diffct = diffct,
                        control = minpack.lm::nls.lm.control(maxiter = nls.lmiter))$par
       newbeta = c(newbeta, betatmp)
@@ -438,7 +430,7 @@ EMNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax, EMIRLS, fc
 #################################################################################
 # EM same sigma
 #################################################################################
-EMNLSigmaunique <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax, EMIRLS, fct, diffct, diffctind, nls.lmiter){
+EMNLSigmaunique <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax, EMIRLS, fct, diffct , nls.lmiter){
   period = ncol(A)
   if (nx ==1){
     pi = param[1:(ng-1)]
@@ -468,7 +460,7 @@ EMNLSigmaunique <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax,
     # M-step
     for (k in 1:ng){
       betatmp = minpack.lm::nls.lm(par = beta[(nbetacum[k]+1):(nbetacum[k+1])], fn = fctbeta, jac = fctbeta.jac,
-                       Y =Y, A = A, TCOV = TCOV, zk = zk[ ,k], diffctind = diffctind,
+                       Y =Y, A = A, TCOV = TCOV, zk = zk[ ,k],
                        period = period, n =n, nbetak = nbeta[k], fct = fct, diffct = diffct,
                        control = minpack.lm::nls.lm.control(maxiter = nls.lmiter))$par
       newbeta = c(newbeta, betatmp)
@@ -513,29 +505,19 @@ EMNLSigmaunique <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax,
 #################################################################################
 # Definition of function
 #################################################################################
-dif2fait <- function(betak, i, t, A, TCOV, fct, diffct, diffctind){
-  if (is.null(diffctind == 0)){
-    ffh <- function(beta, t, TCOV){
-      return(fct(t, beta, TCOV))
-    }
-    return(numDeriv::hessian(func = ffh, x = betak, t = A[i,t], TCOV = TCOV))
-  }else{
-    dffh <- function(beta, t, TCOV){
-      return(diffct(t, beta, TCOV))
-    }
-    return(numDeriv::jacobian(func = dffh, x = betak, t = A[i,t], TCOV = TCOV))
-  }
+dif2fait <- function(betak, i, t, A, TCOV, fct, diffct){
+    return(numDeriv::jacobian(func = diffct, x = betak, t = A[i,t], TCOV = TCOV))
 }
 #################################################################################
 # matrix differential of beta**2 for t and i
 #################################################################################
-mbetaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct, diffctind){
+mbetaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct){
   res = matrix(rep(0,(sum(nbeta)**2)), ncol = sum(nbeta))
   for (k in 1:ng){
     tmp = c()
     for (l in 1:nbeta[k]){
       for (lp in 1:nbeta[k]){
-        tmp = c(tmp, taux[i,k]/sigma[k]**2*(dif2fait(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct, diffctind)[l, lp]*(Y[i,t]-fait(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct))-diffaitbeta(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct, diffctind)[l]*diffaitbeta(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct, diffctind)[lp]))
+        tmp = c(tmp, taux[i,k]/sigma[k]**2*(dif2fait(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct)[l, lp]*(Y[i,t]-fait(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct))-diffaitbeta(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct)[l]*diffaitbeta(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct)[lp]))
       }
     }
     res[(nbetacum[k]+1):(nbetacum[k+1]), (nbetacum[k]+1):(nbetacum[k+1])] = matrix(tmp, ncol = nbeta[k], byrow = TRUE)
@@ -545,12 +527,12 @@ mbetaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, per
 ##################################################################################
 # matrix differential of  beta sigma
 #################################################################################
-mbetasigmaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct, diffctind){
+mbetasigmaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct){
   res = matrix(rep(0,ng*sum(nbeta)), ncol = ng)
   for (k in 1:ng){
     tmp = c()
     for (l in 1:nbeta[k]){
-      tmp = c(tmp, -2*taux[i,k]*diffaitbeta(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct, diffctind)[l]*(Y[i,t]-fait(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct))/sigma[k]**3)
+      tmp = c(tmp, -2*taux[i,k]*diffaitbeta(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct)[l]*(Y[i,t]-fait(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct))/sigma[k]**3)
     }
     res[(nbetacum[k]+1):(nbetacum[k+1]), k] = tmp
   }
@@ -559,7 +541,7 @@ mbetasigmaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV
 ##################################################################################
 # matrix differential of  beta sigma
 #################################################################################
-mdeltasigmaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct, diffctind){
+mdeltasigmaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct){
   res = matrix(rep(0,ng*nw*ng), ncol = ng)
 
   return(res)
@@ -567,12 +549,12 @@ mdeltasigmaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCO
 ##################################################################################
 # matrix differential of  beta delta
 #################################################################################
-mbetadeltaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct, diffctind){
+mbetadeltaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct){
   res = matrix(rep(0,ng*sum(nbeta)), ncol = nw)
   for (k in 1:nw){
     tmp = c()
     for (l in 1:nbeta[k]){
-      tmp = c(tmp, -2*taux[i,k]*diffaitbeta(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct, diffctind)[l]*(Y[i,t]-fait(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct))/sigma[k]**3)
+      tmp = c(tmp, -2*taux[i,k]*diffaitbeta(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct)[l]*(Y[i,t]-fait(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct))/sigma[k]**3)
     }
     res[(nbetacum[k]+1):(nbetacum[k+1]), k] = tmp
   }
@@ -591,7 +573,7 @@ msigmaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, pe
 #################################################################################
 # matrix differential of delta**2 for t and i
 #################################################################################
-mdeltaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct, diffctind){
+mdeltaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct){
   res = matrix(rep(0,(sum(nbeta)**2)), ncol = nw*ng)
 
   return(res)
@@ -599,10 +581,10 @@ mdeltaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, pe
 ##################################################################################
 # defintion of function Bikl and Sk
 ##################################################################################
-BiklNL <- function(i, k, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind){
+BiklNL <- function(i, k, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct){
   tmp = 0
   for (t in 1:period){
-    tmp = tmp + diffaitbeta(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct, diffctind)[l]*(Y[i,t]-fait(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct))/sigma[k]**2
+    tmp = tmp + diffaitbeta(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct, diffct)[l]*(Y[i,t]-fait(beta[(nbetacum[k]+1):nbetacum[k+1]], i, t, A, TCOV, fct))/sigma[k]**2
   }
   return(tmp)
 }
@@ -613,25 +595,25 @@ SikNL <- function(i, k, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, 
   }
   return(tmp)
 }
-DiklNL <- function(i, k, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind){
+DiklNL <- function(i, k, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct){
   tmp = 0
 
   return(tmp)
 }
 # matrix cov pi betak
-covPiBetakNL <- function(k, ng, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, pi, fct, diffct, diffctind){
+covPiBetakNL <- function(k, ng, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, pi, fct, diffct){
   rcovPiBetak =  matrix(rep(0,(ng-1)*nbeta[k]), ncol = nbeta[k])
   for  (kp in 1:(ng-1)){
     for (l in 1:nbeta[k]){
       tmp = 0
       if (kp == k){
         for (i in 1:n){
-          tmp = tmp + BiklNL(i, k, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)*taux[i,kp]*((1-taux[i,kp])/pi[kp]+taux[i,ng]/pi[ng])
+          tmp = tmp + BiklNL(i, k, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)*taux[i,kp]*((1-taux[i,kp])/pi[kp]+taux[i,ng]/pi[ng])
         }
       }
       else{
         for (i in 1:n){
-          tmp = tmp + BiklNL(i, k, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)*taux[i,k]*(-taux[i,kp]/pi[kp]+taux[i,ng]/pi[ng])
+          tmp = tmp + BiklNL(i, k, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)*taux[i,k]*(-taux[i,kp]/pi[kp]+taux[i,ng]/pi[ng])
         }
       }
       rcovPiBetak[kp,l] =  tmp
@@ -640,17 +622,17 @@ covPiBetakNL <- function(k, ng, n, nbeta, A, Y, period, beta, sigma, taux, nbeta
   return(rcovPiBetak)
 }
 # cov betak sigma
-covBetaSigmakNL <- function(k, nbeta, n, ng, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind){
+covBetaSigmakNL <- function(k, nbeta, n, ng, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct){
   rcovBetaSigmak = matrix(rep(0,nbeta[k]*ng), nrow = nbeta[k])
   for (kp in 1:nbeta[k]){
     for (l in 1:ng){
       tmp = 0
       for (i in 1:n){
         if (k==l){
-          tmp = tmp + BiklNL(i, k, kp, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)*SikNL(i, k, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct)*taux[i,k]*(1-taux[i,k])
+          tmp = tmp + BiklNL(i, k, kp, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)*SikNL(i, k, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct)*taux[i,k]*(1-taux[i,k])
         }
         else{
-          tmp = tmp - BiklNL(i, k, kp, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)*SikNL(i, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct)*taux[i,k]*taux[i,l]
+          tmp = tmp - BiklNL(i, k, kp, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)*SikNL(i, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct)*taux[i,k]*taux[i,l]
         }
       }
       rcovBetaSigmak[kp,l] = tmp
@@ -659,20 +641,20 @@ covBetaSigmakNL <- function(k, nbeta, n, ng, A, Y, period, beta, sigma, taux, nb
   return(rcovBetaSigmak)
 }
 # matrix cov pi deltak
-covPiDeltakNL <- function(k, ng, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, pi, fct, diffct, diffctind){
+covPiDeltakNL <- function(k, ng, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, pi, fct, diffct){
   rcovPiDeltak =  matrix(rep(0,(ng-1)*nw), ncol = nw)
 
   return(rcovPiDeltak)
 }
 # matrix cov Betak Betal
-covBetakBetalNL <- function(k, l, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind){
+covBetakBetalNL <- function(k, l, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct){
   rcovBetakBetal = matrix(rep(0, (nbeta[k]*nbeta[l])), nrow = nbeta[k])
   if (k==l){
     for (p in 1:nbeta[k]){
       for (q in 1:nbeta[l]){
         tmp = 0
         for (i in 1:n){
-          tmp = tmp + BiklNL(i, k, p, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)*BiklNL(i, k, q, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)*taux[i,k]*(1-taux[i,k])
+          tmp = tmp + BiklNL(i, k, p, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)*BiklNL(i, k, q, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)*taux[i,k]*(1-taux[i,k])
         }
         rcovBetakBetal[p,q] = tmp
       }
@@ -682,7 +664,7 @@ covBetakBetalNL <- function(k, l, n, nbeta, A, Y, period, beta, sigma, taux, nbe
       for (q in 1:nbeta[l]){
         tmp = 0
         for (i in 1:n){
-          tmp = tmp - BiklNL(i, k, p, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)*BiklNL(i, l, q, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)*taux[i,k]*taux[i,l]
+          tmp = tmp - BiklNL(i, k, p, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)*BiklNL(i, l, q, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)*taux[i,k]*taux[i,l]
         }
         rcovBetakBetal[p,q] = tmp
       }
@@ -691,19 +673,19 @@ covBetakBetalNL <- function(k, l, n, nbeta, A, Y, period, beta, sigma, taux, nbe
   return(rcovBetakBetal)
 }
 # matrix cov Betak Deltal
-covBetakDeltalNL <- function(k, l, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind){
+covBetakDeltalNL <- function(k, l, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct){
   rcovBetakDeltal = matrix(rep(0, (nbeta[k]*nw)), nrow = nbeta[k])
  
   return(rcovBetakDeltal)
 }
 # matrix cov Delak Deltal
-covDeltakDeltalNL <- function(k, l, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind){
+covDeltakDeltalNL <- function(k, l, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct){
   rcovDeltakDeltal = matrix(rep(0, (nw*nw)), nrow = nbeta[k])
   
   return(rcovDeltakDeltal)
 }
 # cov detak sigma
-covDeltaSigmakNL <- function(k, nbeta, n, ng, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind){
+covDeltaSigmakNL <- function(k, nbeta, n, ng, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct){
   rcovDeltaSigmak = matrix(rep(0,nw*ng), nrow = nw)
 
   return(rcovDeltaSigmak)
@@ -711,7 +693,7 @@ covDeltaSigmakNL <- function(k, nbeta, n, ng, A, Y, period, beta, sigma, taux, n
 ##################################################################################
 # Main function
 ##################################################################################
-IEMNL <- function(paramEM, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr, fct, diffct, diffctind){
+IEMNL <- function(paramEM, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr, fct, diffct){
   nsigma = ng
   period = ncol(A)
   #################################################################################
@@ -794,16 +776,16 @@ IEMNL <- function(paramEM, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr, fct, diff
                             mdeltasigmaNL(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)),
                       cbind(t(mbetasigmaNL(i,t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)),
                             t(mdeltasigmaNL(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)),
-                            msigmaNL(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)))
+                            msigmaNL(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct)))
       }
     }
   }else{
     for (i in 1:n){
       for (t in (1:period)){
-        B = B + rbind(cbind(mbetaNL(i,t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct, diffctind),
-                            mbetasigmaNL(i,t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct, diffctind)),
-                      cbind(t(mbetasigmaNL(i,t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct, diffctind)),
-                            msigmaNL(i,t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw)))
+        B = B + rbind(cbind(mbetaNL(i,t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct),
+                            mbetasigmaNL(i,t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct)),
+                      cbind(t(mbetasigmaNL(i,t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct, diffct)),
+                            msigmaNL(i,t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, period, delta, ndeltacum, nw, fct)))
       }
     }
   }
@@ -863,14 +845,14 @@ IEMNL <- function(paramEM, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr, fct, diff
     # matrix cov pi beta
     covPiBeta = c()
     for (k in 1:(ng-1)){
-      covPiBeta = cbind(covPiBeta, covPiBetakNL(k, ng, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, pi, fct, diffct, diffctind))
+      covPiBeta = cbind(covPiBeta, covPiBetakNL(k, ng, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, pi, fct, diffct))
     }
     rcovPiBetak =  matrix(rep(0,(ng-1)*nbeta[ng]), ncol=nbeta[ng])
     for  (kp in 1:(ng-1)){
       for (l in 1:nbeta[ng]){
         tmp = 0
         for (i in 1:n){
-          tmp = tmp + BiklNL(i, ng, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)*taux[i,ng]*((1-taux[i,ng])/pi[ng]+taux[i,kp]/pi[kp])
+          tmp = tmp + BiklNL(i, ng, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)*taux[i,ng]*((1-taux[i,ng])/pi[ng]+taux[i,kp]/pi[kp])
         }
       }
       rcovPiBetak[kp,l] =  tmp
@@ -886,11 +868,11 @@ IEMNL <- function(paramEM, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr, fct, diff
             tmp = 0
             if (k==l){
               for (i in 1:n){
-                tmp = tmp + taux[i,k]*(1-taux[i,k])*X[i,p]*BiklNL(i, k, q, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)
+                tmp = tmp + taux[i,k]*(1-taux[i,k])*X[i,p]*BiklNL(i, k, q, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)
               }
             }else{
               for (i in 1:n){
-                tmp = tmp - taux[i,k]*taux[i,l]*X[i,p]*BiklNL(i, l, q, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)
+                tmp = tmp - taux[i,k]*taux[i,l]*X[i,p]*BiklNL(i, l, q, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)
               }
             }
             covPiBetatmp[p, q] = tmp
@@ -1028,7 +1010,7 @@ IEMNL <- function(paramEM, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr, fct, diff
   covBeta = matrix(rep(0,sum(nbeta)**2), ncol = sum(nbeta))
   for (k in 1:ng){
     for (l in 1:ng){
-      covBeta[(nbetacum[k]+1):(nbetacum[k+1]),(nbetacum[l]+1):(nbetacum[l+1])] = covBetakBetalNL(k, l, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind)
+      covBeta[(nbetacum[k]+1):(nbetacum[k+1]),(nbetacum[l]+1):(nbetacum[l+1])] = covBetakBetalNL(k, l, n, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct)
     }
   }
   ##################################################################################
@@ -1036,7 +1018,7 @@ IEMNL <- function(paramEM, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr, fct, diff
   ##################################################################################
   covBetaSigma = c()
   for (k in 1:ng){
-    covBetaSigma = rbind(covBetaSigma, covBetaSigmakNL(k, nbeta, n, ng, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct, diffctind))
+    covBetaSigma = rbind(covBetaSigma, covBetaSigmakNL(k, nbeta, n, ng, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct))
   }
   ##################################################################################
   # Matrix cov sigma

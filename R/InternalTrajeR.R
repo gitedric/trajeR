@@ -848,7 +848,6 @@ trajeR.POIS <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, deg
 #' 
 #' @inheritParams trajeR
 #' @inheritParams trajeR.CNORM
-#' @param diffctind Integer.
 #' @param X Matrix. An optional matrix that modify the probability of belong to group. By default its value is a matrix
 #' with one column  with value 1.
 #' @return  return a object of class Trajectory.NL
@@ -872,7 +871,7 @@ trajeR.POIS <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, deg
 #' }
 
 trajeR.NL <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, sigma, pi, Method, ssigma,
-                      hessian, itermax, paraminit, EMIRLS, refgr, fct, diffct, diffctind, nls.lmiter){
+                      hessian, itermax, paraminit, EMIRLS, refgr, fct, diffct, nls.lmiter){
   nsigma = ng
   if (Method == "L"){
     # initial value for Likelihood's method
@@ -887,7 +886,7 @@ trajeR.NL <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre
                               method = "BFGS",
                               hessian = hessian,
                               control = list(fnscale=-1, trace=6, maxit = itermax),
-                              ng = ng, nx = nx, n =n, A = A, Y = Y, X = X, nbeta = nbeta, diffctind = diffctind,
+                              ng = ng, nx = nx, n =n, A = A, Y = Y, X = X, nbeta = nbeta, 
                               TCOV = TCOV, fct = fct, diffct = diffct)
     } else {
       # same sigma
@@ -895,7 +894,7 @@ trajeR.NL <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre
                               method = "BFGS",
                               hessian = hessian,
                               control = list(fnscale=-1, trace=6, maxit = itermax),
-                              ng = ng, nx = nx, n =n, A = A, Y = Y, X = X, nbeta = nbeta, diffctind =  diffctind,
+                              ng = ng, nx = nx, n =n, A = A, Y = Y, X = X, nbeta = nbeta, 
                               TCOV = TCOV)
     }
     param = newparam$par
@@ -925,12 +924,12 @@ trajeR.NL <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre
       if (nx == 1){paraminitEM = paraminit[-ng]}
     }
     if (ssigma == FALSE){
-      param = EMNL(paraminitEM, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax, EMIRLS, fct, diffct, diffctind, nls.lmiter)
+      param = EMNL(paraminitEM, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax, EMIRLS, fct, diffct, nls.lmiter)
     }else{
-      param = EMNLSigmaunique(paraminitEM, ng, nx, nbeta, n, A, Y, X, TCOV,  nw, itermax, EMIRLS, fct, diffct, diffctind, nls.lmiter)
+      param = EMNLSigmaunique(paraminitEM, ng, nx, nbeta, n, A, Y, X, TCOV,  nw, itermax, EMIRLS, fct, diffct, nls.lmiter)
     }
     if (hessian == TRUE){
-      SE = IEMNL(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr, fct, diffct, diffctind)
+      SE = IEMNL(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr, fct, diffct)
       if (nx == 1){
         SE = c(SE[-c(1:(ng-1))], SE[1:(ng-1)], sqrt(sum(SE[1:(ng-1)]**2)))
       }else{
@@ -993,7 +992,7 @@ trajeR.NL <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre
              Likelihood = Likelihood(param = c(theta, beta, sigma), model = "NL",
                                      ng = ng, nx = nx, n = n,
                                      nbeta = nbeta, nw = nw, A= A, Y = Y, X = X,
-                                     TCOV = TCOV, fct),
+                                     TCOV = TCOV, fct = fct),
              Time = A[1,], degre = degre - 1, fct = fct)
   class(res) = "Trajectory.NL"
   return(res)

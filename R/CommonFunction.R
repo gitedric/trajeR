@@ -107,7 +107,7 @@ Likelihood <- function(param, model, method, ng, nx, n, nbeta, nw, A, Y, X, TCOV
 
     }
   }else{
-    a = LikelihoodNL(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct)
+    a = LikelihoodNL(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct = fct)
   }
   return(a)
 }

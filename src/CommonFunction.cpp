@@ -209,7 +209,7 @@ Rcpp::NumericVector thethaIRLS_cpp(Rcpp::NumericVector thetaIRLS,
                                    int refgr){
 
   int nx = X.cols();
-  Rcpp::Function piik("piik");
+  //Rcpp::Function piik("piik");
   int stop = 0;
   arma::vec precIRLS(thetaIRLS.length());
   precIRLS.fill(1);

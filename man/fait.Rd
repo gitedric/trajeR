@@ -4,7 +4,7 @@
 \alias{fait}
 \title{Function fait}
 \usage{
-fait(betak, i, t, A, TCOV, fct, diffctind)
+fait(betak, i, t, A, TCOV, fct, diffct)
 }
 \arguments{
 \item{betak}{Vector of intger.}
@@ -19,7 +19,7 @@ fait(betak, i, t, A, TCOV, fct, diffctind)
 
 \item{fct}{Function.}
 
-\item{diffctind}{Integer.}
+\item{diffct}{Function.}
 }
 \value{
 real. Cumpute the value of the function fct for individual i, time t and group k.

@@ -4,7 +4,7 @@
 \alias{diffaitbeta}
 \title{Differential}
 \usage{
-diffaitbeta(betak, i, t, A, TCOV, fct, diffct, diffctind)
+diffaitbeta(betak, i, t, A, TCOV, fct, diffct)
 }
 \arguments{
 \item{betak}{Vector of intger.}
@@ -20,8 +20,6 @@ diffaitbeta(betak, i, t, A, TCOV, fct, diffct, diffctind)
 \item{fct}{Function.}
 
 \item{diffct}{Function.}
-
-\item{diffctind}{Integer.}
 }
 \value{
 real. Cumpute the value of the diferential function fct for individual i, time t and group k.

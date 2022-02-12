@@ -30,7 +30,6 @@ trajeR.NL(
   refgr,
   fct,
   diffct,
-  diffctind,
   nls.lmiter
 )
 }
@@ -94,8 +93,6 @@ based of the range or the standard deviation.}
 \item{fct}{Function. The definition of the function  f in the definition in nonlinear model.}
 
 \item{diffct}{Function. The differential of the function f in the nonlinear model.}
-
-\item{diffctind}{Integer.}
 
 \item{nls.lmiter}{Integer. In the case of non linear model, the maximum number of iterations allowed.}
 }
