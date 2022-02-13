@@ -17,7 +17,7 @@ PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 #		if test -e "/usr/bin/strip"; then /usr/bin/strip --strip-debug $(SHLIB); fi
 #.phony: strippedLib
 strippedLib: $(SHLIB)
-	if test -e "/usr/bin/strip" & test -e "/bin/uname" & [[`uname` == "Linux" ]] ; then /usr/bin/strip --strip-debug $(SHLIB); fi
+		if test -e "/usr/bin/strip" & test -e "/bin/uname" & [[`uname` == "Linux" ]] ; then /usr/bin/strip --strip-debug $(SHLIB); fi
 .phony: strippedLib
 
 # Compact shared object libraries: http://dirk.eddelbuettel.com/blog/2017/08/14#009_compact_shared_libraries
