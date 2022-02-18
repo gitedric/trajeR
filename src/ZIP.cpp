@@ -466,7 +466,7 @@ NumericVector difLZIP_cpp(NumericVector param,
   }
   NumericVector beta = param[Range((ng-1)*nx,(ng-1)*nx+sum(nbeta)-1)];
   //NumericVector beta = param[Range(ng*nx,ng*nx+sum(nbeta)-1)];
-  NumericVector nu = param[Range((ng-1)*nx+sum(nbeta), (ng-1)*nx+sum(nbeta)+sum(nnu))];
+  NumericVector nu = param[Range((ng-1)*nx+sum(nbeta), (ng-1)*nx+sum(nbeta)+sum(nnu) - 1)];
   // create a list for beta
   List betaL(ng);
   int ind = 0;
@@ -491,7 +491,7 @@ NumericVector difLZIP_cpp(NumericVector param,
   NumericVector delta;
   List deltaL(ng);
   if (param.length() > (ng-1)*nx+sum(nbeta)+sum(nnu)){
-    delta = param[Range((ng-1)*nx+sum(nbeta)+sum(nnu), param.length())];
+    delta = param[Range((ng-1)*nx+sum(nbeta)+sum(nnu), param.length() -1)];
     int ind = 0;
     for (int i = 0; i < ng; i++){
       NumericVector tmp;
@@ -555,7 +555,7 @@ double likelihoodZIP_cpp(NumericVector param,
     theta.push_front(0);
   }
   NumericVector beta = param[Range((ng-1)*nx,(ng-1)*nx+sum(nbeta)-1)];
-  NumericVector nu = param[Range((ng-1)*nx+sum(nbeta), (ng-1)*nx+sum(nbeta)+sum(nnu))];
+  NumericVector nu = param[Range((ng-1)*nx+sum(nbeta), (ng-1)*nx+sum(nbeta)+sum(nnu) - 1)];
   List betaL(ng);
   int ind = 0;
   for (int i = 0; i < ng; i++){
@@ -579,7 +579,7 @@ double likelihoodZIP_cpp(NumericVector param,
   NumericVector delta;
   List deltaL(ng);
   if (param.length() > (ng-1)*nx+sum(nbeta)+sum(nnu)){
-    delta = param[Range((ng-1)*nx+sum(nbeta)+sum(nnu), param.length())];
+    delta = param[Range((ng-1)*nx+sum(nbeta)+sum(nnu), param.length() - 1)];
     int ind = 0;
     for (int i = 0; i < ng; i++){
       NumericVector tmp;

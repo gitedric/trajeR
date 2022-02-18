@@ -621,7 +621,7 @@ NumericVector difLalpha_cpp(NumericVector param,
   NumericVector delta;
   List deltaL(ng);
   if (param.length() > (ng - 1)*nx+sum(nbeta)+ng){
-    delta = param[Range((ng - 1)*nx+sum(nbeta)+ng, param.length())];
+    delta = param[Range((ng - 1)*nx+sum(nbeta)+ng, param.length() - 1)];
     int ind = 0;
     for (int i = 0; i < ng; i++){
       NumericVector tmp;
@@ -699,7 +699,7 @@ NumericVector difLalphaunique_cpp(NumericVector param,
   NumericVector delta;
   List deltaL(ng);
   if (param.length() > indtmp){
-    delta = param[Range(indtmp, param.length())];
+    delta = param[Range(indtmp, param.length() - 1)];
     if (nw != 0){
       int ind = 0;
       for (int i = 0; i < ng; i++){
@@ -786,7 +786,7 @@ double Likelihoodalpha_cpp(NumericVector param,
   NumericVector delta;
   List deltaL(ng);
   if (param.length() > indtmp){
-    delta = param[Range(indtmp, param.length())];
+    delta = param[Range(indtmp, param.length() - 1)];
     if (nw != 0){
       int ind = 0;
       for (int i = 0; i < ng; i++){
@@ -846,7 +846,7 @@ double likelihoodCNORM_cpp(NumericVector param,
   NumericVector delta;
   List deltaL(ng);
   if (param.length() > ng*nx+sum(nbeta)+ng){
-    delta = param[Range(ng*nx+sum(nbeta)+ng, param.length())];
+    delta = param[Range(ng*nx+sum(nbeta)+ng, param.length() - 1)];
     if (nw != 0){
       int ind = 0;
       for (int i = 0; i < ng; i++){

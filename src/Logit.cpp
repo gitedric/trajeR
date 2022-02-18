@@ -204,7 +204,7 @@ NumericVector difLLOGIT_cpp(NumericVector param,
   NumericVector delta;
   List deltaL(ng);
   if (param.length() > (ng-1)*nx+sum(nbeta)){
-    delta = param[Range((ng-1)*nx+sum(nbeta), param.length())];
+    delta = param[Range((ng-1)*nx+sum(nbeta), param.length() - 1)];
     if (nw != 0){
       int ind = 0;
       for (int i = 0; i < ng; i++){
@@ -276,7 +276,7 @@ double likelihoodLOGIT_cpp(NumericVector param,
   NumericVector delta;
   List deltaL(ng);
   if (param.length() > (ng-1)*nx+sum(nbeta)){
-    delta = param[Range((ng-1)*nx+sum(nbeta), param.length())];
+    delta = param[Range((ng-1)*nx+sum(nbeta), param.length() - 1)];
     if (nw != 0){
       int ind = 0;
       for (int i = 0; i < ng; i++){
