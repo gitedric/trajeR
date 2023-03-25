@@ -81,8 +81,8 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, degre = NULL, degre.nu = 0, d
                    itermax = 100, paraminit = NULL, ProbIRLS = TRUE, refgr = 1,
                    fct = NULL, diffct = NULL, nbvar = NULL, ng.nl = NULL, nls.lmiter = 50) {
   ng <- ifelse(is.null(ng.nl), length(degre), ng.nl)
-  Y <- as.matrix(Y)
-  A <- as.matrix(A)
+  Y <- data.matrix(Y)
+  A <- data.matrix(A)
   EMIRLS <- ProbIRLS
   X <- Risk
   if (is.null(degre)) {
