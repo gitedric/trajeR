@@ -14,13 +14,13 @@
 #' @export
 #'
 #' @examples
-#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
-#' data = as.matrix(data)
-#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data <- as.matrix(data)
+#' sol <- trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2, 2), Model = "CNORM", Method = "EM")
 #' AvePP(sol, Y = data[, 2:6], A = data[, 7:11])
-AvePP <- function(sol, Y, A, X = NULL){
-  #Xt = cbind(matrix(rep(1, sol$Size), ncol = 1), X)
-  Xt = X
+AvePP <- function(sol, Y, A, X = NULL) {
+  # Xt = cbind(matrix(rep(1, sol$Size), ncol = 1), X)
+  Xt <- X
   #
   # A VOIR
   #
@@ -28,42 +28,44 @@ AvePP <- function(sol, Y, A, X = NULL){
   #   sol$theta = exp(sol$theta)/sum(exp(sol$theta))
   #   sol$Method = "EM"
   # }
-  prob = GroupProb(sol, Y, A, X = Xt)
-  gr = as.vector(sapply(1:nrow(prob), function(s){which.max(prob[s,])}))
-  res = c()
-  for (i in 1:sol$groups){
-    res = c(res, mean(apply(prob[gr == i,], 1, max)))
+  prob <- GroupProb(sol, Y, A, X = Xt)
+  gr <- as.vector(sapply(1:nrow(prob), function(s) {
+    which.max(prob[s, ])
+  }))
+  res <- c()
+  for (i in 1:sol$groups) {
+    res <- c(res, mean(apply(prob[gr == i, ], 1, max)))
   }
   return(res)
 }
 
 #' Odds of Correct Classification
 #'
-#' Calculate Odds of Correct Classification. The Odds of Correct Classification for 
-#' group k (OCCj) is the ratio between the odds of a correct 
-#' classification into group j on the basis of the posterior probability rule and 
-#' the odds of correct assignment based on random assignments with the probability 
-#' of assignment to group j is done with $pi_{ik}$, the probability estimate by 
+#' Calculate Odds of Correct Classification. The Odds of Correct Classification for
+#' group k (OCCj) is the ratio between the odds of a correct
+#' classification into group j on the basis of the posterior probability rule and
+#' the odds of correct assignment based on random assignments with the probability
+#' of assignment to group j is done with $pi_{ik}$, the probability estimate by
 #' the model.
-#'  
+#'
 #' @inheritParams AvePP
 #'
 #' @return A vector of reals. The Odds of Correct Classification.
 #' @export
 #'
 #' @examples
-#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
-#' data = as.matrix(data)
-#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data <- as.matrix(data)
+#' sol <- trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2, 2), Model = "CNORM", Method = "EM")
 #' OCC(sol, Y = data[, 2:6], A = data[, 7:11])
-OCC <- function(sol, Y, A){
-  tmp = AvePP(sol, Y, A, X = NULL)
-  if (sol$Method == "L"){
-    prob = exp(sol$theta)/sum(exp(sol$theta))
-  }else{
-    prob = sol$theta
+OCC <- function(sol, Y, A) {
+  tmp <- AvePP(sol, Y, A, X = NULL)
+  if (sol$Method == "L") {
+    prob <- exp(sol$theta) / sum(exp(sol$theta))
+  } else {
+    prob <- sol$theta
   }
-  return(tmp/(1-tmp)/(prob/(1-prob)))
+  return(tmp / (1 - tmp) / (prob / (1 - prob)))
 }
 
 #' Assignment proportion
@@ -76,18 +78,22 @@ OCC <- function(sol, Y, A){
 #' @export
 #'
 #' @examples
-#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
-#' data = as.matrix(data)
-#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data <- as.matrix(data)
+#' sol <- trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2, 2), Model = "CNORM", Method = "EM")
 #' propAssign(sol, Y = data[, 2:6], A = data[, 7:11])
-propAssign <- function(sol, Y, A){
-  #Xt = matrix(rep(1, sol$Size), ncol = 1)
+propAssign <- function(sol, Y, A) {
+  # Xt = matrix(rep(1, sol$Size), ncol = 1)
   # prob = GroupProb(sol, Y, A, X = Xt)
-  prob = GroupProb(sol, Y, A, X = NULL)
-  gr = as.vector(sapply(1:nrow(prob), function(s){which.max(prob[s,])}))
-  tab = matrix(sapply(1:sol$groups, function(s){sum(gr == s)}), nrow = 1)
-  colnames(tab) = 1:sol$groups
-  return(tab/sol$Size)
+  prob <- GroupProb(sol, Y, A, X = NULL)
+  gr <- as.vector(sapply(1:nrow(prob), function(s) {
+    which.max(prob[s, ])
+  }))
+  tab <- matrix(sapply(1:sol$groups, function(s) {
+    sum(gr == s)
+  }), nrow = 1)
+  colnames(tab) <- 1:sol$groups
+  return(tab / sol$Size)
 }
 
 #' Confidence interval
@@ -104,19 +110,23 @@ propAssign <- function(sol, Y, A){
 #' @export
 #'
 #' @examples
-#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
-#' data = as.matrix(data)
-#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data <- as.matrix(data)
+#' sol <- trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2, 2), Model = "CNORM", Method = "EM")
 #' ConfIntT(sol, Y = data[, 2:6], A = data[, 7:11])
-ConfIntT <- function(sol, Y, A, nb = 10000, alpha = 0.98){
-  Xt = cbind(matrix(rep(1, sol$Size), ncol = 1))
+ConfIntT <- function(sol, Y, A, nb = 10000, alpha = 0.98) {
+  Xt <- cbind(matrix(rep(1, sol$Size), ncol = 1))
   # theta = sol$tab[(length(c(sol$beta,sol$delta, sol$phi, sol$nu))+sol$groups):(length(c(sol$beta,sol$delta, sol$phi, sol$nu, sol$theta))+sol$groups-1),1]
   # sdthet = sol$tab[(length(c(sol$beta, sol$phi, sol$nu,sol$delta))+sol$groups):(length(c(sol$beta,sol$delta, sol$phi, sol$nu, sol$theta))+sol$groups-1),2]
-  theta = sol$tab[(length(c(sol$beta,sol$delta, sol$phi, sol$nu))+1):(length(c(sol$beta,sol$delta, sol$phi, sol$nu, sol$theta))),1]
-  sdthet = sol$tab[(length(c(sol$beta, sol$phi, sol$nu,sol$delta))+1):(length(c(sol$beta,sol$delta, sol$phi, sol$nu, sol$theta))),2]
-  boottheta = sapply(1:sol$groups, function(s){stats::rnorm(nb, theta[s], sdthet[s])})
-  prob = exp(boottheta)/rowSums(exp(boottheta))
-  sapply(1:sol$groups, function(s){stats::quantile(prob[,s], probs = c((1-alpha)/2,1-(1-alpha)/2))})
+  theta <- sol$tab[(length(c(sol$beta, sol$delta, sol$phi, sol$nu)) + 1):(length(c(sol$beta, sol$delta, sol$phi, sol$nu, sol$theta))), 1]
+  sdthet <- sol$tab[(length(c(sol$beta, sol$phi, sol$nu, sol$delta)) + 1):(length(c(sol$beta, sol$delta, sol$phi, sol$nu, sol$theta))), 2]
+  boottheta <- sapply(1:sol$groups, function(s) {
+    stats::rnorm(nb, theta[s], sdthet[s])
+  })
+  prob <- exp(boottheta) / rowSums(exp(boottheta))
+  sapply(1:sol$groups, function(s) {
+    stats::quantile(prob[, s], probs = c((1 - alpha) / 2, 1 - (1 - alpha) / 2))
+  })
 }
 
 #' Adequacy of the model
@@ -132,17 +142,18 @@ ConfIntT <- function(sol, Y, A, nb = 10000, alpha = 0.98){
 #' @export
 #'
 #' @examples
-#' data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
-#' data = as.matrix(data)
-#' sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+#' data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+#' data <- as.matrix(data)
+#' sol <- trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2, 2), Model = "CNORM", Method = "EM")
 #' adequacy(sol, Y = data[, 2:6], A = data[, 7:11])
-adequacy <- function(sol, Y, A, nb = 10000, alpha = 0.98){
-  tab = rbind(exp(sol$theta)/sum(exp(sol$theta)),
-              ConfIntT(sol, Y, A, nb = 10000, alpha = 0.98),
-              propAssign(sol, Y, A),
-              AvePP(sol,  Y, A),
-              OCC(sol, Y, A)
-              )
-  rownames(tab) = c("Prob. est.", "CI inf.", "CI sup.", "Prop.", "AvePP", "OCC")
+adequacy <- function(sol, Y, A, nb = 10000, alpha = 0.98) {
+  tab <- rbind(
+    exp(sol$theta) / sum(exp(sol$theta)),
+    ConfIntT(sol, Y, A, nb = 10000, alpha = 0.98),
+    propAssign(sol, Y, A),
+    AvePP(sol, Y, A),
+    OCC(sol, Y, A)
+  )
+  rownames(tab) <- c("Prob. est.", "CI inf.", "CI sup.", "Prop.", "AvePP", "OCC")
   return(tab)
 }

@@ -19,7 +19,7 @@ my_env <- new.env(parent = emptyenv())
 #' @param degre.nu Vector of integer. The degree of all Poisson part for a ZIP model.
 #' @param degre.phi Vector of integer. The degree of  beta parametr for  a BETA model.
 #' @param Model String. The model used. The value are LOGIT for a Logit Mixture model,
-#'CNORM for a Censored Normal Mixture Model or ZIP for Zero Inflated Poisson Mixture model.
+#' CNORM for a Censored Normal Mixture Model or ZIP for Zero Inflated Poisson Mixture model.
 #' @param Method String. Determine the method used for find the parameters of the model.
 #' The value are L for the Maximum Likelihood Estimation, EM for Expectation Maximization method
 #' with quasi newton method inside, EMIWRLS for Expectation Maximization method with Iterative
@@ -37,7 +37,7 @@ my_env <- new.env(parent = emptyenv())
 #' @param itermax Integer. Indicate the maximal number of iteration for \code{optim} function or for the EM algorithm.
 #' @param paraminit Vector. The vector of initial parameters. By default \code{trajeR} calculate the initial value
 #' based of the range or the standard deviation.
-#' @param ProbIRLS Logical. Indicate the method to sue in the search of predictor's probability. If TRUE (by default) we use 
+#' @param ProbIRLS Logical. Indicate the method to sue in the search of predictor's probability. If TRUE (by default) we use
 #' IRLS method and if FALSE we use optimization method.
 #' @param refgr Integer. The number of reference group. By default is 1.
 #' @param fct  Function. The definition of the function  f in the definition in nonlinear model.
@@ -51,7 +51,7 @@ my_env <- new.env(parent = emptyenv())
 #'
 #' An object of class "\code{Trajectory.LOGIT}" is a list containing at least the following components:
 #'
-#'\describe{
+#' \describe{
 #' \item{\code{beta}}{a vector of the parameters beta.}
 #' \item{\code{delta}}{a vector of the parameter delta. Only if we use time covariate.}
 #' \item{\code{theta}}{a vector with the parameter theta if there exist a covariate X that modify
@@ -62,135 +62,150 @@ my_env <- new.env(parent = emptyenv())
 #' \item{\code{ng}}{a integer with the number of group.}
 #' \item{\code{model}}{a string with the model used.}
 #' \item{\code{method}}{a string with the method used.}
-#'}
+#' }
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' load("data/dataNORM01.RData")
-#' solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
-#'               Model="CNORM", Method = "L", ssigma = FALSE, 
-#'               hessian = TRUE)
-#'               }
+#' solL <- trajeR(data[, 1:5], data[, 6:10],
+#'   ng = 3, degre = c(2, 2, 2),
+#'   Model = "CNORM", Method = "L", ssigma = FALSE,
+#'   hessian = TRUE
+#' )
+#' }
 trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, degre = NULL, degre.nu = 0, degre.phi = 0,
                    Model, Method = "L", ssigma = FALSE,
-                   ymax = max(Y, na.rm = TRUE)+1, ymin = min(Y, na.rm = TRUE)-1, hessian = TRUE,
+                   ymax = max(Y, na.rm = TRUE) + 1, ymin = min(Y, na.rm = TRUE) - 1, hessian = TRUE,
                    itermax = 100, paraminit = NULL, ProbIRLS = TRUE, refgr = 1,
-                   fct = NULL, diffct = NULL, nbvar = NULL, ng.nl = NULL, nls.lmiter = 50){
-  ng = ifelse(is.null(ng.nl), length(degre), ng.nl) 
-  EMIRLS = ProbIRLS
-  X = Risk
-  if (is.null(degre)){
-    degre = rep(nbvar, ng)
-  }else{
-    degre = degre + 1
+                   fct = NULL, diffct = NULL, nbvar = NULL, ng.nl = NULL, nls.lmiter = 50) {
+  ng <- ifelse(is.null(ng.nl), length(degre), ng.nl)
+  EMIRLS <- ProbIRLS
+  X <- Risk
+  if (is.null(degre)) {
+    degre <- rep(nbvar, ng)
+  } else {
+    degre <- degre + 1
   }
-  degre.phi = degre.phi + 1
-  n = nrow(Y)
-  period = ncol(A)
-  if (is.null(X)){
-    X = cbind(rep(1, n))
-    nx = ncol(X)
-    colnames(X) = c("Intercept")
-  }else{
-    X = cbind(matrix(rep(1, n), ncol = 1), X)
-    nx = ncol(X)
-    if (is.null(colnames(X))){
-      colnames(X) = c("Intercept", paste0("X",2:nx))
+  degre.phi <- degre.phi + 1
+  n <- nrow(Y)
+  period <- ncol(A)
+  if (is.null(X)) {
+    X <- cbind(rep(1, n))
+    nx <- ncol(X)
+    colnames(X) <- c("Intercept")
+  } else {
+    X <- cbind(matrix(rep(1, n), ncol = 1), X)
+    nx <- ncol(X)
+    if (is.null(colnames(X))) {
+      colnames(X) <- c("Intercept", paste0("X", 2:nx))
     }
   }
-  if (is.null(TCOV)){
-    nw = 0
-    delta = NULL
-  }else{
-    nw = ncol(TCOV)/period
-    delta = lapply(1:ng, function(s){
+  if (is.null(TCOV)) {
+    nw <- 0
+    delta <- NULL
+  } else {
+    nw <- ncol(TCOV) / period
+    delta <- lapply(1:ng, function(s) {
       rep(0, nw)
     })
   }
-  ntheta = nx
-  nu = NULL
-  if (Model == "CNORM"){
-    beta = lapply(1:(ng), function(s){
-      c(stats::qnorm((2*(s-1)+1)/(2*ng),mean(Y, na.rm = TRUE),stats::sd(Y, na.rm = TRUE)), rep(0, degre[s]-1))
+  ntheta <- nx
+  nu <- NULL
+  if (Model == "CNORM") {
+    beta <- lapply(1:(ng), function(s) {
+      c(stats::qnorm((2 * (s - 1) + 1) / (2 * ng), mean(Y, na.rm = TRUE), stats::sd(Y, na.rm = TRUE)), rep(0, degre[s] - 1))
     })
-    sigma = rep(stats::sd(Y, na.rm = TRUE), ng)
-    paraff = c(unlist(beta), sigma)
-  }else if (Model == "LOGIT"){
-    beta = lapply(1:(ng), function(s){
-      c(suppressWarnings(log(stats::qnorm((2*(s-1)+1)/(2*ng),mean(Y, na.rm = TRUE),stats::sd(Y, na.rm = TRUE))/(1-stats::qnorm((2*(s-1)+1)/(2*ng),mean(Y, na.rm = TRUE),stats::sd(Y, na.rm = TRUE))))), rep(0, degre[s]-1))
+    sigma <- rep(stats::sd(Y, na.rm = TRUE), ng)
+    paraff <- c(unlist(beta), sigma)
+  } else if (Model == "LOGIT") {
+    beta <- lapply(1:(ng), function(s) {
+      c(suppressWarnings(log(stats::qnorm((2 * (s - 1) + 1) / (2 * ng), mean(Y, na.rm = TRUE), stats::sd(Y, na.rm = TRUE)) / (1 - stats::qnorm((2 * (s - 1) + 1) / (2 * ng), mean(Y, na.rm = TRUE), stats::sd(Y, na.rm = TRUE))))), rep(0, degre[s] - 1))
     })
-    beta[is.na(beta)]=-5
-    paraff = c(unlist(beta))
-  }else if (Model =="ZIP"){
-    nu = lapply(1:(ng), function(s){
+    beta <- rapply(beta, f = function(x) ifelse(is.na(x), -5, x), how = "replace")
+    paraff <- c(unlist(beta))
+  } else if (Model == "ZIP") {
+    nu <- lapply(1:(ng), function(s) {
       c(-3, rep(0, degre.nu[s]))
     })
-    beta = lapply(1:(ng), function(s){
-      c(log(stats::qgamma((2*(s-1)+1)/(2*ng), mean(Y, na.rm = T), mean(Y, na.rm = T)**2/(stats::sd(Y, na.rm = T)**2-mean(Y, na.rm = T)))), rep(0, degre[s]-1))
+    beta <- lapply(1:(ng), function(s) {
+      c(log(stats::qgamma((2 * (s - 1) + 1) / (2 * ng), mean(Y, na.rm = T), mean(Y, na.rm = T)**2 / (stats::sd(Y, na.rm = T)**2 - mean(Y, na.rm = T)))), rep(0, degre[s] - 1))
     })
-    paraff = c(unlist(beta), unlist(nu))
-  }else  if (Model == "BETA"){
-    beta = lapply(1:(ng), function(s){
-      c(suppressWarnings(max(log(stats::qnorm((2*(s-1)+1)/(2*ng),mean(Y, na.rm = TRUE),stats::sd(Y, na.rm = TRUE))/(1-stats::qnorm((2*(s-1)+1)/(2*ng),mean(Y, na.rm = TRUE),stats::sd(Y, na.rm = TRUE)))), -5)), rep(0, degre[s]-1))
+    paraff <- c(unlist(beta), unlist(nu))
+  } else if (Model == "BETA") {
+    beta <- lapply(1:(ng), function(s) {
+      c(suppressWarnings(max(log(stats::qnorm((2 * (s - 1) + 1) / (2 * ng), mean(Y, na.rm = TRUE), stats::sd(Y, na.rm = TRUE)) / (1 - stats::qnorm((2 * (s - 1) + 1) / (2 * ng), mean(Y, na.rm = TRUE), stats::sd(Y, na.rm = TRUE)))), -5)), rep(0, degre[s] - 1))
     })
-    beta[is.na(beta)]=-5
-    phi = lapply(1:(ng), function(s){
-      c(5, rep(0, degre.phi[s]-1))
+    beta <- rapply(beta, f = function(x) ifelse(is.na(x), -5, x), how = "replace")
+    phi <- lapply(1:(ng), function(s) {
+      c(5, rep(0, degre.phi[s] - 1))
     })
-    paraff = c(unlist(beta), unlist(phi))
-  }else if (Model =="POIS"){
-    beta = lapply(1:(ng), function(s){
-      c(log(stats::qgamma((2*(s-1)+1)/(2*ng), mean(Y, na.rm = T)**2, mean(Y, na.rm = T)**2/(stats::sd(Y, na.rm = T)**2-mean(Y, na.rm = T)))), rep(0, degre[s]-1))
+    paraff <- c(unlist(beta), unlist(phi))
+  } else if (Model == "POIS") {
+    beta <- lapply(1:(ng), function(s) {
+      c(log(stats::qgamma((2 * (s - 1) + 1) / (2 * ng), mean(Y, na.rm = TRUE)**2, mean(Y, na.rm = T)**2 / (stats::sd(Y, na.rm = T)**2 - mean(Y, na.rm = T)))), rep(0, degre[s] - 1))
     })
-    paraff = c(unlist(beta))
-  }else{
-    beta = lapply(1:(ng), function(s){
-      c(stats::qnorm((2*(s-1)+1)/(2*ng),mean(Y, na.rm = T),stats::sd(Y, na.rm = T)), rep(0, degre[s]-1))
+    paraff <- c(unlist(beta))
+  } else {
+    beta <- lapply(1:(ng), function(s) {
+      c(stats::qnorm((2 * (s - 1) + 1) / (2 * ng), mean(Y, na.rm = TRUE), stats::sd(Y, na.rm = T)), rep(0, degre[s] - 1))
     })
-    paraff = c(unlist(beta), rep(stats::sd(Y, na.rm = T), ng))
+    paraff <- c(unlist(beta), rep(stats::sd(Y, na.rm = TRUE), ng))
   }
-  nbeta = degre
-  theta = rep(0, ng*ntheta)
-  X = as.matrix(X)
-  pi = sapply(1:ng, function(s){piik(theta = theta, i = 1, k = s, ng = ng, X = X)})
-  cat('Starting Values\n')
-  if (is.null(paraminit)){
-    cat(c(pi, paraff, unlist(delta)))  
-  }
-  else{
+  nbeta <- degre
+  theta <- rep(0, ng * ntheta)
+  X <- as.matrix(X)
+  pi <- sapply(1:ng, function(s) {
+    piik(theta = theta, i = 1, k = s, ng = ng, X = X)
+  })
+  cat("Starting Values\n")
+  if (is.null(paraminit)) {
+    cat(c(pi, paraff, unlist(delta)))
+  } else {
     cat(paraminit)
   }
-  cat('\n\n')
+  cat("\n\n")
   cat("Likelihood\n")
-  
-  if (Model == "CNORM"){
-    res = trajeR.CNORM(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, sigma, delta, pi, Method, ssigma,
-                       ymax, ymin, hessian, itermax, paraminit, EMIRLS, refgr)
-  }else if (Model == "LOGIT"){
-    res = trajeR.LOGIT(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, delta, pi, Method,
-                       hessian, itermax, paraminit, EMIRLS, refgr)
-  }else if (Model == "ZIP"){
-    res = trajeR.ZIP(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, degre.nu, theta, beta, nu, delta, pi, Method,
-                     hessian, itermax, paraminit, EMIRLS, refgr)
-  }else if (Model == "BETA"){
-    res = trajeR.BETA(Y, A, X, TCOV, ng, nx, n, nbeta, degre.phi, nw, ntheta, period, degre, theta, beta, phi, delta, pi, Method,
-                      hessian, itermax, paraminit, EMIRLS, refgr)
-  }else if (Model == "POIS"){
-    res = trajeR.POIS(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, delta, pi, Method,
-                      hessian, itermax, paraminit, EMIRLS, refgr)
-  }
-  else{
-    if (is.null(diffct)){
-      diffct <- function(t, betak, TCOV){
-        return(numDeriv::jacobian(func = fct,
-                                  x = betak, t = t , TCOV = TCOV)
-        )
+
+  if (Model == "CNORM") {
+    res <- trajeR.CNORM(
+      Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, sigma, delta, pi, Method, ssigma,
+      ymax, ymin, hessian, itermax, paraminit, EMIRLS, refgr
+    )
+  } else if (Model == "LOGIT") {
+    res <- trajeR.LOGIT(
+      Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, delta, pi, Method,
+      hessian, itermax, paraminit, EMIRLS, refgr
+    )
+  } else if (Model == "ZIP") {
+    res <- trajeR.ZIP(
+      Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, degre.nu, theta, beta, nu, delta, pi, Method,
+      hessian, itermax, paraminit, EMIRLS, refgr
+    )
+  } else if (Model == "BETA") {
+    res <- trajeR.BETA(
+      Y, A, X, TCOV, ng, nx, n, nbeta, degre.phi, nw, ntheta, period, degre, theta, beta, phi, delta, pi, Method,
+      hessian, itermax, paraminit, EMIRLS, refgr
+    )
+  } else if (Model == "POIS") {
+    res <- trajeR.POIS(
+      Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, delta, pi, Method,
+      hessian, itermax, paraminit, EMIRLS, refgr
+    )
+  } else {
+    if (is.null(diffct)) {
+      diffct <- function(t, betak, TCOV) {
+        return(numDeriv::jacobian(
+          func = fct,
+          x = betak, t = t, TCOV = TCOV
+        ))
       }
     }
-    res = trajeR.NL(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, sigma, pi, Method, ssigma,
-                    hessian, itermax, paraminit, EMIRLS, refgr, fct, diffct, nls.lmiter)
+    res <- trajeR.NL(
+      Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, sigma, pi, Method, ssigma,
+      hessian, itermax, paraminit, EMIRLS, refgr, fct, diffct, nls.lmiter
+    )
   }
   return(res)
 }

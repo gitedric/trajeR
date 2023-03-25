@@ -1,3 +1,14 @@
+## Resubmission - trajeR: valgrind  Still
+
+I guess (I hope) I have settled the valgrind issues.
+
+Test environnements with docker containers:
+
+* RDcsan - no problem
+* RDValgrind - no problem
+
+--------------------------------------------------------
+
 ## Resubmission
 
 This is a resubmission. I believe I have fixed all the links apart from one mentioned below.
