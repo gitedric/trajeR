@@ -81,8 +81,11 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, degre = NULL, degre.nu = 0, d
                    itermax = 100, paraminit = NULL, ProbIRLS = TRUE, refgr = 1,
                    fct = NULL, diffct = NULL, nbvar = NULL, ng.nl = NULL, nls.lmiter = 50) {
   ng <- ifelse(is.null(ng.nl), length(degre), ng.nl)
+  cat("1")
   Y <- data.matrix(Y)
+  cat("2")
   A <- data.matrix(A)
+  cat("3")
   EMIRLS <- ProbIRLS
   X <- Risk
   if (is.null(degre)) {
@@ -115,6 +118,7 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, degre = NULL, degre.nu = 0, d
   }
   ntheta <- nx
   nu <- NULL
+  cat("4")
   if (Model == "CNORM") {
     beta <- lapply(1:(ng), function(s) {
       c(stats::qnorm((2 * (s - 1) + 1) / (2 * ng), mean(Y, na.rm = TRUE), stats::sd(Y, na.rm = TRUE)), rep(0, degre[s] - 1))
