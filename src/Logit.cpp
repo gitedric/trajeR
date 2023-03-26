@@ -101,7 +101,7 @@ NumericVector difLbetakLOGIT_cpp(NumericVector theta,
       for (int t = 0; t < period; ++t){
        if (R_IsNA(Y(i, t)) == FALSE){
           tmp1.push_back(pow(1-1/(1+exp(muikt[t])), Y(i,t))*pow(1/(1+exp(muikt[t])), 1-Y(i,t)));
-       } else{
+       }else{
          tmp1.push_back(1);
        }
       }
@@ -154,7 +154,7 @@ NumericVector difLdeltakLOGIT_cpp(NumericVector theta,
       for (int t = 0; t < period; ++t){
         if (R_IsNA(Y(i, t)) == FALSE){
           tmp1.push_back(pow(1-1/(1+exp(muikt[t])), Y(i,t))*pow(1/(1+exp(muikt[t])), 1-Y(i,t)));
-        } else{
+        }else{
           tmp1.push_back(1);
         }
       }

@@ -108,6 +108,7 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, degre = NULL, degre.nu = 0, d
     nw <- 0
     delta <- NULL
   } else {
+    TCOV <- data.matrix(TCOV)
     nw <- ncol(TCOV) / period
     delta <- lapply(1:ng, function(s) {
       rep(0, nw)
