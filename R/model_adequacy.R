@@ -116,14 +116,19 @@ propAssign <- function(sol, Y, A) {
 #' ConfIntT(sol, Y = data[, 2:6], A = data[, 7:11])
 ConfIntT <- function(sol, Y, A, nb = 10000, alpha = 0.98) {
   Xt <- cbind(matrix(rep(1, sol$Size), ncol = 1))
-  # theta = sol$tab[(length(c(sol$beta,sol$delta, sol$phi, sol$nu))+sol$groups):(length(c(sol$beta,sol$delta, sol$phi, sol$nu, sol$theta))+sol$groups-1),1]
-  # sdthet = sol$tab[(length(c(sol$beta, sol$phi, sol$nu,sol$delta))+sol$groups):(length(c(sol$beta,sol$delta, sol$phi, sol$nu, sol$theta))+sol$groups-1),2]
-  theta <- sol$tab[(length(c(sol$beta, sol$delta, sol$phi, sol$nu)) + 1):(length(c(sol$beta, sol$delta, sol$phi, sol$nu, sol$theta))), 1]
-  sdthet <- sol$tab[(length(c(sol$beta, sol$phi, sol$nu, sol$delta)) + 1):(length(c(sol$beta, sol$delta, sol$phi, sol$nu, sol$theta))), 2]
+  vtmp <- c(sol$beta, sol$delta, sol$phi, sol$nu, sol$sigma)
+  vtmp <- vtmp[!is.na(vtmp)]
+  indmin <- length(vtmp) + 1
+  indmax <- indmin + length(c(sol$theta)) - 1
+  theta <- sol$tab[indmin : indmax, 1]
+  sdthet <- sol$tab[indmin : indmax, 2]
   boottheta <- sapply(1:sol$groups, function(s) {
     stats::rnorm(nb, theta[s], sdthet[s])
   })
-  prob <- exp(boottheta) / rowSums(exp(boottheta))
+  prob <- boottheta
+  if (sol$Method == "L") {
+    prob <- exp(boottheta) / rowSums(exp(boottheta))
+  }
   sapply(1:sol$groups, function(s) {
     stats::quantile(prob[, s], probs = c((1 - alpha) / 2, 1 - (1 - alpha) / 2))
   })
