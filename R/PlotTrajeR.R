@@ -17,7 +17,7 @@ plotTrajCensoredNormalLikelihood <- function(beta, sigma, theta, delta, plotcov,
   betatmp <- beta
   j <- 1
   beta <- list()
-  for (i in 1:length(nbeta)) {
+  for (i in seq_along(nbeta)) {
     beta[[i]] <- betatmp[j:sum(nbeta[1:i])]
     j <- sum(nbeta[1:i]) + 1
   }
@@ -46,6 +46,8 @@ plotTrajCensoredNormalLikelihood <- function(beta, sigma, theta, delta, plotcov,
       tmp <- sapply(1:length(pas), function(s) {
         sum(beta[[i]] * pas[s]**(0:(nbeta[i] - 1)))
       })
+      tmp[tmp < ymin] <- ymin
+      tmp[tmp > ymax] <- ymax
       vec <- cbind(vec, tmp)
     }
     graphics::matplot(pas, vec, type = "l", pch = 16, col = cols2, lwd = 4, lty = 1, ...)
@@ -115,7 +117,7 @@ plotTrajCensoredNormalLikelihood <- function(beta, sigma, theta, delta, plotcov,
 ##########################################################################################
 # plot LOGIT function
 ##########################################################################################
-plotTrajLOGIT <- function(beta, theta, delta, Y, A, X, ng, n, Time, dec, col, degre, plotcov, mean, alpha) {
+plotTrajLOGIT <- function(beta, theta, delta, Y, A, X, ng, n, Time, dec, col, degre, plotcov, mean, alpha, ...) {
   period <- length(Time)
   Ygr <- cbind(Y, rep(NA, n)) # for store the group membership
   if (is.null(plotcov)) {
@@ -152,7 +154,7 @@ plotTrajLOGIT <- function(beta, theta, delta, Y, A, X, ng, n, Time, dec, col, de
       })
       vec <- cbind(vec, tmp / (1 + tmp))
     }
-    graphics::matplot(pas, vec, type = "l", pch = 16, col = cols2, lwd = 4, lty = 1, xlab = "Time", ylab = "Value", main = "Values and predicted trajectories for all groups")
+    graphics::matplot(pas, vec, type = "l", pch = 16, col = cols2, lwd = 4, lty = 1, ...)
   } else {
     if (is.null(X)) {
       X <- cbind(rep(1, n))
@@ -172,7 +174,7 @@ plotTrajLOGIT <- function(beta, theta, delta, Y, A, X, ng, n, Time, dec, col, de
       type = "b",
       ylim = c(-0.2, 1.2), xlim = xlim,
       pch = 16, col = cols1[ncol],
-      xlab = "Time", ylab = "Value", yaxt = "n", main = "Values and predicted trajectories for all groups"
+      ...
     )
     graphics::axis(side = 2, at = seq(0, 1, 0.25), labels = seq(0, 1, 0.25))
     graphics::rect(
@@ -227,7 +229,7 @@ plotTrajLOGIT <- function(beta, theta, delta, Y, A, X, ng, n, Time, dec, col, de
 ##########################################################################################
 # plot POIS function
 ##########################################################################################
-plotTrajPOIS <- function(beta, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, col, degre, plotcov, mean, alpha, method) {
+plotTrajPOIS <- function(beta, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, col, degre, plotcov, mean, alpha, method, ...) {
   period <- length(Time)
   Ygr <- cbind(Y, rep(NA, n)) # for store the group membership
   if (is.null(plotcov)) {
@@ -264,7 +266,7 @@ plotTrajPOIS <- function(beta, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, co
       })
       vec <- cbind(vec, tmp)
     }
-    graphics::matplot(pas, vec, type = "l", pch = 16, col = cols2, lwd = 4, lty = 1, xlab = "Time", ylab = "Value", main = "Values and predicted trajectories for all groups")
+    graphics::matplot(pas, vec, type = "l", pch = 16, col = cols2, lwd = 4, lty = 1, ...)
   } else {
     if (is.null(X)) {
       X <- cbind(rep(1, n))
@@ -285,7 +287,7 @@ plotTrajPOIS <- function(beta, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, co
       type = "b",
       ylim = c(min(Y, na.rm = T), max(Y, na.rm = T)),
       pch = 16, col = cols1[ncol],
-      xlab = "Time", ylab = "Value", yaxt = "n", main = "Values and predicted trajectories for all groups"
+      ...
     )
     Ygr[1, period + 1] <- ncol
     for (i in 2:n) {
@@ -336,7 +338,7 @@ plotTrajPOIS <- function(beta, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, co
 ##########################################################################################
 # plot ZIP function
 ##########################################################################################
-plotTrajZIP <- function(beta, nu, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, col, degre, plotcov, mean, alpha, method, degre.nu) {
+plotTrajZIP <- function(beta, nu, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, col, degre, plotcov, mean, alpha, method, degre.nu, ...) {
   period <- length(Time)
   if (is.null(plotcov)) {
     plotcov <- matrix(rep(0, period), nrow = 1)
@@ -391,7 +393,7 @@ plotTrajZIP <- function(beta, nu, theta, delta, Y, A, X, TCOV, ng, n, Time, dec,
       vec <- cbind(vec, (1 - tmp2) * tmp)
       # vec = cbind(vec, tmp2 +(1-tmp2)*tmp)
     }
-    graphics::matplot(pas, vec, type = "l", pch = 16, col = cols2, lwd = 4, lty = 1, xlab = "Time", ylab = "Value", main = "Values and predicted trajectories for all groups")
+    graphics::matplot(pas, vec, type = "l", pch = 16, col = cols2, lwd = 4, lty = 1, ...)
   } else {
     Ygr <- cbind(Y, rep(NA, n)) # for store the group membership
     if (is.null(X)) {
@@ -419,7 +421,7 @@ plotTrajZIP <- function(beta, nu, theta, delta, Y, A, X, TCOV, ng, n, Time, dec,
       type = "b",
       ylim = c(min(Y, na.rm = T), max(Y, na.rm = T)),
       pch = 16, col = cols1[ncol],
-      xlab = "Time", ylab = "Value", yaxt = "n", main = "Values and predicted trajectories for all groups"
+      ...
     )
     Ygr[1, period + 1] <- ncol
     for (i in 2:n) {
@@ -479,7 +481,7 @@ plotTrajZIP <- function(beta, nu, theta, delta, Y, A, X, TCOV, ng, n, Time, dec,
 }
 #################################################################################
 plotTrajNL <- function(beta, sigma, theta, plotcov, Y, A, X, mean, alpha,
-                       ng, n, Time, col, degre, ymin, ymax, method, fct, main, TCOV) {
+                       ng, n, Time, col, degre, ymin, ymax, method, fct, main, TCOV, ...) {
   period <- length(Time)
   if (is.null(plotcov)) {
     plotcov <- matrix(rep(0, period), nrow = 1)
@@ -510,7 +512,7 @@ plotTrajNL <- function(beta, sigma, theta, plotcov, Y, A, X, mean, alpha,
       })
       vec <- cbind(vec, tmp)
     }
-    graphics::matplot(pas, vec, type = "l", pch = 16, col = cols2, lwd = 4, lty = 1, xlab = "Time", ylab = "Value", main = main)
+    graphics::matplot(pas, vec, type = "l", pch = 16, col = cols2, lwd = 4, lty = 1, ...)
   } else {
     Ygr <- cbind(Y, rep(NA, n)) # for store the group membership
     if (is.null(X)) {
@@ -528,7 +530,7 @@ plotTrajNL <- function(beta, sigma, theta, plotcov, Y, A, X, mean, alpha,
     ncol <- which.max(tmp / sum(tmp))
     plot(A[1, ], Y[1, ],
       type = "b", ylim = c(min(Y), max(Y)), pch = 16, col = cols1[ncol],
-      xlab = "Time", ylab = "Value", main = main
+      ...
     )
     Ygr[1, period + 1] <- ncol
     for (i in 2:n) {
@@ -578,7 +580,7 @@ plotTrajNL <- function(beta, sigma, theta, plotcov, Y, A, X, mean, alpha,
 ##########################################################################################
 # plot BETA function
 ##########################################################################################
-plotTrajBETA <- function(beta, phi, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, col, degre, plotcov, mean, alpha, method, degre.phi) {
+plotTrajBETA <- function(beta, phi, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, col, degre, plotcov, mean, alpha, method, degre.phi, ...) {
   period <- length(Time)
   if (is.null(plotcov)) {
     plotcov <- matrix(rep(0, period), nrow = 1)
@@ -628,7 +630,7 @@ plotTrajBETA <- function(beta, phi, theta, delta, Y, A, X, TCOV, ng, n, Time, de
       })
       vec <- cbind(vec, tmp / (1 + tmp))
     }
-    graphics::matplot(pas, vec, type = "l", pch = 16, col = cols2, lwd = 4, lty = 1)
+    graphics::matplot(pas, vec, type = "l", pch = 16, col = cols2, lwd = 4, lty = 1, ...)
     # graphics::matplot(pas, vec, type="l", pch=16, col = cols2, lwd = 4, lty = 1, xlab = 'Time', ylab = 'Value', main = 'Values and predicted trajectories for all groups')
   } else {
     Ygr <- cbind(Y, rep(NA, n)) # for store the group membership), max(Y))
@@ -651,7 +653,7 @@ plotTrajBETA <- function(beta, phi, theta, delta, Y, A, X, TCOV, ng, n, Time, de
       type = "b",
       ylim = c(min(Y, na.rm = T), max(Y, na.rm = T)),
       pch = 16, col = cols1[ncol],
-      xlab = "Time", ylab = "Value", main = "Values and predicted trajectories for all groups"
+      ...
     )
     Ygr[1, period + 1] <- ncol
     for (i in 2:n) {
@@ -743,6 +745,12 @@ plotrajeR <- function(Obj, ...) {
 #'
 plotrajeR.Trajectory.CNORM <- function(Obj, plotcov = NULL, col = "black", Y = NULL, A = NULL, Risk = NULL, mean = FALSE, alpha = 1,
                                        ...) {
+  if (!is.null(Y)) {
+    Y <- data.matrix(Y)
+  }
+  if (!is.null(A)) {
+    A <- data.matrix(A)
+  }
   plotTrajCensoredNormalLikelihood(
     beta = Obj$beta, sigma = Obj$sigma, theta = Obj$theta, delta = Obj$delta, plotcov = plotcov,
     Y = Y, A = A, X = Risk, mean = mean, alpha = alpha,
@@ -771,10 +779,17 @@ plotrajeR.Trajectory.CNORM <- function(Obj, plotcov = NULL, col = "black", Y = N
 #'
 
 plotrajeR.Trajectory.LOGIT <- function(Obj, plotcov = NULL, dec = 1, col = "black", Y = NULL, A = NULL, Risk = NULL, mean = FALSE, alpha = 1, ...) {
+  if (!is.null(Y)) {
+    Y <- data.matrix(Y)
+  }
+  if (!is.null(A)) {
+    A <- data.matrix(A)
+  }
   plotTrajLOGIT(
     beta = Obj$beta, theta = Obj$theta, delta = Obj$delta, plotcov = plotcov,
     Y = Y, A = A, X = Risk, mean = mean, alpha = alpha,
-    ng = Obj$groups, n = Obj$Size, Time = Obj$Time, dec = dec, col = col, degre = Obj$degre
+    ng = Obj$groups, n = Obj$Size, Time = Obj$Time, dec = dec, col = col, degre = Obj$degre,
+    ...
   )
 }
 ###################################################################################
@@ -797,10 +812,17 @@ plotrajeR.Trajectory.LOGIT <- function(Obj, plotcov = NULL, dec = 1, col = "blac
 #'
 
 plotrajeR.Trajectory.POIS <- function(Obj, plotcov = NULL, dec = 0, col = "black", Y = NULL, A = NULL, Risk = NULL, TCOV = NULL, mean = FALSE, alpha = 1, ...) {
+  if (!is.null(Y)) {
+    Y <- data.matrix(Y)
+  }
+  if (!is.null(A)) {
+    A <- data.matrix(A)
+  }
   plotTrajPOIS(
     beta = Obj$beta, theta = Obj$theta, delta = Obj$delta, plotcov = plotcov,
     Y = Y, A = A, X = Risk, TCOV = TCOV, mean = mean, alpha = alpha, method = Obj$Method,
-    ng = Obj$groups, n = Obj$Size, Time = Obj$Time, dec = dec, col = col, degre = Obj$degre
+    ng = Obj$groups, n = Obj$Size, Time = Obj$Time, dec = dec, col = col, degre = Obj$degre,
+    ...
   )
 }
 ###################################################################################
@@ -822,11 +844,18 @@ plotrajeR.Trajectory.POIS <- function(Obj, plotcov = NULL, dec = 0, col = "black
 #' @export
 #'
 plotrajeR.Trajectory.ZIP <- function(Obj, plotcov = NULL, dec = 1, col = "black", Y = NULL, A = NULL, Risk = NULL, TCOV = NULL, mean = FALSE, alpha = 1, ...) {
+  if (!is.null(Y)) {
+    Y <- data.matrix(Y)
+  }
+  if (!is.null(A)) {
+    A <- data.matrix(A)
+  }
   plotTrajZIP(
     beta = Obj$beta, nu = Obj$nu, theta = Obj$theta, delta = Obj$delta, plotcov = plotcov,
     Y = Y, A = A, X = Risk, TCOV = TCOV, mean = mean, alpha = alpha,
     ng = Obj$groups, n = Obj$Size, Time = Obj$Time, dec = dec, col = col,
-    degre = Obj$degre, method = Obj$Method, degre.nu = Obj$degre.nu
+    degre = Obj$degre, method = Obj$Method, degre.nu = Obj$degre.nu,
+    ...
   )
 }
 ###################################################################################
@@ -847,12 +876,18 @@ plotrajeR.Trajectory.ZIP <- function(Obj, plotcov = NULL, dec = 1, col = "black"
 #' @export
 #'
 plotrajeR.Trajectory.NL <- function(Obj, plotcov = NULL, col = "black", Y = NULL, A = NULL, Risk = NULL, mean = FALSE, alpha = 1, TCOV = NULL, ...) {
+  if (!is.null(Y)) {
+    Y <- data.matrix(Y)
+  }
+  if (!is.null(A)) {
+    A <- data.matrix(A)
+  }
   plotTrajNL(
     beta = Obj$beta, sigma = Obj$sigma, theta = Obj$theta, plotcov = plotcov,
-    Y = Y, A = A, X = Risk, mean = mean, alpha = alpha,
+    Y = Y, A = A, X = Risk, TCOV = TCOV, mean = mean, alpha = alpha,
     ng = Obj$groups, n = Obj$Size, Time = Obj$Time, col = col, degre = Obj$degre,
     ymin = Obj$min, ymax = Obj$max, method = Obj$Method, fct = Obj$fct,
-    TCOV = TCOV
+    ...
   )
 }
 ###################################################################################
@@ -873,10 +908,17 @@ plotrajeR.Trajectory.NL <- function(Obj, plotcov = NULL, col = "black", Y = NULL
 #' @export
 #'
 plotrajeR.Trajectory.BETA <- function(Obj, plotcov = NULL, col = "black", Y = NULL, A = NULL, Risk = NULL, TCOV = NULL, mean = FALSE, alpha = 1, ...) {
+  if (!is.null(Y)) {
+    Y <- data.matrix(Y)
+  }
+  if (!is.null(A)) {
+    A <- data.matrix(A)
+  }
   plotTrajBETA(
     beta = Obj$beta, phi = Obj$phi, theta = Obj$theta, delta = Obj$delta, plotcov = plotcov,
     Y = Y, A = A, X = Risk, TCOV = TCOV, mean = mean, alpha = alpha,
     ng = Obj$groups, n = Obj$Size, Time = Obj$Time, dec = 1, col = col,
-    degre = Obj$degre, method = Obj$Method, degre.phi = Obj$degre.phi
+    degre = Obj$degre, method = Obj$Method, degre.phi = Obj$degre.phi,
+    ...
   )
 }

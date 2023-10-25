@@ -141,8 +141,9 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, degre = NULL, degre.nu = 0, d
       c(suppressWarnings(max(log(stats::qnorm((2 * (s - 1) + 1) / (2 * ng), mean(Y, na.rm = TRUE), stats::sd(Y, na.rm = TRUE)) / (1 - stats::qnorm((2 * (s - 1) + 1) / (2 * ng), mean(Y, na.rm = TRUE), stats::sd(Y, na.rm = TRUE)))), -5)), rep(0, degre[s] - 1))
     })
     beta <- rapply(beta, f = function(x) ifelse(is.na(x), -5, x), how = "replace")
+    # we take log because in the formulas of  BETA mixture we use exponentielle to avoid negative values
     phi <- lapply(1:(ng), function(s) {
-      c(5, rep(0, degre.phi[s] - 1))
+      c(log(mean(Y, na.rm = TRUE) * (1 - mean(Y, na.rm = TRUE)) / sd(Y, na.rm = TRUE)**2 - 1), rep(0, degre.phi[s] - 1))
     })
     paraff <- c(unlist(beta), unlist(phi))
   } else if (Model == "POIS") {

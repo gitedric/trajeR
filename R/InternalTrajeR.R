@@ -313,11 +313,13 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
   set_tour(1)
   set_storelik(10**100)
   theta <- theta - theta[1:nx]
-  theta <- theta[-c(1:nx)]
   if (Method == "L") {
+    theta <- theta[-c(1:nx)]
     # initial value for Likelihood's method
     if (is.null(paraminit)) {
       paraminit <- c(theta, unlist(beta), unlist(delta))
+    } else {
+      paraminit <- paraminit[-c(1:nx)]
     }
     if (!hessian) {
       newparam <- stats::optim(
@@ -513,16 +515,19 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
   set_tour(1)
   set_storelik(10**100)
   theta <- theta - theta[1:nx]
-  theta <- theta[-c(1:nx)]
   degre.nu <- degre.nu + 1
   nnu <- degre.nu
   #  nu = unlist(c(sapply(1:ng, function(s){
   #    c(min(Y)+s*(max(Y)-min(Y))/(ng+1), rep(0, degre.nu[s]-1))
   #  })))
   if (Method == "L") {
+    theta <- theta[-c(1:nx)]
     # initial value for Likelihood's method
     if (is.null(paraminit)) {
       paraminit <- c(theta, unlist(beta), unlist(nu), delta)
+    }
+    else {
+      paraminit <- paraminit[-c(1:nx)]
     }
     if (!hessian) {
       newparam <- stats::optim(
@@ -1101,11 +1106,13 @@ trajeR.BETA <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nphi, nw, ntheta, perio
   set_tour(1)
   set_storelik(10**100)
   theta <- theta - theta[1:nx]
-  theta <- theta[-c(1:nx)]
   if (Method == "L") {
+    theta <- theta[-c(1:nx)]
     # initial value for Likelihood's method
     if (is.null(paraminit)) {
       paraminit <- c(theta, unlist(beta), unlist(phi), unlist(delta))
+    } else {
+      paraminit <- paraminit[-c(1:nx)]
     }
     if (!hessian) {
       newparam <- stats::optim(
@@ -1119,6 +1126,7 @@ trajeR.BETA <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nphi, nw, ntheta, perio
       param <- newparam$par
       theta <- c(rep(0, nx), param[c(1:((ng - 1) * nx))])
       param <- c(param[-c(1:((ng - 1) * nx))], theta)
+      #param[(sum(nbeta) + 1):(sum(nbeta) + sum(nphi))] <- exp(param[(sum(nbeta) + 1):(sum(nbeta) + sum(nphi))])
     } else {
       newparam <- ucminf::ucminf(
         par = paraminit,
@@ -1132,6 +1140,7 @@ trajeR.BETA <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nphi, nw, ntheta, perio
       param <- newparam$par
       theta <- c(rep(0, nx), param[c(1:((ng - 1) * nx))])
       param <- c(param[-c(1:((ng - 1) * nx))], theta)
+      #param[(sum(nbeta) + 1):(sum(nbeta) + sum(nphi))] <- exp(param[(sum(nbeta) + 1):(sum(nbeta) + sum(nphi))])
     }
     invH <- NULL
     if (hessian == TRUE) {
@@ -1144,6 +1153,7 @@ trajeR.BETA <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nphi, nw, ntheta, perio
       } else {
         SE <- c(SE[-c(1:((ng - 1) * nx))], rep(NA, nx), SE[c(1:((ng - 1) * nx))])
       }
+      #SE[(sum(nbeta) + 1):(sum(nbeta) + sum(nphi))] <- SE[(sum(nbeta) + 1):(sum(nbeta) + sum(nphi))] * param[(sum(nbeta) + 1):(sum(nbeta) + sum(nphi))]
     }
   }
   if (hessian == TRUE) {

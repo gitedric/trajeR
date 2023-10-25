@@ -59,6 +59,8 @@ deltaThetaBase <- function(theta, Ht, X, ng) {
 # likelihood
 #################################################################################
 Likelihood <- function(param, model, method, ng, nx, n, nbeta, nw, A, Y, X, TCOV, ymin = NULL, ymax = NULL, nnu = NULL, fct = NULL, nphi = NULL) {
+  Y <- data.matrix(Y)
+  A <- data.matrix(A)
   if (model == "CNORM") {
     if (method == "L" | nx != 1) {
       # a = likelihoodCNORM_cpp(param[-c(1:nx)], ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw)
@@ -160,6 +162,8 @@ WitEM <- function(TCOV, period, delta, nw, i, t, k, ndeltacum) {
 #' sol <- trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2, 2), Model = "CNORM", Method = "EM")
 #' GroupProb(sol, Y = data[, 2:6], A = data[, 7:11])
 GroupProb <- function(Obj, Y, A, TCOV = NULL, X = NULL) {
+  Y <- data.matrix(Y)
+  A <- data.matrix(A)
   n <- Obj$Size
   ng <- Obj$groups
   nbeta <- Obj$degre + 1
@@ -168,7 +172,7 @@ GroupProb <- function(Obj, Y, A, TCOV = NULL, X = NULL) {
   betatmp <- Obj$beta
   j <- 1
   beta <- list()
-  for (i in 1:length(nbeta)) {
+  for (i in seq_along(nbeta)) {
     beta[[i]] <- betatmp[j:sum(nbeta[1:i])]
     j <- sum(nbeta[1:i]) + 1
   }
@@ -220,8 +224,14 @@ GroupProb <- function(Obj, Y, A, TCOV = NULL, X = NULL) {
       }
     }
   } else if (Obj$Model == "ZIP") {
-    nu <- Obj$nu
+    nutmp <- Obj$nu
     nnu <- Obj$degre.nu + 1
+    j <- 1
+    nu <- list()
+    for (i in seq_along(nnu)) {
+      nu[[i]] <- nutmp[j:sum(nnu[1:i])]
+      j <- sum(nnu[1:i]) + 1
+    }
     if (Obj$Method == "L") {
       for (i in 1:n) {
         tmp <- sapply(1:ng, function(s) {
@@ -242,7 +252,7 @@ GroupProb <- function(Obj, Y, A, TCOV = NULL, X = NULL) {
     nphi <- Obj$degre.phi + 1
     j <- 1
     phi <- list()
-    for (i in 1:length(nphi)) {
+    for (i in seq_along(nphi)) {
       phi[[i]] <- phitmp[j:sum(nphi[1:i])]
       j <- sum(nphi[1:i]) + 1
     }
