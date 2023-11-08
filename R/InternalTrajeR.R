@@ -692,7 +692,9 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
       nx = nx, n = n, nbeta = nbeta, nw = nw, A = A, Y = Y, X = X,
       TCOV = TCOV, nnu = nnu
     ),
-    Time = A[1, ], degre = degre - 1, degre.nu = degre.nu - 1
+    #Time = A[1, ], degre = degre - 1, degre.nu = degre.nu - 1
+    Time = c(min(A, na.rm = TRUE), max(A, na.rm = TRUE)), period = period,
+    degre = degre - 1, degre.nu = degre.nu - 1
   )
   class(res) <- "Trajectory.ZIP"
   return(res)

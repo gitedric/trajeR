@@ -338,8 +338,8 @@ plotTrajPOIS <- function(beta, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, co
 ##########################################################################################
 # plot ZIP function
 ##########################################################################################
-plotTrajZIP <- function(beta, nu, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, col, degre, plotcov, mean, alpha, method, degre.nu, ...) {
-  period <- length(Time)
+plotTrajZIP <- function(beta, nu, theta, delta, Y, A, X, TCOV, ng, n, Time, dec, col, degre, plotcov, mean, alpha, method, degre.nu, period, ...) {
+  #period <- length(Time)
   if (is.null(plotcov)) {
     plotcov <- matrix(rep(0, period), nrow = 1)
   }
@@ -379,7 +379,8 @@ plotTrajZIP <- function(beta, nu, theta, delta, Y, A, X, TCOV, ng, n, Time, dec,
     cols1 <- grDevices::gray.colors(ng, start = 0.3, end = 0.7, gamma = 2.2, alpha = 0.5)
     cols2 <- rep("black", ng)
   }
-  pas <- seq(Time[1], Time[period], (Time[period] - Time[1]) / 100)
+  #pas <- seq(Time[1], Time[period], (Time[period] - Time[1]) / 100)
+  pas <- seq(Time[1], Time[2], (Time[2] - Time[1]) / 100)
   if (is.null(Y) | is.null(A)) {
     vec <- c()
     for (k in 1:ng) {
@@ -415,11 +416,10 @@ plotTrajZIP <- function(beta, nu, theta, delta, Y, A, X, TCOV, ng, n, Time, dec,
     decy <- r * sin(a)
     d <- max(decx)
     dy <- max(decy)
-    xlim <- c(min(A), max(A))
-    ylim <- c(min(Y), max(Y))
     plot(A[1, ] + decx[1:period], Y[1, ] + decy[1:period],
       type = "b",
       ylim = c(min(Y, na.rm = T), max(Y, na.rm = T)),
+      xlim = c(Time[1], Time[2]),
       pch = 16, col = cols1[ncol],
       ...
     )
@@ -778,7 +778,7 @@ plotrajeR.Trajectory.CNORM <- function(Obj, plotcov = NULL, col = "black", Y = N
 #' @export
 #'
 
-plotrajeR.Trajectory.LOGIT <- function(Obj, plotcov = NULL, dec = 1, col = "black", Y = NULL, A = NULL, Risk = NULL, mean = FALSE, alpha = 1, ...) {
+plotrajeR.Trajectory.LOGIT <- function(Obj, plotcov = NULL, dec = 0, col = "black", Y = NULL, A = NULL, Risk = NULL, mean = FALSE, alpha = 1, ...) {
   if (!is.null(Y)) {
     Y <- data.matrix(Y)
   }
@@ -843,7 +843,7 @@ plotrajeR.Trajectory.POIS <- function(Obj, plotcov = NULL, dec = 0, col = "black
 #' @return a graphic.
 #' @export
 #'
-plotrajeR.Trajectory.ZIP <- function(Obj, plotcov = NULL, dec = 1, col = "black", Y = NULL, A = NULL, Risk = NULL, TCOV = NULL, mean = FALSE, alpha = 1, ...) {
+plotrajeR.Trajectory.ZIP <- function(Obj, plotcov = NULL, dec = 0, col = "black", Y = NULL, A = NULL, Risk = NULL, TCOV = NULL, mean = FALSE, alpha = 1, ...) {
   if (!is.null(Y)) {
     Y <- data.matrix(Y)
   }
@@ -854,7 +854,7 @@ plotrajeR.Trajectory.ZIP <- function(Obj, plotcov = NULL, dec = 1, col = "black"
     beta = Obj$beta, nu = Obj$nu, theta = Obj$theta, delta = Obj$delta, plotcov = plotcov,
     Y = Y, A = A, X = Risk, TCOV = TCOV, mean = mean, alpha = alpha,
     ng = Obj$groups, n = Obj$Size, Time = Obj$Time, dec = dec, col = col,
-    degre = Obj$degre, method = Obj$Method, degre.nu = Obj$degre.nu,
+    degre = Obj$degre, method = Obj$Method, degre.nu = Obj$degre.nu, period = Obj$period,
     ...
   )
 }
