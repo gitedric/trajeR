@@ -9,7 +9,7 @@ GroupProfiles(sol, Y, A, X)
 \arguments{
 \item{sol}{Trajectory's object. A object of type trajectory.}
 
-\item{Y}{Matirx. A matrix containing the variables in the model.}
+\item{Y}{Matrix. A matrix containing the variables in the model.}
 
 \item{A}{Matrix. A matrix containing the time variable data.}
 
@@ -26,9 +26,11 @@ individual level characteristic that might be associated with trajectory
 group membership.
 }
 \examples{
-data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
-data = as.matrix(data)
-sol = trajeR(Y = data[, 2:6], A = data[, 7:11], Risk = data[,12], 
-             degre = c(2,2), Model = "CNORM", Method = "L")
-GroupProfiles(sol, Y = data[, 2:6], A = data[, 7:11], X = data[,12])
+data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+data <- as.matrix(data)
+sol <- trajeR(
+  Y = data[, 2:6], A = data[, 7:11], Risk = data[, 12],
+  degre = c(2, 2), Model = "CNORM", Method = "L"
+)
+GroupProfiles(sol, Y = data[, 2:6], A = data[, 7:11], X = data[, 12])
 }

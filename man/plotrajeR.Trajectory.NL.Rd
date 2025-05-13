@@ -32,7 +32,7 @@ Its length is the double of the number of group. Default value is a grayscale.}
 \item{Risk}{Matrix. An optional matrix that modify the probability of belong to group. By default its value is a matrix
 with one column  with value 1.}
 
-\item{mean}{an optional logicial. Indicate if the mean of ech group and time value must be draw.}
+\item{mean}{an optional logical. Indicate if the mean of ech group and time value must be draw.}
 
 \item{alpha}{on optional real. Indicate the alpha channel of the points color.}
 

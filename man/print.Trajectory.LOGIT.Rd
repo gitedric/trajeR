@@ -15,11 +15,11 @@
 The print of Obj.
 }
 \description{
-Print mehtod for an object of class "\code{Trajectory.LOGIT}".
+Print method for an object of class "\code{Trajectory.LOGIT}".
 }
 \examples{
-data = read.csv(system.file("extdata", "LOGIT2gr.csv", package = "trajeR"))
-data = as.matrix(data)
-sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(1,2), Model = "LOGIT", Method = "L")
+data <- read.csv(system.file("extdata", "LOGIT2gr.csv", package = "trajeR"))
+data <- as.matrix(data)
+sol <- trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(1, 2), Model = "LOGIT", Method = "L")
 sol
 }

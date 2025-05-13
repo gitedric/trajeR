@@ -732,12 +732,12 @@ plotrajeR <- function(Obj, ...) {
 #' plot CNORM trajectory
 #'
 #' @param Obj an object of class "\code{Trajectory.CNORM}".
-#' @param plotcov an optionnal vector or matrix with the same length as the time period. Default value is NULL.
-#' @param col an optionnal vector. The vecotr of colors. It must contain a color for each trajectory and each points of groups.
-#' Its length is the double of the number of group. Default valme is a grayscale.
+#' @param plotcov an optional vector or matrix with the same length as the time period. Default value is NULL.
+#' @param col an optional vector. The vector of colors. It must contain a color for each trajectory and each points of groups.
+#' Its length is the double of the number of group. Default value is a grayscale.
 #' @inheritParams trajeR
-#' @param mean an optional logicial. Indicate if the mean of ech group and time value must be draw.
-#' @param alpha on optionnal real. Indiciate the alpha channel of the points color.
+#' @param mean an optional logical. Indicate if the mean of ech group and time value must be draw.
+#' @param alpha on optional real. Indicate the alpha channel of the points color.
 #' @param ... optional parameters
 #'
 #' @return a graphic.
@@ -770,7 +770,7 @@ plotrajeR.Trajectory.CNORM <- function(Obj, plotcov = NULL, col = "black", Y = N
 #' @param col an optional vector. The vector of colors. It must contain a color for each trajectory and each points of groups.
 #' Its length is the double of the number of group. Default value is a grayscale.
 #' @inheritParams trajeR
-#' @param mean an optional logicial. Indicate if the mean of ech group and time value must be draw.
+#' @param mean an optional logical. Indicate if the mean of ech group and time value must be draw.
 #' @param alpha on optional real. Indicate the alpha channel of the points color.
 #' @param ... optional parameters
 #'
@@ -803,7 +803,7 @@ plotrajeR.Trajectory.LOGIT <- function(Obj, plotcov = NULL, dec = 0, col = "blac
 #' @param col an optional vector. The vector of colors. It must contain a color for each trajectory and each points of groups.
 #' Its length is the double of the number of group. Default value is a grayscale.
 #' @inheritParams trajeR
-#' @param mean an optional logicial. Indicate if the mean of ech group and time value must be draw.
+#' @param mean an optional logical. Indicate if the mean of ech group and time value must be draw.
 #' @param alpha on optional real. Indicate the alpha channel of the points color.
 #' @param ... optional parameters
 #'
@@ -836,7 +836,7 @@ plotrajeR.Trajectory.POIS <- function(Obj, plotcov = NULL, dec = 0, col = "black
 #' @param col an optional vector. The vector of colors. It must contain a color for each trajectory and each points of groups.
 #' Its length is the double of the number of group. Default value is a grayscale.
 #' @inheritParams trajeR
-#' @param mean an optional logicial. Indicate if the mean of ech group and time value must be draw.
+#' @param mean an optional logical. Indicate if the mean of ech group and time value must be draw.
 #' @param alpha on optional real. Indicate the alpha channel of the points color.
 #' @param ... optional parameters
 #'
@@ -868,7 +868,7 @@ plotrajeR.Trajectory.ZIP <- function(Obj, plotcov = NULL, dec = 0, col = "black"
 #' @param col an optional vector. The vector of colors. It must contain a color for each trajectory and each points of groups.
 #' Its length is the double of the number of group. Default value is a grayscale.
 #' @inheritParams trajeR
-#' @param mean an optional logicial. Indicate if the mean of ech group and time value must be draw.
+#' @param mean an optional logical. Indicate if the mean of ech group and time value must be draw.
 #' @param alpha on optional real. Indicate the alpha channel of the points color.
 #' @param ... optional parameters
 #'
@@ -900,7 +900,7 @@ plotrajeR.Trajectory.NL <- function(Obj, plotcov = NULL, col = "black", Y = NULL
 #' @param col an optional vector. The vector of colors. It must contain a color for each trajectory and each points of groups.
 #' Its length is the double of the number of group. Default value is a grayscale.
 #' @inheritParams trajeR
-#' @param mean an optional logicial. Indicate if the mean of ech group and time value must be draw.
+#' @param mean an optional logical. Indicate if the mean of ech group and time value must be draw.
 #' @param alpha on optional real. Indicate the alpha channel of the points color.
 #' @param ... optional parameters
 #'

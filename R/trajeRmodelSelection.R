@@ -47,7 +47,8 @@ trajeRAIC <- function(sol) {
 #' @examples
 #' data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
 #' data <- as.matrix(data)
-#' degre <- list(c(2, 2), c(1, 1), c(1, 2), c(2, 1), c(0, 0), c(0, 1), c(1, 0), c(0, 0), c(0, 2), c(2, 0))
+#' degre <- list(c(2, 2), c(1, 1), c(1, 2), c(2, 1), c(0, 0),
+#' c(0, 1), c(1, 0), c(0, 0), c(0, 2), c(2, 0))
 #' sol <- list()
 #' for (i in 1:10) {
 #'   sol[[i]] <- trajeR(

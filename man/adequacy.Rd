@@ -26,8 +26,8 @@ A table of reals. A table with 5 rows: the estimate probabilities, the
 Calculate the summary of the five methods : assignment proportion, average posterior probability, confidence interval, odds of Correct Classification.
 }
 \examples{
-data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
-data = as.matrix(data)
-sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+data <- as.matrix(data)
+sol <- trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2, 2), Model = "CNORM", Method = "EM")
 adequacy(sol, Y = data[, 2:6], A = data[, 7:11])
 }

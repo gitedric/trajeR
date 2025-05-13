@@ -45,7 +45,7 @@ AvePP <- function(sol, Y, A, X = NULL) {
 #' group k (OCCj) is the ratio between the odds of a correct
 #' classification into group j on the basis of the posterior probability rule and
 #' the odds of correct assignment based on random assignments with the probability
-#' of assignment to group j is done with $pi_{ik}$, the probability estimate by
+#' of assignment to group j is the probability estimate by
 #' the model.
 #'
 #' @inheritParams AvePP

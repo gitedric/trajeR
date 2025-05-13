@@ -7,7 +7,7 @@ my_env <- new.env(parent = emptyenv())
 #' \code{trajeR} is used to fit longitudinal mixture models. It used 3 types of mixture models : LOGIT, ZIP and censored Normal.
 #'
 #' Models for trajeR is, by default, a polynomial regression of the time value parameters for each groups. The number fo group is controlled by the integer \code{ng}.
-#' We can spcecify the degre of the polynomial shape for each groups by the vector \code{degre}.
+#' We can specify the degre of the polynomial shape for each groups by the vector \code{degre}.
 #'
 #' @param Y Matrix. A matrix containing the variables in the model.
 #' @param A Matrix. A matrix containing the time variable data.
@@ -17,7 +17,7 @@ my_env <- new.env(parent = emptyenv())
 #' By default its value is NULL.
 #' @param degre Vector of integer. The degree of every polynomial function.
 #' @param degre.nu Vector of integer. The degree of all Poisson part for a ZIP model.
-#' @param degre.phi Vector of integer. The degree of  beta parametr for  a BETA model.
+#' @param degre.phi Vector of integer. The degree of  beta parameter for  a BETA model.
 #' @param Model String. The model used. The value are LOGIT for a Logit Mixture model,
 #' CNORM for a Censored Normal Mixture Model or ZIP for Zero Inflated Poisson Mixture model.
 #' @param Method String. Determine the method used for find the parameters of the model.
@@ -56,9 +56,9 @@ my_env <- new.env(parent = emptyenv())
 #' \item{\code{delta}}{a vector of the parameter delta. Only if we use time covariate.}
 #' \item{\code{theta}}{a vector with the parameter theta if there exist a covariate X that modify
 #'   the probability or the probability of group membership.}
-#' \item{\code{sd}}{a vector of the standrad deviation of the parameters.}
+#' \item{\code{sd}}{a vector of the standard deviation of the parameters.}
 #' \item{\code{tab}}{a matrix with all the parameters and standard deviation.}
-#' \item{\code{Likelihood}}{a real with the Likelihhod obtnaied by the parameters.}
+#' \item{\code{Likelihood}}{a real with the Likelihood obtained by the parameters.}
 #' \item{\code{ng}}{a integer with the number of group.}
 #' \item{\code{model}}{a string with the model used.}
 #' \item{\code{method}}{a string with the method used.}

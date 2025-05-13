@@ -8,14 +8,14 @@
 #################################################################################
 #'  Function fait
 #'  
-#' @param betak Vector of intger.
+#' @param betak Vector of integer.
 #' @param i Integer. 
 #' @param t Real.
 #' @param A Matrix of real.
 #' @param TCOV Matrix of real.
 #' @param fct Function.
 #' @param diffct Function.
-#' @return real. Cumpute the value of the function fct for individual i, time t and group k.
+#' @return real. Compute the value of the function fct for individual i, time t and group k.
 #' @export
 fait <- function(betak, i, t, A, TCOV, fct, diffct){
   return(fct(A[i,t], betak, TCOV))
@@ -23,7 +23,7 @@ fait <- function(betak, i, t, A, TCOV, fct, diffct){
 #' Differential
 #' 
 #' @inheritParams fait
-#' @return real. Cumpute the value of the diferential function fct for individual i, time t and group k.
+#' @return real. Compute the value of the differential function fct for individual i, time t and group k.
 #' @export
 diffaitbeta <- function(betak, i, t, A, TCOV, fct, diffct){
     return(diffct(A[i,t], betak, TCOV))
@@ -39,7 +39,7 @@ gkNL <- function(beta, sigma, i, k, TCOV, A, Y, fct){
   return(max(prod(stats::dnorm((Y[i, ]-muikt)/sigma[k])/sigma[k]), 10**(-300)))
 }
 #################################################################################
-# gk with exponential parametrization
+# gk with exponential parameterization
 #################################################################################
 gkalphaNL <- function(beta, alpha, i, k, TCOV, A, Y, fct){
   period = ncol(A)
@@ -81,7 +81,7 @@ difLthetakalphaNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct){
   return(thetas)
 }
 #################################################################################
-# dif likelihood beta with reparametrization alpha
+# dif likelihood beta with reparameterization alpha
 #################################################################################
 difLbetakalphaNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct){
   period = ncol(A)
@@ -120,7 +120,7 @@ difLbetakalphaNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct, dif
   return(betas)
 }
 #################################################################################
-# dif likelihood sigma with reparametrization alpha
+# dif likelihood sigma with reparameterization alpha
 #################################################################################
 difLsigmakalphaNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct){
   period = ncol(A)
@@ -156,7 +156,7 @@ difLsigmakalphaNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct){
   return(alphas)
 }
 #################################################################################
-# dif likelihood sigma with reparametrization alpha same sigma
+# dif likelihood sigma with reparameterization alpha same sigma
 #################################################################################
 difLsigmaalphauniqueNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fct){
   period = ncol(A)
@@ -197,7 +197,7 @@ difLsigmaalphauniqueNL <- function(param, k, ng, nx, nbeta, n, A, Y, X, TCOV, fc
   return(alphas)
 }
 #################################################################################
-# dif likelihood sigma with exponential reparametrization
+# dif likelihood sigma with exponential reparameterization
 #################################################################################
 difLalphaNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct ){
   out =c()
@@ -213,7 +213,7 @@ difLalphaNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct ){
   return(out)
 }
 #################################################################################
-# dif likelihood sigma with exponential reparametrization and unique sigma
+# dif likelihood sigma with exponential reparameterization and unique sigma
 #################################################################################
 difLalphauniqueNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct ){
   out =c()
@@ -227,7 +227,7 @@ difLalphauniqueNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffc
   return(out)
 }
 #################################################################################
-# likelihood sigma with exponential reparametrization
+# likelihood sigma with exponential reparameterization
 #################################################################################
 LikelihoodalphaNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, fct, diffct ){
   theta = param[1:(ng*nx)]
@@ -579,7 +579,7 @@ mdeltaNL = function(i, t, ng, nbeta, A, Y, beta, sigma, taux, nbetacum, TCOV, pe
   return(res)
 }
 ##################################################################################
-# defintion of function Bikl and Sk
+# definition of function Bikl and Sk
 ##################################################################################
 BiklNL <- function(i, k, l, nbeta, A, Y, period, beta, sigma, taux, nbetacum, TCOV, delta, ndeltacum, nw, fct, diffct){
   tmp = 0

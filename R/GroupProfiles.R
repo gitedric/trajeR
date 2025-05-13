@@ -6,7 +6,7 @@
 #' group membership.
 #'
 #' @param sol Trajectory's object. A object of type trajectory.
-#' @param Y Matirx. A matrix containing the variables in the model.
+#' @param Y Matrix. A matrix containing the variables in the model.
 #' @param A Matrix. A matrix containing the time variable data.
 #' @param X Matrix. An optional matrix that modify the probability of belong to group.
 #'   By default its value is a matrix with one column  with value 1.

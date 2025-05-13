@@ -7,7 +7,7 @@
 \method{plotrajeR}{Trajectory.ZIP}(
   Obj,
   plotcov = NULL,
-  dec = 1,
+  dec = 0,
   col = "black",
   Y = NULL,
   A = NULL,
@@ -38,7 +38,7 @@ with one column  with value 1.}
 \item{TCOV}{Matrix. An optional matrix containing the time covariate that influence the trajectory themselves.
 By default its value is NULL.}
 
-\item{mean}{an optional logicial. Indicate if the mean of ech group and time value must be draw.}
+\item{mean}{an optional logical. Indicate if the mean of ech group and time value must be draw.}
 
 \item{alpha}{on optional real. Indicate the alpha channel of the points color.}
 

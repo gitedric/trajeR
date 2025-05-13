@@ -366,7 +366,7 @@ print.Trajectory.ZIP <- function(x, ...) {
 ####################################################################################
 #' Print LOGIT
 #'
-#' Print mehtod for an object of class "\code{Trajectory.LOGIT}".
+#' Print method for an object of class "\code{Trajectory.LOGIT}".
 #'
 #' @param x Trajectory's object. . An object of class "\code{Trajectory.LOGIT}".
 #' @param ... optional parameters
@@ -516,7 +516,7 @@ print.Trajectory.LOGIT <- function(x, ...) {
 ####################################################################################
 #' Print POIS
 #'
-#' Print mehtod for an object of class "\code{Trajectory.POIS}".
+#' Print method for an object of class "\code{Trajectory.POIS}".
 #'
 #' @param x Trajectory's object. . An object of class "\code{Trajectory.POIS}".
 #' @param ... optional parameters

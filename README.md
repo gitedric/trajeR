@@ -17,7 +17,7 @@ TrajeR support several distributions
 
 - Censored (or regular) Normal distribution ;
 - Zero Inflated Poisson distribution ;
-- Poisson ditribution ;
+- Poisson distribution ;
 - Bernouilli distribution ;
 - Beta distribution (only withe Likelihood) ;
 - Non linear regression.

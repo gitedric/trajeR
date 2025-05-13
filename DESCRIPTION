@@ -1,22 +1,28 @@
 Package: trajeR
 Type: Package
 Title: Group Based Modeling Trajectory
-Description: Find the probability and the trajectory of longitudinal mixture model. Methods used in the package refer to Nagin (2005),
-      <doi:10.4159/9780674041318>,
-      Nagin, D. (2005). Group-Based Modeling of Development. Cambridge, MA: Harvard University Press.
-      and Noel (2022),
-      <https://orbilu.uni.lu/>,
-      thesis.
-Version: 0.10.0
-Date: 2022-02-14
-Author: Cédric NOEL - Jang Schiltz
-Maintainer: Cédric NOEL <cedric.noel@univ-lorraine.fr>
+Description: Find the probability and the trajectory of longitudinal mixture model,
+      <doi:10.4159/9780674041318>, Nagin, D. (2005). Group-Based Modeling of Development. Cambridge, MA: Harvard University Press.
+      and Noel (2022), <https://orbilu.uni.lu/>, thesis.
+Version: 0.11.1
+Date: 2025-05-13
+Authors@R:
+     c(person(given = "Cédric",
+             family = "Noel",
+             role = c("aut", "cre"),
+             email = "cedric.noel@univ-lorraine.fr"),
+    person(given = "Jang",
+           family = "Schiltz",
+           role = "aut"))
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.4.6), minpack.lm, numDeriv, ucminf, MASS, capushe
+Imports: Rcpp (>= 1.0.4.6), minpack.lm, numDeriv, ucminf, MASS, capushe, stats
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.2
 Encoding: UTF-8
 URL: https://github.com/gitedric/trajeR
 BugReports: https://github.com/gitedric/trajeR/issues
 Depends: 
     R (>= 2.10)
+Suggests: 
+    spelling
+Language: en-US

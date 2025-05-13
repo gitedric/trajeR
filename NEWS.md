@@ -1,3 +1,5 @@
+# trajeR 0.11.0
+
 # trajeR 0.10.0
 
 # trajeR 0.9.0.5

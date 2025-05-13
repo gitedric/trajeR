@@ -21,8 +21,8 @@ Calculate the proportion of individuals in a given group. That is the ratio of
 the number of individuals in one group and all the individuals.
 }
 \examples{
-data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
-data = as.matrix(data)
-sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+data <- as.matrix(data)
+sol <- trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2, 2), Model = "CNORM", Method = "EM")
 propAssign(sol, Y = data[, 2:6], A = data[, 7:11])
 }

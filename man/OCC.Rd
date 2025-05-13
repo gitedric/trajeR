@@ -17,16 +17,16 @@ OCC(sol, Y, A)
 A vector of reals. The Odds of Correct Classification.
 }
 \description{
-Calculate Odds of Correct Classification. The Odds of Correct Classification for 
-group k (OCCj) is the ratio between the odds of a correct 
-classification into group j on the basis of the posterior probability rule and 
-the odds of correct assignment based on random assignments with the probability 
-of assignment to group j is done with $pi_{ik}$, the probability estimate by 
+Calculate Odds of Correct Classification. The Odds of Correct Classification for
+group k (OCCj) is the ratio between the odds of a correct
+classification into group j on the basis of the posterior probability rule and
+the odds of correct assignment based on random assignments with the probability
+of assignment to group j is the probability estimate by
 the model.
 }
 \examples{
-data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
-data = as.matrix(data)
-sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
+data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+data <- as.matrix(data)
+sol <- trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2, 2), Model = "CNORM", Method = "EM")
 OCC(sol, Y = data[, 2:6], A = data[, 7:11])
 }

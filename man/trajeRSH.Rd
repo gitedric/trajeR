@@ -16,13 +16,16 @@ A vector of real.
 Calculate the Slope Heuristic value to a list of trajectory objects.
 }
 \examples{
-data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
-data = as.matrix(data)
-degre = list(c(2,2), c(1,1), c(1,2), c(2,1), c(0,0), c(0,1), c(1,0), c(0,0), c(0,2), c(2,0))
-sol = list()
-for (i in 1:10){
-  sol[[i]] = trajeR(Y = data[, 2:6], A = data[, 7:11], 
-                    degre = degre[[i]], Model = "CNORM", Method = "EM")
-  }
+data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+data <- as.matrix(data)
+degre <- list(c(2, 2), c(1, 1), c(1, 2), c(2, 1), c(0, 0),
+c(0, 1), c(1, 0), c(0, 0), c(0, 2), c(2, 0))
+sol <- list()
+for (i in 1:10) {
+  sol[[i]] <- trajeR(
+    Y = data[, 2:6], A = data[, 7:11],
+    degre = degre[[i]], Model = "CNORM", Method = "EM"
+  )
+}
 trajeRSH(sol)
 }

@@ -104,7 +104,7 @@ return a object of class Trajectory.CNORM
   \item beta -  vector of the parameter beta.
   \item sigma - vector of the parameters sigma.
   \item delta - vector of the parameter delta. Only if we use time covariate.
-  \item theta - vector with the parameter theta if there exist a coavriate X that modify
+  \item theta - vector with the parameter theta if there exist a covariate X that modify
   the probability or the probability of group membership.
   \item sd - vector of the standard deviation of the parameters.
   \item tab - a matrix with all the parameters and standard deviation.

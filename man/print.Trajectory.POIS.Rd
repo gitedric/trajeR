@@ -15,12 +15,14 @@
 The print of Obj.
 }
 \description{
-Print mehtod for an object of class "\code{Trajectory.POIS}".
+Print method for an object of class "\code{Trajectory.POIS}".
 }
 \examples{
-data = read.csv(system.file("extdata", "POIS2gr.csv", package = "trajeR"))
-data = as.matrix(data)
-sol = trajeR(Y = data[, 2:6], A = data[, 7:11], 
-             degre = c(2,2), Model = "POIS", Method = "L", hessian = FALSE)
+data <- read.csv(system.file("extdata", "POIS2gr.csv", package = "trajeR"))
+data <- as.matrix(data)
+sol <- trajeR(
+  Y = data[, 2:6], A = data[, 7:11],
+  degre = c(2, 2), Model = "POIS", Method = "L", hessian = FALSE
+)
 sol
 }

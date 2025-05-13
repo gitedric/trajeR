@@ -24,7 +24,7 @@
 #'   \item beta -  vector of the parameter beta.
 #'   \item sigma - vector of the parameters sigma.
 #'   \item delta - vector of the parameter delta. Only if we use time covariate.
-#'   \item theta - vector with the parameter theta if there exist a coavriate X that modify
+#'   \item theta - vector with the parameter theta if there exist a covariate X that modify
 #'   the probability or the probability of group membership.
 #'   \item sd - vector of the standard deviation of the parameters.
 #'   \item tab - a matrix with all the parameters and standard deviation.
@@ -293,7 +293,7 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
 #' \itemize{
 #'   \item beta -  vector of the parameter beta.
 #'   \item delta - vector of the parameter delta. Only if we use time covariate.
-#'   \item theta - vector with the parameter theta if there exist a coavriate X that modify
+#'   \item theta - vector with the parameter theta if there exist a covariate X that modify
 #'   the probability or the probability of group membership.
 #'   \item sd - vector of the standard deviation of the parameters.
 #'   \item tab - a matrix with all the parameters and standard deviation.
@@ -494,7 +494,7 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
 #' \itemize{
 #'   \item beta -  vector of the parameter beta.
 #'   \item delta - vector of the parameter delta. Only if we use time covariate.
-#'   \item theta - vector with the parameter theta if there exist a coavriate X that modify
+#'   \item theta - vector with the parameter theta if there exist a covariate X that modify
 #'   the probability or the probability of group membership.
 #'   \item nu - vector of the parameters nu.
 #'   \item sd - vector of the standard deviation of the parameters.
@@ -712,7 +712,7 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
 #' \itemize{
 #'   \item beta -  vector of the parameter beta.
 #'   \item delta - vector of the parameter delta. Only if we use time covariate.
-#'   \item theta - vector with the parameter theta if there exist a coavriate X that modify
+#'   \item theta - vector with the parameter theta if there exist a covariate X that modify
 #'   the probability or the probability of group membership.
 #'   \item sd - vector of the standard deviation of the parameters.
 #'   \item tab - a matrix with all the parameters and standard deviation.
@@ -915,7 +915,7 @@ trajeR.POIS <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, deg
 #'   \item beta -  vector of the parameter beta.
 #'   \item sigma - vector of the parameters sigma.
 #'   \item delta - vector of the parameter delta. Only if we use time covariate.
-#'   \item theta - vector with the parameter theta if there exist a coavriate X that modify
+#'   \item theta - vector with the parameter theta if there exist a covariate X that modify
 #'   the probability or the probability of group membership.
 #'   \item sd - vector of the standard deviation of the parameters.
 #'   \item tab - a matrix with all the parameters and standard deviation.
@@ -927,7 +927,7 @@ trajeR.POIS <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, deg
 #'   \item Likelihood -  a real with the Likelihood obtained by the parameters.
 #'   \item Time - a vector with the first row of time values.
 #'   \item degre - a vector with the degree of the polynomial shape.
-#'   \item fct - the defintion of the function used int this model.
+#'   \item fct - the definition of the function used int this model.
 #' }
 
 trajeR.NL <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, sigma, pi, Method, ssigma,
@@ -1090,7 +1090,7 @@ trajeR.NL <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre
 #'   \item beta -  vector of the parameter beta.
 #'   \item sigma - vector of the parameters sigma.
 #'   \item delta - vector of the parameter delta. Only if we use time covariate.
-#'   \item theta - vector with the parameter theta if there exist a coavriate X that modify
+#'   \item theta - vector with the parameter theta if there exist a covariate X that modify
 #'   the probability or the probability of group membership.
 #'   \item sd - vector of the standard deviation of the parameters.
 #'   \item tab - a matrix with all the parameters and standard deviation.

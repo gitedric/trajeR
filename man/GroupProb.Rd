@@ -24,8 +24,8 @@ a real matrix. For each individual i in the data, this matrix contained the memb
 \code{GroupProb} calculate the membership probability of each value of the data.
 }
 \examples{
-data = read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
-data = as.matrix(data)
-sol = trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2,2), Model = "CNORM", Method = "EM")
-GroupProb(sol, Y=data[, 2:6], A=data[, 7:11])
+data <- read.csv(system.file("extdata", "CNORM2gr.csv", package = "trajeR"))
+data <- as.matrix(data)
+sol <- trajeR(Y = data[, 2:6], A = data[, 7:11], degre = c(2, 2), Model = "CNORM", Method = "EM")
+GroupProb(sol, Y = data[, 2:6], A = data[, 7:11])
 }

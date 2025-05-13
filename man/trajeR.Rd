@@ -44,7 +44,7 @@ By default its value is NULL.}
 
 \item{degre.nu}{Vector of integer. The degree of all Poisson part for a ZIP model.}
 
-\item{degre.phi}{Vector of integer. The degree of  beta parametr for  a BETA model.}
+\item{degre.phi}{Vector of integer. The degree of  beta parameter for  a BETA model.}
 
 \item{Model}{String. The model used. The value are LOGIT for a Logit Mixture model,
 CNORM for a Censored Normal Mixture Model or ZIP for Zero Inflated Poisson Mixture model.}
@@ -73,7 +73,7 @@ If the method is EM or EMIWRLS, the hessian is calculated by using Louis method.
 \item{paraminit}{Vector. The vector of initial parameters. By default \code{trajeR} calculate the initial value
 based of the range or the standard deviation.}
 
-\item{ProbIRLS}{Logical. Indicate the method to sue in the search of predictor's probability. If TRUE (by default) we use 
+\item{ProbIRLS}{Logical. Indicate the method to sue in the search of predictor's probability. If TRUE (by default) we use
 IRLS method and if FALSE we use optimization method.}
 
 \item{refgr}{Integer. The number of reference group. By default is 1.}
@@ -100,9 +100,9 @@ An object of class "\code{Trajectory.LOGIT}" is a list containing at least the f
 \item{\code{delta}}{a vector of the parameter delta. Only if we use time covariate.}
 \item{\code{theta}}{a vector with the parameter theta if there exist a covariate X that modify
   the probability or the probability of group membership.}
-\item{\code{sd}}{a vector of the standrad deviation of the parameters.}
+\item{\code{sd}}{a vector of the standard deviation of the parameters.}
 \item{\code{tab}}{a matrix with all the parameters and standard deviation.}
-\item{\code{Likelihood}}{a real with the Likelihhod obtnaied by the parameters.}
+\item{\code{Likelihood}}{a real with the Likelihood obtained by the parameters.}
 \item{\code{ng}}{a integer with the number of group.}
 \item{\code{model}}{a string with the model used.}
 \item{\code{method}}{a string with the method used.}
@@ -113,13 +113,15 @@ An object of class "\code{Trajectory.LOGIT}" is a list containing at least the f
 }
 \details{
 Models for trajeR is, by default, a polynomial regression of the time value parameters for each groups. The number fo group is controlled by the integer \code{ng}.
-We can spcecify the degre of the polynomial shape for each groups by the vector \code{degre}.
+We can specify the degre of the polynomial shape for each groups by the vector \code{degre}.
 }
 \examples{
 \dontrun{
 load("data/dataNORM01.RData")
-solL = trajeR(data[,1:5], data[,6:10], ng = 3, degre=c(2,2,2), 
-              Model="CNORM", Method = "L", ssigma = FALSE, 
-              hessian = TRUE)
-              }
+solL <- trajeR(data[, 1:5], data[, 6:10],
+  ng = 3, degre = c(2, 2, 2),
+  Model = "CNORM", Method = "L", ssigma = FALSE,
+  hessian = TRUE
+)
+}
 }

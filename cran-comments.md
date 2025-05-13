@@ -1,3 +1,10 @@
+## Resubmission 
+Correction of notes
+
+## Resubmission 
+Correction of errors due to the Rcpp package
+
+
 ## Resubmission - trajeR: valgrind  Still
 
 I guess (I hope) I have settled the valgrind issues.

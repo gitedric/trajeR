@@ -7,7 +7,7 @@
 fait(betak, i, t, A, TCOV, fct, diffct)
 }
 \arguments{
-\item{betak}{Vector of intger.}
+\item{betak}{Vector of integer.}
 
 \item{i}{Integer.}
 
@@ -22,7 +22,7 @@ fait(betak, i, t, A, TCOV, fct, diffct)
 \item{diffct}{Function.}
 }
 \value{
-real. Cumpute the value of the function fct for individual i, time t and group k.
+real. Compute the value of the function fct for individual i, time t and group k.
 }
 \description{
 Function fait

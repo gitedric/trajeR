@@ -102,7 +102,7 @@ return a object of class Trajectory.NL
   \item beta -  vector of the parameter beta.
   \item sigma - vector of the parameters sigma.
   \item delta - vector of the parameter delta. Only if we use time covariate.
-  \item theta - vector with the parameter theta if there exist a coavriate X that modify
+  \item theta - vector with the parameter theta if there exist a covariate X that modify
   the probability or the probability of group membership.
   \item sd - vector of the standard deviation of the parameters.
   \item tab - a matrix with all the parameters and standard deviation.
@@ -114,7 +114,7 @@ return a object of class Trajectory.NL
   \item Likelihood -  a real with the Likelihood obtained by the parameters.
   \item Time - a vector with the first row of time values.
   \item degre - a vector with the degree of the polynomial shape.
-  \item fct - the defintion of the function used int this model.
+  \item fct - the definition of the function used int this model.
 }
 }
 \description{
