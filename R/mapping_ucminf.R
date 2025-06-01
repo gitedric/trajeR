@@ -8,8 +8,8 @@ LLOGIT <- function(x, ng, nx, n, A, Y, X, nbeta,
     nw = nw, TCOV = TCOV
   )
   if (storelik > lik) {
-    cat(sprintf("iter %3d value ", tour))
-    cat(sprintf("%.6f\n", lik))
+    message(sprintf("iter %3d value ", tour))
+    message(sprintf("%.6f\n", lik))
     set_tour(tour + 1)
     set_storelik(lik)
   }
@@ -33,8 +33,8 @@ LCNORM <- function(x, ng, nx, n, A, Y, X, nbeta,
     ymin = ymin, ymax = ymax, nw = nw, TCOV = TCOV, ssigma = ssigma
   )
   if (storelik > lik) {
-    cat(sprintf("iter %3d value ", tour))
-    cat(sprintf("%.6f\n", lik))
+    message(sprintf("iter %3d value ", tour))
+    message(sprintf("%.6f\n", lik))
     set_tour(tour + 1)
     set_storelik(lik)
   }
@@ -66,8 +66,8 @@ LZIP <- function(x, ng, nx, n, A, Y, X, nbeta, nnu,
     nw = nw, TCOV = TCOV
   )
   if (storelik > lik) {
-    cat(sprintf("iter %3d value ", tour))
-    cat(sprintf("%.6f\n", lik))
+    message(sprintf("iter %3d value ", tour))
+    message(sprintf("%.6f\n", lik))
     set_tour(tour + 1)
     set_storelik(lik)
   }
@@ -91,8 +91,8 @@ LBETA <- function(x, ng, nx, n, A, Y, X, nbeta, nphi,
     nw = nw, TCOV = TCOV
   )
   if (storelik > lik) {
-    cat(sprintf("iter %3d value ", tour))
-    cat(sprintf("%.6f\n", lik))
+    message(sprintf("iter %3d value ", tour))
+    message(sprintf("%.6f\n", lik))
     set_tour(tour + 1)
     set_storelik(lik)
   }

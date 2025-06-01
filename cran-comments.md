@@ -1,4 +1,18 @@
 ## Resubmission 
+Modification of description
+
+## Resubmission 
+Description modification, removing 'trajeR is an R package'.
+
+## Resubmission 
+Change the descitpion field
+Replace \dontrun{} by \donttest{}
+Replace cat() by message()
+
+## Resubmission 
+Removing C++11 specification
+
+## Resubmission 
 Correction of notes
 
 ## Resubmission 

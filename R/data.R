@@ -1,0 +1,37 @@
+#' Simulated CNORM Dataset (data01)
+#'
+#' @description
+#' The \code{data01} dataset is a simulated dataset included in the package. It contains
+#' 500 trajectories with 10 time-points each, simulating a 3-group solution. The parameters
+#' for the groups are summarized in the table below:
+#'
+#' \tabular{llll}{
+#'   Parameter \tab Group 1 \tab Group 2 \tab Group 3 \cr
+#'   \eqn{\beta_{k0}} \tab 2.797 \tab 7.000 \tab 19.545 \cr
+#'   \eqn{\beta_{k1}} \tab 8.809 \tab -0.297 \tab -0.407 \cr
+#'   \eqn{\beta_{k2}} \tab -3.201 \tab 0.463 \tab 0.026 \cr
+#'   \eqn{\beta_{k3}} \tab 0.000 \tab -0.021 \tab 0.000 \cr
+#'   \eqn{\pi_k} \tab 0.32 \tab 0.54 \tab 0.14 \cr
+#'   \eqn{\sigma_k} \tab 4.000 \tab 4.000 \tab 4.000 \cr
+#' }
+#'
+#' @details
+#' The dataset includes the following variables:
+#' \itemize{
+#'   \item \code{Y} (columns 2:11): Matrix of real numbers representing the variable of interest.
+#'   \item \code{A} (columns 12:21): Matrix of time points (1 to 10).
+#'   \item \code{W} (columns 22:31): Matrix with values 0 and 1, indicating the presence or absence of a characteristic.
+#'   \item \code{W} (columns 32:41): Matrix of real numbers (additional time-dependent covariate).
+#'   \item \code{X} (columns 42:43): Matrix with values 0 and 1, influencing group membership probability.
+#' }
+#'
+#' @format A data frame with 500 rows and 43 columns:
+#' \describe{
+#'   \item{Columns 2:11}{Matrix of real numbers (variable of interest, Y).}
+#'   \item{Columns 12:21}{Matrix of time points (1 to 10, A).}
+#'   \item{Columns 22:31}{Matrix of binary values (0 or 1, time-dependent covariate W).}
+#'   \item{Columns 32:41}{Matrix of real numbers (additional time-dependent covariate W).}
+#'   \item{Columns 42:43}{Matrix of binary values (0 or 1, covariate X).}
+#' }
+#' @source Simulated data for illustrative purposes.
+"dataNORM01"

@@ -67,9 +67,9 @@ my_env <- new.env(parent = emptyenv())
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' load("data/dataNORM01.RData")
-#' solL <- trajeR(data[, 1:5], data[, 6:10],
+#' \donttest{
+#' data("dataNORM01")
+#' solL <- trajeR(dataNORM01[, 1:5], dataNORM01[, 6:10],
 #'   ng = 3, degre = c(2, 2, 2),
 #'   Model = "CNORM", Method = "L", ssigma = FALSE,
 #'   hessian = TRUE
@@ -163,14 +163,14 @@ trajeR <- function(Y, A, Risk = NULL, TCOV = NULL, degre = NULL, degre.nu = 0, d
   pi <- sapply(1:ng, function(s) {
     piik(theta = theta, i = 1, k = s, ng = ng, X = X)
   })
-  cat("Starting Values\n")
+  message("Starting Values\n")
   if (is.null(paraminit)) {
-    cat(c(pi, paraff, unlist(delta)))
+    message(c(pi, paraff, unlist(delta)))
   } else {
-    cat(paraminit)
+    message(paraminit)
   }
-  cat("\n\n")
-  cat("Likelihood\n")
+  message("\n\n")
+  message("Likelihood\n")
 
   if (Model == "CNORM") {
     res <- trajeR.CNORM(

@@ -378,9 +378,9 @@ EMNL <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax, EMIRLS, fc
     # print likelihood for every loop
     ###########################
     if (nx == 1){
-      cat(paste(-likelihoodEMNL(n, ng, nbeta, beta, sigma, pi, A, Y, TCOV, nw, fct), "\n"))
+      message(paste(-likelihoodEMNL(n, ng, nbeta, beta, sigma, pi, A, Y, TCOV, nw, fct), "\n"))
     }else{
-      cat(paste(-LikelihoodalphaNL(c(pi, beta, log(sigma)), ng, nx, nbeta, n, A, Y, X, TCOV, fct), "\n"))
+      message(paste(-LikelihoodalphaNL(c(pi, beta, log(sigma)), ng, nx, nbeta, n, A, Y, X, TCOV, fct), "\n"))
     }
     # E-step
     zk = ftauxNL(pi, beta, sigma, ng, nbeta, n, nw, nx, A, Y, X, TCOV, fct)
@@ -449,9 +449,9 @@ EMNLSigmaunique <- function(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, itermax,
     # print likelihood for every loop
     ###########################
     if (nx == 1){
-      cat(paste(-likelihoodEMNL(n, ng, nbeta, beta, sigma, pi, A, Y, TCOV, nw, fct), "\n"))
+      message(paste(-likelihoodEMNL(n, ng, nbeta, beta, sigma, pi, A, Y, TCOV, nw, fct), "\n"))
     }else{
-      cat(paste(-LikelihoodalphaNL(c(pi, beta, log(sigma)), ng, nx, nbeta, n, A, Y, X, TCOV, fct), "\n"))
+      message(paste(-LikelihoodalphaNL(c(pi, beta, log(sigma)), ng, nx, nbeta, n, A, Y, X, TCOV, fct), "\n"))
     }
     # E-step
     zk = ftauxNL(pi, beta, sigma, ng, nbeta, n, nw, nx, A, Y, X, TCOV, fct)

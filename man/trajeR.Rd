@@ -116,9 +116,9 @@ Models for trajeR is, by default, a polynomial regression of the time value para
 We can specify the degre of the polynomial shape for each groups by the vector \code{degre}.
 }
 \examples{
-\dontrun{
-load("data/dataNORM01.RData")
-solL <- trajeR(data[, 1:5], data[, 6:10],
+\donttest{
+data("dataNORM01")
+solL <- trajeR(dataNORM01[, 1:5], dataNORM01[, 6:10],
   ng = 3, degre = c(2, 2, 2),
   Model = "CNORM", Method = "L", ssigma = FALSE,
   hessian = TRUE
