@@ -28,7 +28,7 @@ piik <- function(theta, i, k, ng, X) {
   return(tmp[k] / sum(tmp))
 }
 #################################################################################
-# Delta mthod for theta
+# Delta method for theta
 #################################################################################
 deltaTheta <- function(theta, Ht, X, ng) {
   Dg <- matrix(rep(0, ng**2), ncol <- ng)
@@ -371,3 +371,89 @@ findtheta <- function(theta, taux, X, n, ng, nx, period, EMIRLS, refgr) {
   }
   return(newtheta)
 }
+
+
+#####################################
+# Confidence Intervall
+#####################################
+#' Compute Confidence Intervals for Predicted Trajectories
+#'
+#' @description
+#' Calculates predicted values and confidence intervals for a given model object
+#' at specified time points, based on model. The function computes standard errors and confidence bounds
+#' for the predictions.
+#'
+#' @param Obj An object containing model parameters, including:
+#'   \itemize{
+#'     \item \code{degre}: Vector of polynomial degrees for each group.
+#'     \item \code{varcov}: Variance-covariance matrix of the model coefficients.
+#'     \item \code{groups}: Number of groups in the model.
+#'     \item \code{Model}: Character string specifying the model type ("CNORM" or "LOGIT").
+#'     \item \code{beta}: Vector of model coefficients.
+#'   }
+#' @param newtime Numeric vector of time points at which to compute predictions
+#'   and confidence intervals.
+#' @param alpha Numeric value specifying the significance level for the confidence
+#'   intervals (default is 0.05, corresponding to 95% confidence intervals).
+#'
+#' @return A list of class \code{"Trajectory.predict"} containing:
+#'   \itemize{
+#'     \item \code{newtime}: The input time points.
+#'     \item \code{Ypred}: Matrix of predicted values for each group at each time point.
+#'     \item \code{SEYpred}: Matrix of standard errors for the predicted values.
+#'     \item \code{IC.inf}: Matrix of lower bounds of the confidence intervals.
+#'     \item \code{IC.max}: Matrix of upper bounds of the confidence intervals.
+#'     \item \code{groups}: Number of groups from the input object.
+#'   }
+#'
+#' @examples
+#' \donttest{
+#' # Example with a hypothetical model object
+#' model <- list(
+#'   degre = c(2, 2),
+#'   varcov = diag(4),
+#'   groups = 2,
+#'   Model = "CNORM",
+#'   beta = c(1, 0.5, 0.2, 2, 0.3, 0.1)
+#' )
+#' newtime <- seq(0, 1, by = 0.1)
+#' result <- confidenceInt(model, newtime, alpha = 0.05)
+#' print(result)
+#' }
+#'
+#' @export
+confidenceInt <- function(Obj, newtime, alpha = 0.05) {
+  nbeta <- Obj$degre + 1
+  nbetacum <- cumsum(c(0, nbeta))
+
+  Ypred <- c()
+  SEYpred <- c()
+  for (i in 1:Obj$groups) {
+    ind <- Obj$groups - 1 + (nbetacum[i] + 1):(nbetacum[i + 1])
+    varbeta <- Obj$varcov[ind, ind]
+    SEYpred <- cbind(SEYpred, sapply(newtime, function(s) matrix((s)**(0:Obj$degre[i]), nrow = 1) %*% varbeta %*% t(matrix((s)**(0:Obj$degre[i]), nrow = 1))))
+    if (Obj$Model == "CNORM") {
+      Ypred <- cbind(Ypred, sapply(newtime, function(s) sum(Obj$beta[(nbetacum[i] + 1):(nbetacum[i + 1])] * (s)**(0:Obj$degre[i]))))
+    } else if (Obj$Model == "LOGIT") {
+      Ypred <- cbind(Ypred, sapply(newtime, function(s) 1 / (1 + exp(-(sum(Obj$beta[(nbetacum[i] + 1):(nbetacum[i + 1])] * (s)**(0:Obj$degre[i])))))))
+    }
+  }
+  if (Obj$Model == "LOGIT") {
+    SEYpred <- (Ypred * (1 - Ypred))**2 * SEYpred
+  }
+
+  IC.inf <- Ypred - qnorm(1 - alpha / 2) * sqrt(SEYpred)
+  IC.max <- Ypred + qnorm(1 - alpha / 2) * sqrt(SEYpred)
+
+  res <- list(
+    newtime = newtime,
+    Ypred = Ypred,
+    SEYpred = SEYpred,
+    IC.inf = IC.inf,
+    IC.max = IC.max,
+    groups = Obj$groups
+  )
+  class(res) <- "Trajectory.predict"
+  return(res)
+}
+

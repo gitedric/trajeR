@@ -44,6 +44,7 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
                          ymax, ymin, hessian, itermax, paraminit, EMIRLS, refgr) {
   set_tour(1)
   set_storelik(10**100)
+  varcov <- NA
   nsigma <- ng
   theta <- theta - theta[1:nx]
   if (Method == "L") {
@@ -139,6 +140,7 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     if (hessian == TRUE) {
       invH <- newparam$invhessian
       SE <- sqrt(diag(invH))
+      varcov <- invH
       if (ssigma) {
         sdsigma <- rep(exp(newparam$par[indsigma[1]]) * SE[indsigma[1]], ng)
       } else {
@@ -190,6 +192,7 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     }
     if (hessian == TRUE) {
       SE <- IEM_cpp(param, ng, nx, nbeta, n, A, Y, X, ymin, ymax, TCOV, nw, refgr)
+      varcov <- SE
       if (nx == 1) {
         if (nw == 0) {
           SE <- c(SE[-c(1:(ng - 1))], SE[1:(ng - 1)], sqrt(sum(SE[1:(ng - 1)]**2)))
@@ -275,7 +278,8 @@ trajeR.CNORM <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
       nbeta = nbeta, nw = nw, A = A, Y = Y, X = X,
       TCOV = TCOV, ymin = ymin, ymax = ymax
     ),
-    Time = A[1, ], degre = degre - 1, min = ymin, max = ymax
+    Time = A[1, ], degre = degre - 1, min = ymin, max = ymax,
+    varcov = varcov
   )
   class(res) <- "Trajectory.CNORM"
   return(res)
@@ -312,6 +316,7 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
                          hessian, itermax, paraminit, EMIRLS, refgr) {
   set_tour(1)
   set_storelik(10**100)
+  varcov <- NA
   theta <- theta - theta[1:nx]
   if (Method == "L") {
     theta <- theta[-c(1:nx)]
@@ -349,6 +354,7 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     }
     if (hessian == TRUE) {
       invH <- newparam$invhessian
+      varcov <- invH
       SE <- sqrt(diag(invH))
       if (nx == 1) {
         sdtmp <- deltaTheta(theta, invH[1:(ng - 1), 1:(ng - 1)], X, ng - 1)
@@ -376,6 +382,7 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     param <- EMLOGIT_cpp(paraminitEM, ng, nx, n, nbeta, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr)
     if (hessian == TRUE) {
       SE <- IEMLOGIT_cpp(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr)
+      varcov <- SE
       if (nx == 1) {
         SE <- c(SE[-c(1:(ng - 1))], SE[1:(ng - 1)], sqrt(sum(SE[1:(ng - 1)]**2)))
       } else {
@@ -407,6 +414,7 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
     param <- EMLOGITIRLS_cpp(paraminitEM, ng, nx, n, nbeta, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr)
     if (hessian == TRUE) {
       SE <- IEMLOGIT_cpp(param, ng, nx, nbeta, n, A, Y, X, TCOV, nw, refgr)
+      varcov <- SE 
       if (nx == 1) {
         SE <- c(SE[-c(1:(ng - 1))], SE[1:(ng - 1)], sqrt(sum(SE[1:(ng - 1)]**2)))
       } else {
@@ -475,7 +483,8 @@ trajeR.LOGIT <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, de
       ng = ng, nx = nx, n = n, nbeta = nbeta, nw = nw,
       A = A, Y = Y, X = X, TCOV = TCOV
     ),
-    Time = A[1, ], degre = degre - 1
+    Time = A[1, ], degre = degre - 1,
+    varcov = varcov
   )
   class(res) <- "Trajectory.LOGIT"
   return(res)
@@ -514,6 +523,7 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
                        hessian, itermax, paraminit, EMIRLS, refgr) {
   set_tour(1)
   set_storelik(10**100)
+  varcov <- NA
   theta <- theta - theta[1:nx]
   degre.nu <- degre.nu + 1
   nnu <- degre.nu
@@ -557,6 +567,7 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
     }
     if (hessian == TRUE) {
       invH <- newparam$invhessian
+      varcov <- invH
       SE <- sqrt(diag(invH))
       if (nx == 1) {
         sdtmp <- deltaTheta(theta, invH[1:(ng - 1), 1:(ng - 1)], X, ng - 1)
@@ -584,6 +595,7 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
     param <- EMZIP_cpp(paraminitEM, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr)
     if (hessian == TRUE) {
       SE <- IEMZIP_cpp(param, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw, refgr)
+      varcov <- SE
       if (nx == 1) {
         SE <- c(SE[-c(1:(ng - 1))], SE[1:(ng - 1)], sqrt(sum(SE[1:(ng - 1)]**2)))
       } else {
@@ -615,6 +627,7 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
     param <- EMZIPIRLS_cpp(paraminitEM, ng, nx, n, nbeta, nnu, A, Y, X, TCOV, nw, itermax, EMIRLS, refgr)
     if (hessian == TRUE) {
       SE <- IEMZIP_cpp(param, ng, nx, nbeta, nnu, n, A, Y, X, TCOV, nw, refgr)
+      varcov <- SE
       if (nx == 1) {
         SE <- c(SE[-c(1:(ng - 1))], SE[1:(ng - 1)], sqrt(sum(SE[1:(ng - 1)]**2)))
       } else {
@@ -694,7 +707,8 @@ trajeR.ZIP <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degr
     ),
     #Time = A[1, ], degre = degre - 1, degre.nu = degre.nu - 1
     Time = c(min(A, na.rm = TRUE), max(A, na.rm = TRUE)), period = period,
-    degre = degre - 1, degre.nu = degre.nu - 1
+    degre = degre - 1, degre.nu = degre.nu - 1,
+    varcov = varcov
   )
   class(res) <- "Trajectory.ZIP"
   return(res)
@@ -730,6 +744,7 @@ trajeR.POIS <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, deg
                         hessian, itermax, paraminit, EMIRLS, refgr) {
   set_tour(1)
   set_storelik(10**100)
+  varcov <- NA
   theta <- theta - theta[1:nx]
   theta <- theta[-c(1:nx)]
   #  nu = unlist(c(sapply(1:ng, function(s){
@@ -896,7 +911,8 @@ trajeR.POIS <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, deg
       nx = nx, n = n, nbeta = nbeta, nw = nw, A = A, Y = Y, X = X,
       TCOV = TCOV
     ),
-    Time = A[1, ], degre = degre - 1
+    Time = A[1, ], degre = degre - 1,
+    varcov = varcov
   )
   class(res) <- "Trajectory.POIS"
   return(res)
@@ -932,6 +948,7 @@ trajeR.POIS <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, deg
 
 trajeR.NL <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre, theta, beta, sigma, pi, Method, ssigma,
                       hessian, itermax, paraminit, EMIRLS, refgr, fct, diffct, nls.lmiter) {
+  varcov <- NA
   nsigma <- ng
   if (Method == "L") {
     # initial value for Likelihood's method
@@ -1068,7 +1085,8 @@ trajeR.NL <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nw, ntheta, period, degre
       nbeta = nbeta, nw = nw, A = A, Y = Y, X = X,
       TCOV = TCOV, fct = fct
     ),
-    Time = A[1, ], degre = degre - 1, fct = fct
+    Time = A[1, ], degre = degre - 1, fct = fct,
+    varcov = varcov
   )
   class(res) <- "Trajectory.NL"
   return(res)
@@ -1107,6 +1125,7 @@ trajeR.BETA <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nphi, nw, ntheta, perio
                         hessian, itermax, paraminit, EMIRLS, refgr) {
   set_tour(1)
   set_storelik(10**100)
+  varcov <- NA
   theta <- theta - theta[1:nx]
   if (Method == "L") {
     theta <- theta[-c(1:nx)]
@@ -1147,6 +1166,7 @@ trajeR.BETA <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nphi, nw, ntheta, perio
     invH <- NULL
     if (hessian == TRUE) {
       invH <- newparam$invhessian
+      varcov <- invH
       SE <- sqrt(diag(invH))
       if (nx == 1) {
         sdtmp <- deltaTheta(theta, invH[1:(ng - 1), 1:(ng - 1)], X, ng - 1)
@@ -1220,7 +1240,8 @@ trajeR.BETA <- function(Y, A, X, TCOV, ng, nx, n, nbeta, nphi, nw, ntheta, perio
       ng = ng, nx = nx, n = n, nbeta = nbeta, nphi = nphi, nw = nw,
       A = A, Y = Y, X = X, TCOV = TCOV
     ),
-    Time = A[1, ], degre = degre - 1, degre.phi = nphi - 1, invH = invH
+    Time = A[1, ], degre = degre - 1, degre.phi = nphi - 1, invH = invH,
+    varcov = varcov
   )
   class(res) <- "Trajectory.BETA"
   return(res)
